@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Plus, Pencil, Trash2, Search } from "lucide-react";
+import { Plus, Pencil, Trash2, Search, Loader2 } from "lucide-react";
 import { api } from "../api/client";
 import ProductModal from "../components/ProductModal";
 import Modal from "../components/Modal";
@@ -12,6 +12,8 @@ export default function Products() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState(null);
   const [confirming, setConfirming] = useState(null);
+  const [editingPrice, setEditingPrice] = useState(null); // { id, value } — inline price edit
+  const [savingPrice, setSavingPrice] = useState(false);
 
   const load = () =>
     api
@@ -47,6 +49,31 @@ export default function Products() {
       await load();
     } catch (e) {
       setError(e.message);
+    }
+  };
+
+  // កែតម្លៃភ្លាមៗក្នុងតារាង (Quick Price Edit) — ផ្ញើតែ price ប៉ុណ្ណោះ
+  const startPriceEdit = (p) => setEditingPrice({ id: p.id, value: String(p.price) });
+  const cancelPriceEdit = () => setEditingPrice(null);
+
+  const savePrice = async () => {
+    if (!editingPrice) return;
+    const price = parseFloat(editingPrice.value);
+    if (Number.isNaN(price) || price < 0) {
+      setError("Please enter a valid price (0 or more).");
+      setEditingPrice(null);
+      return;
+    }
+    setSavingPrice(true);
+    setError("");
+    try {
+      await api.updateProduct(editingPrice.id, { price });
+      setEditingPrice(null);
+      await load();
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setSavingPrice(false);
     }
   };
 
@@ -140,8 +167,40 @@ export default function Products() {
                     </div>
                   </td>
                   <td className="px-4 py-3 text-slate-600">{p.category || "—"}</td>
-                  <td className="px-4 py-3 font-semibold text-slate-900">
-                    {formatPrice(p.price)}
+                  <td className="px-4 py-3">
+                    {editingPrice?.id === p.id ? (
+                      <div className="flex items-center gap-1">
+                        <span className="text-slate-500 font-medium">$</span>
+                        <input
+                          autoFocus
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          value={editingPrice.value}
+                          onChange={(e) =>
+                            setEditingPrice({ id: p.id, value: e.target.value })
+                          }
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") savePrice();
+                            if (e.key === "Escape") cancelPriceEdit();
+                          }}
+                          onBlur={savePrice}
+                          className="w-24 px-2 py-1 rounded-lg border border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-semibold text-slate-900"
+                        />
+                        {savingPrice && (
+                          <Loader2 className="w-4 h-4 text-emerald-600 animate-spin" />
+                        )}
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => startPriceEdit(p)}
+                        title="Click to edit price"
+                        className="font-semibold text-emerald-700 hover:underline underline-offset-2"
+                      >
+                        {formatPrice(p.price)}
+                      </button>
+                    )}
                   </td>
                   <td className="px-4 py-3">
                     {p.is_on_sale ? (
