@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-import { ShieldCheck, User as UserIcon, Search } from "lucide-react";
+import { ShieldCheck, User as UserIcon, Search, Trash2 } from "lucide-react";
 import { api } from "../api/client";
 import { useAuth } from "../context/AuthContext";
 import { formatDate } from "../lib/format";
+import Modal from "../components/Modal";
 
 export default function Users() {
   const { user: currentUser } = useAuth();
@@ -10,6 +11,8 @@ export default function Users() {
   const [search, setSearch] = useState("");
   const [error, setError] = useState("");
   const [updatingId, setUpdatingId] = useState(null);
+  const [confirming, setConfirming] = useState(null);
+  const [deleting, setDeleting] = useState(false);
 
   const load = () =>
     api
@@ -41,6 +44,22 @@ export default function Users() {
       setError(e.message);
     } finally {
       setUpdatingId(null);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!confirming) return;
+    setDeleting(true);
+    setError("");
+    try {
+      await api.deleteUser(confirming.id);
+      setConfirming(null);
+      await load();
+    } catch (e) {
+      setError(e.message);
+      setConfirming(null);
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -90,6 +109,7 @@ export default function Users() {
                 <th className="px-4 py-3 font-semibold">Role</th>
                 <th className="px-4 py-3 font-semibold">Verified</th>
                 <th className="px-4 py-3 font-semibold">Joined</th>
+                <th className="px-4 py-3 font-semibold text-right">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -161,12 +181,66 @@ export default function Users() {
                   <td className="px-4 py-3 text-slate-500 whitespace-nowrap">
                     {formatDate(u.created_at)}
                   </td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center justify-end">
+                      <button
+                        onClick={() => setConfirming(u)}
+                        disabled={u.email === currentUser?.email || deleting}
+                        title={
+                          u.email === currentUser?.email
+                            ? "You cannot delete your own account"
+                            : "Delete user"
+                        }
+                        className="p-2 rounded-lg text-slate-400 hover:bg-rose-50 hover:text-rose-600 transition disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-slate-400"
+                        aria-label="Delete user"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
       )}
+
+      <Modal
+        open={!!confirming}
+        onClose={() => !deleting && setConfirming(null)}
+        title="Delete user"
+      >
+        <p className="text-sm text-slate-600">
+          Are you sure you want to delete{" "}
+          <strong className="text-slate-900">
+            {confirming?.name || confirming?.email}
+          </strong>
+          ? This will permanently remove the account
+          {confirming?.email ? (
+            <>
+              {" "}
+              (<span className="text-slate-900">{confirming.email}</span>)
+            </>
+          ) : null}{" "}
+          along with their orders. This action cannot be undone.
+        </p>
+        <div className="mt-6 flex gap-3 justify-end">
+          <button
+            onClick={() => setConfirming(null)}
+            disabled={deleting}
+            className="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-600 font-medium hover:bg-slate-50 transition text-sm disabled:opacity-50"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleDelete}
+            disabled={deleting}
+            className="px-5 py-2.5 rounded-xl bg-rose-600 text-white font-semibold hover:bg-rose-700 transition text-sm disabled:opacity-60"
+          >
+            {deleting ? "Deleting..." : "Delete user"}
+          </button>
+        </div>
+      </Modal>
     </div>
   );
 }

@@ -167,6 +167,8 @@ export const api = {
       body: { role },
       auth: true,
     }),
+  deleteUser: (id) =>
+    request(`/api/admin/users/${id}`, { method: "DELETE", auth: true }),
 
   // Settings (public endpoint — សម្រាប់ Branding លើ Login Page ផង)
   getSettings: () => request("/api/settings/all"),
