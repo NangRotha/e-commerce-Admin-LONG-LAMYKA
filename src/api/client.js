@@ -168,8 +168,8 @@ export const api = {
       auth: true,
     }),
 
-  // Settings
-  getSettings: () => request("/api/settings/all", { auth: true }),
+  // Settings (public endpoint — សម្រាប់ Branding លើ Login Page ផង)
+  getSettings: () => request("/api/settings/all"),
   updateSetting: (key, value) =>
     request("/api/settings/admin/update", {
       method: "PUT",

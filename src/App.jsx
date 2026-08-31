@@ -1,5 +1,7 @@
+import { useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
+import { api } from "./api/client";
 import Layout from "./components/Layout";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
@@ -12,8 +14,46 @@ import Discounts from "./pages/Discounts";
 import Users from "./pages/Users";
 import Settings from "./pages/Settings";
 
+/**
+ * អនុវត្ត Branding លើ Browser Tab៖
+ * - document.title = site_name (ពី Database)
+ * - favicon (icon) = site_logo (ពី Database)
+ */
+function applyBranding(settings) {
+  const fallback = "Admin Dashboard";
+  const name = settings.site_name || fallback;
+  const title = settings.site_name ? `${settings.site_name} — Admin` : fallback;
+  if (document.title !== title) document.title = title;
+  if (!name) return;
+
+  const logo = settings.site_logo || "";
+  if (!logo) return;
+
+  let link = document.querySelector("link[rel~='icon']");
+  if (!link) {
+    link = document.createElement("link");
+    link.rel = "icon";
+    document.head.appendChild(link);
+  }
+  if (link.getAttribute("href") !== logo) {
+    link.setAttribute("href", logo);
+    link.setAttribute(
+      "type",
+      logo.toLowerCase().endsWith(".svg") ? "image/svg+xml" : ""
+    );
+  }
+}
+
 export default function App() {
   const { user } = useAuth();
+
+  // ដាក់ Title + Icon (Favicon) ពី Database (site_name / site_logo)
+  useEffect(() => {
+    api
+      .getSettings()
+      .then(applyBranding)
+      .catch(() => {});
+  }, []);
 
   return (
     <Routes>

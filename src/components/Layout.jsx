@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -13,6 +14,7 @@ import {
   Store,
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import { api } from "../api/client";
 
 const NAV_ITEMS = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -29,6 +31,18 @@ const NAV_ITEMS = [
 export default function Layout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+
+  // ឈ្មោះ + Logo របស់ Store ពី Database (site_name / site_logo)
+  const [site, setSite] = useState({});
+  useEffect(() => {
+    api
+      .getSettings()
+      .then(setSite)
+      .catch(() => {});
+  }, []);
+
+  const siteName = site.site_name || "Admin Panel";
+  const siteLogo = site.site_logo || "";
 
   const handleLogout = () => {
     logout();
@@ -47,8 +61,17 @@ export default function Layout() {
       {/* Sidebar (desktop) */}
       <aside className="hidden lg:flex fixed inset-y-0 left-0 w-60 bg-slate-900 flex-col">
         <div className="h-16 flex items-center gap-2 px-5 text-white font-extrabold text-lg border-b border-slate-800">
-          <Store className="w-5 h-5 text-emerald-500" />
-          Admin Panel
+          {siteLogo ? (
+            <img
+              src={siteLogo}
+              alt={siteName}
+              className="h-8 w-auto max-w-[130px] object-contain"
+              onError={(e) => (e.target.style.display = "none")}
+            />
+          ) : (
+            <Store className="w-5 h-5 text-emerald-500 shrink-0" />
+          )}
+          <span className="truncate">{siteName}</span>
         </div>
         <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
           {NAV_ITEMS.map((item) => (
@@ -77,11 +100,22 @@ export default function Layout() {
         {/* Topbar */}
         <header className="sticky top-0 z-30 bg-white border-b border-slate-200 h-16 flex items-center justify-between px-4 sm:px-6">
           <div className="flex items-center gap-2 lg:hidden font-extrabold text-slate-900">
-            <Store className="w-5 h-5 text-emerald-600" />
-            Admin
+            {siteLogo ? (
+              <img
+                src={siteLogo}
+                alt={siteName}
+                className="h-7 w-auto max-w-[120px] object-contain"
+                onError={(e) => (e.target.style.display = "none")}
+              />
+            ) : (
+              <Store className="w-5 h-5 text-emerald-600" />
+            )}
+            {!siteLogo && <span className="truncate">{siteName}</span>}
           </div>
           <div className="hidden lg:block text-sm text-slate-500">
-            E-Commerce Store Management
+            {site.site_name
+              ? `${site.site_name} Management`
+              : "E-Commerce Store Management"}
           </div>
           <div className="flex items-center gap-3">
             <span className="text-sm font-medium text-slate-700 hidden sm:block">

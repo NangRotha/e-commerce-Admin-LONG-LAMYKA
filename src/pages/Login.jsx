@@ -1,11 +1,23 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Store } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import { api } from "../api/client";
 
 export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
+
+  const [site, setSite] = useState({});
+  useEffect(() => {
+    api
+      .getSettings()
+      .then(setSite)
+      .catch(() => {});
+  }, []);
+
+  const siteName = site.site_name || "Admin Panel";
+  const siteLogo = site.site_logo || "";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -29,8 +41,17 @@ export default function Login() {
     <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="flex items-center justify-center gap-2 text-white font-extrabold text-2xl mb-8">
-          <Store className="w-7 h-7 text-emerald-500" />
-          Admin Panel
+          {siteLogo ? (
+            <img
+              src={siteLogo}
+              alt={siteName}
+              className="h-9 w-auto max-w-[160px] object-contain"
+              onError={(e) => (e.target.style.display = "none")}
+            />
+          ) : (
+            <Store className="w-7 h-7 text-emerald-500" />
+          )}
+          {!siteLogo && siteName}
         </div>
 
         <div className="bg-white rounded-3xl shadow-xl p-8">
