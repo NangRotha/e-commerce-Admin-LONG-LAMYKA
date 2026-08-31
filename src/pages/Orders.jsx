@@ -66,11 +66,12 @@ export default function Orders() {
         </div>
       ) : (
         <div className="bg-white rounded-2xl border border-slate-200 overflow-x-auto">
-          <table className="w-full text-sm min-w-[820px]">
+          <table className="w-full text-sm min-w-[1000px]">
             <thead>
               <tr className="text-left text-xs uppercase tracking-wide text-slate-400 border-b border-slate-200">
                 <th className="px-4 py-3 font-semibold">Order</th>
                 <th className="px-4 py-3 font-semibold">Customer</th>
+                <th className="px-4 py-3 font-semibold">Shipping</th>
                 <th className="px-4 py-3 font-semibold">Items</th>
                 <th className="px-4 py-3 font-semibold">Total</th>
                 <th className="px-4 py-3 font-semibold">Status</th>
@@ -88,7 +89,39 @@ export default function Orders() {
                       </span>
                     )}
                   </td>
-                  <td className="px-4 py-3 text-slate-600">{o.user_email || "—"}</td>
+                  <td className="px-4 py-3">
+                    <div className="text-slate-800 font-medium">
+                      {o.customer_name || "—"}
+                    </div>
+                    {o.customer_phone && (
+                      <div className="text-xs text-slate-500">
+                        {o.customer_phone}
+                      </div>
+                    )}
+                    <div className="text-xs text-slate-400">
+                      {o.user_email || "—"}
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 text-slate-600">
+                    {o.shipping_address ? (
+                      <span
+                        className="block max-w-[220px] line-clamp-2"
+                        title={o.shipping_address}
+                      >
+                        {o.shipping_address}
+                      </span>
+                    ) : (
+                      <span className="text-slate-300">—</span>
+                    )}
+                    {o.note && (
+                      <span
+                        className="mt-1 block max-w-[220px] text-xs text-amber-700 line-clamp-2"
+                        title={`Note: ${o.note}`}
+                      >
+                        📝 {o.note}
+                      </span>
+                    )}
+                  </td>
                   <td className="px-4 py-3">
                     <div className="text-slate-600">
                       {o.items.length === 0 ? (
