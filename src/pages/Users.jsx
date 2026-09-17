@@ -66,14 +66,14 @@ export default function Users() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-2xl font-extrabold text-slate-900">Users</h1>
-        <p className="text-sm text-slate-500">
+        <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white">Users</h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400">
           {users ? `${users.length} registered users` : "Loading..."}
         </p>
       </div>
 
       {error && (
-        <p className="text-sm text-rose-600 bg-rose-50 border border-rose-200 rounded-xl px-4 py-3">
+        <p className="text-sm text-rose-600 bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900 rounded-xl px-4 py-3">
           {error}
         </p>
       )}
@@ -85,61 +85,61 @@ export default function Users() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search users..."
-          className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm"
+          className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm transition"
         />
       </div>
 
       {users === null ? (
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 animate-pulse space-y-3">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-6 animate-pulse space-y-3">
           {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="h-12 bg-slate-200 rounded-xl" />
+            <div key={i} className="h-12 bg-slate-200 dark:bg-slate-800 rounded-xl" />
           ))}
         </div>
       ) : filtered.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-dashed border-slate-300 py-16 text-center text-slate-500">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 py-16 text-center text-slate-500 dark:text-slate-400">
           {users.length === 0 ? "No users yet." : "No users match your search."}
         </div>
       ) : (
-        <div className="bg-white rounded-2xl border border-slate-200 overflow-x-auto">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-x-auto">
           <table className="w-full text-sm min-w-[720px]">
             <thead>
-              <tr className="text-left text-xs uppercase tracking-wide text-slate-400 border-b border-slate-200">
-                <th className="px-4 py-3 font-semibold">User</th>
-                <th className="px-4 py-3 font-semibold">Email</th>
-                <th className="px-4 py-3 font-semibold">Role</th>
-                <th className="px-4 py-3 font-semibold">Verified</th>
-                <th className="px-4 py-3 font-semibold">Joined</th>
-                <th className="px-4 py-3 font-semibold text-right">Actions</th>
+              <tr className="text-left text-xs uppercase tracking-wide text-slate-400 dark:text-slate-500 border-b border-slate-200 dark:border-slate-800">
+                <th className="px-4 py-3.5 font-semibold">User</th>
+                <th className="px-4 py-3.5 font-semibold">Email</th>
+                <th className="px-4 py-3.5 font-semibold">Role</th>
+                <th className="px-4 py-3.5 font-semibold">Verified</th>
+                <th className="px-4 py-3.5 font-semibold">Joined</th>
+                <th className="px-4 py-3.5 font-semibold text-right">Actions</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
               {filtered.map((u) => (
-                <tr key={u.id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50">
+                <tr key={u.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
                       {u.profile_image ? (
                         <img
                           src={u.profile_image}
                           alt=""
-                          className="w-9 h-9 rounded-full object-cover border border-slate-200 shrink-0"
+                          className="w-9 h-9 rounded-full object-cover border border-slate-200 dark:border-slate-700 shrink-0"
                           onError={(e) => (e.target.style.display = "none")}
                         />
                       ) : (
-                        <div className="w-9 h-9 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold shrink-0">
+                        <div className="w-9 h-9 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 flex items-center justify-center font-bold shrink-0">
                           {(u.name || u.email || "U").charAt(0).toUpperCase()}
                         </div>
                       )}
-                      <span className="font-semibold text-slate-800">
+                      <span className="font-semibold text-slate-800 dark:text-white">
                         {u.name}
                         {u.email === currentUser?.email && (
-                          <span className="ml-2 text-xs font-medium text-slate-400">
+                          <span className="ml-2 text-xs font-medium text-slate-400 dark:text-slate-500">
                             (you)
                           </span>
                         )}
                       </span>
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-slate-600">{u.email}</td>
+                  <td className="px-4 py-3 text-slate-600 dark:text-slate-300">{u.email}</td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
                       <select
@@ -148,8 +148,8 @@ export default function Users() {
                         onChange={(e) => changeRole(u.id, e.target.value)}
                         className={`text-xs font-semibold px-2.5 py-1.5 rounded-full border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50 ${
                           u.role === "admin"
-                            ? "bg-slate-900 text-white"
-                            : "bg-slate-100 text-slate-700"
+                            ? "bg-slate-900 dark:bg-emerald-600 text-white"
+                            : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
                         }`}
                         title={
                           u.email === currentUser?.email
@@ -157,28 +157,28 @@ export default function Users() {
                             : "Change role"
                         }
                       >
-                        <option value="user" className="text-slate-800">user</option>
-                        <option value="admin" className="text-slate-800">admin</option>
+                        <option value="user" className="text-slate-800 dark:bg-slate-800 dark:text-white">user</option>
+                        <option value="admin" className="text-slate-800 dark:bg-slate-800 dark:text-white">admin</option>
                       </select>
                       {u.role === "admin" ? (
-                        <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                        <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                       ) : (
-                        <UserIcon className="w-4 h-4 text-slate-400" />
+                        <UserIcon className="w-4 h-4 text-slate-400 dark:text-slate-500" />
                       )}
                     </div>
                   </td>
                   <td className="px-4 py-3">
                     {u.email_verified ? (
-                      <span className="text-xs font-semibold bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">
+                      <span className="text-xs font-semibold bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 px-2 py-1 rounded-full">
                         ✓ Verified
                       </span>
                     ) : (
-                      <span className="text-xs font-semibold bg-amber-100 text-amber-700 px-2 py-1 rounded-full">
+                      <span className="text-xs font-semibold bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 px-2 py-1 rounded-full">
                         Pending
                       </span>
                     )}
                   </td>
-                  <td className="px-4 py-3 text-slate-500 whitespace-nowrap">
+                  <td className="px-4 py-3 text-slate-500 dark:text-slate-400 whitespace-nowrap">
                     {formatDate(u.created_at)}
                   </td>
                   <td className="px-4 py-3">

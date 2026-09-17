@@ -42,25 +42,25 @@ export default function Login() {
   };
 
   return (
-    <div className="relative min-h-screen w-full bg-gradient-to-br from-[#EBF3FE] via-[#F3F7FF] to-[#DFEDFE] dark:from-[#0b1120] dark:via-[#0f172a] dark:to-[#090d16] flex items-center justify-center p-4 sm:p-6 md:p-10 overflow-hidden">
+    <div className="relative min-h-screen w-full bg-gradient-to-br from-[#EBF3FE] via-[#F3F7FF] to-[#DFEDFE] dark:from-[#0b1120] dark:via-[#0f172a] dark:to-[#090d16] flex items-center justify-center p-3 sm:p-6 md:p-10 overflow-x-hidden">
       {/* Decorative ambient background curves */}
       <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-blue-300/20 dark:bg-blue-600/10 blur-3xl pointer-events-none" />
       <div className="absolute -bottom-24 -right-24 w-[30rem] h-[30rem] rounded-full bg-indigo-300/20 dark:bg-indigo-600/10 blur-3xl pointer-events-none" />
       <div className="absolute top-1/2 left-1/4 w-72 h-72 rounded-full bg-sky-200/30 dark:bg-sky-600/5 blur-2xl pointer-events-none" />
 
       {/* Top right language & theme controls */}
-      <div className="absolute top-4 right-4 sm:top-6 sm:right-8 z-20">
-        <HeaderControls className="backdrop-blur-md bg-white/70 dark:bg-slate-800/80 p-1.5 rounded-full shadow-sm border border-slate-200/60 dark:border-slate-700" />
+      <div className="absolute top-3 right-3 sm:top-6 sm:right-8 z-20">
+        <HeaderControls className="backdrop-blur-md bg-white/70 dark:bg-slate-800/80 p-1 rounded-full shadow-xs border border-slate-200/60 dark:border-slate-700" />
       </div>
 
       {/* Main Container Card (inspired by modern dashboard login mockup) */}
-      <div className="relative w-full max-w-5xl rounded-[28px] sm:rounded-[36px] bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-2 border-blue-200/70 dark:border-blue-900/40 shadow-2xl shadow-blue-500/10 dark:shadow-black/50 overflow-hidden animate-pop-in">
-        <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[580px]">
+      <div className="relative w-full max-w-5xl rounded-2xl sm:rounded-[36px] bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-2 border-blue-200/70 dark:border-blue-900/40 shadow-2xl shadow-blue-500/10 dark:shadow-black/50 overflow-hidden animate-pop-in my-10 sm:my-0">
+        <div className="grid grid-cols-1 lg:grid-cols-12 min-h-0 sm:min-h-[580px]">
           {/* Left Column: Login Form */}
-          <div className="lg:col-span-5 flex flex-col justify-between p-8 sm:p-10 md:p-12 z-10">
+          <div className="lg:col-span-5 flex flex-col justify-between p-5 sm:p-10 md:p-12 z-10">
             <div>
               {/* Brand logo / title */}
-              <div className="flex items-center gap-2.5 mb-10">
+              <div className="flex items-center gap-2.5 mb-6 sm:mb-10">
                 {siteLogo ? (
                   <img
                     src={siteLogo}
@@ -79,11 +79,11 @@ export default function Login() {
               </div>
 
               {/* Heading */}
-              <div className="mb-8">
-                <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-800 dark:text-white tracking-tight">
+              <div className="mb-6 sm:mb-8">
+                <h1 className="text-2xl sm:text-4xl font-extrabold text-slate-800 dark:text-white tracking-tight">
                   {t("login.title") || "Login"}
                 </h1>
-                <p className="mt-2 text-sm text-slate-400 dark:text-slate-400 leading-relaxed font-normal">
+                <p className="mt-1.5 sm:mt-2 text-xs sm:text-sm text-slate-400 dark:text-slate-400 leading-relaxed font-normal">
                   {t("login.subtitle") || "Welcome to log in to your background management system."}
                 </p>
               </div>

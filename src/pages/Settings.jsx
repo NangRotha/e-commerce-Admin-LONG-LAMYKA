@@ -191,28 +191,28 @@ export default function Settings() {
   };
 
   const input =
-    "mt-1.5 w-full px-4 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-400 transition duration-200 text-sm";
-  const label = "block text-sm font-medium text-slate-700";
+    "mt-1.5 w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-400 transition duration-200 text-sm";
+  const label = "block text-sm font-medium text-slate-700 dark:text-slate-300";
   const card =
-    "bg-white rounded-2xl border border-slate-200 p-6 transition-all duration-300 hover:shadow-soft animate-fade-in-up";
+    "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-4 sm:p-6 transition-all duration-300 hover:shadow-soft animate-fade-in-up";
 
   return (
     <div className="space-y-5 max-w-2xl">
       <div>
-        <h1 className="text-2xl font-extrabold text-slate-900">
+        <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white">
           {t("settings.title")}
         </h1>
-        <p className="text-sm text-slate-500">{t("settings.subtitle")}</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400">{t("settings.subtitle")}</p>
       </div>
 
       {error && (
-        <p className="text-sm text-rose-600 bg-rose-50 border border-rose-200 rounded-xl px-4 py-3 animate-fade-in">
+        <p className="text-sm text-rose-600 bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900 rounded-xl px-4 py-3 animate-fade-in">
           {error}
         </p>
       )}
 
       {msg && (
-        <p className="text-sm text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-3 animate-pop-in">
+        <p className="text-sm text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 rounded-xl px-4 py-3 animate-pop-in">
           {msg}
         </p>
       )}

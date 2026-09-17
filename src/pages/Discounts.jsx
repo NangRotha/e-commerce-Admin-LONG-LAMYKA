@@ -62,21 +62,21 @@ export default function Discounts() {
   };
 
   const input =
-    "mt-1.5 w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm";
-  const label = "block text-sm font-medium text-slate-700";
+    "mt-1.5 w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm transition";
+  const label = "block text-sm font-medium text-slate-700 dark:text-slate-300";
 
   return (
     <div className="space-y-5">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-extrabold text-slate-900">Discounts</h1>
-          <p className="text-sm text-slate-500">
+          <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white">Discounts</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400">
             {discounts ? `${discounts.length} promo codes` : "Loading..."}
           </p>
         </div>
         <button
           onClick={() => setModalOpen(true)}
-          className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition text-sm"
+          className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition text-sm shadow-xs"
         >
           <Plus className="w-4 h-4" />
           Create promo
@@ -84,53 +84,53 @@ export default function Discounts() {
       </div>
 
       {error && (
-        <p className="text-sm text-rose-600 bg-rose-50 border border-rose-200 rounded-xl px-4 py-3">
+        <p className="text-sm text-rose-600 bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900 rounded-xl px-4 py-3">
           {error}
         </p>
       )}
 
       {discounts === null ? (
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 animate-pulse space-y-3">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-6 animate-pulse space-y-3">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="h-12 bg-slate-200 rounded-xl" />
+            <div key={i} className="h-12 bg-slate-200 dark:bg-slate-800 rounded-xl" />
           ))}
         </div>
       ) : discounts.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-dashed border-slate-300 py-16 text-center text-slate-500">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 py-16 text-center text-slate-500 dark:text-slate-400">
           No promo codes yet. Create one to start offering discounts.
         </div>
       ) : (
-        <div className="bg-white rounded-2xl border border-slate-200 overflow-x-auto">
-          <table className="w-full text-sm min-w-[680px]">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-x-auto">
+          <table className="w-full text-sm min-w-[640px]">
             <thead>
-              <tr className="text-left text-xs uppercase tracking-wide text-slate-400 border-b border-slate-200">
-                <th className="px-4 py-3 font-semibold">Code</th>
-                <th className="px-4 py-3 font-semibold">Percent</th>
-                <th className="px-4 py-3 font-semibold">Uses</th>
-                <th className="px-4 py-3 font-semibold">Expiry</th>
-                <th className="px-4 py-3 font-semibold">Active</th>
+              <tr className="text-left text-xs uppercase tracking-wide text-slate-400 dark:text-slate-500 border-b border-slate-200 dark:border-slate-800">
+                <th className="px-4 py-3.5 font-semibold">Code</th>
+                <th className="px-4 py-3.5 font-semibold">Percent</th>
+                <th className="px-4 py-3.5 font-semibold">Uses</th>
+                <th className="px-4 py-3.5 font-semibold">Expiry</th>
+                <th className="px-4 py-3.5 font-semibold">Active</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
               {discounts.map((d) => (
-                <tr key={d.id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50">
-                  <td className="px-4 py-3 font-mono font-bold text-slate-900">
+                <tr key={d.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition">
+                  <td className="px-4 py-3 font-mono font-bold text-slate-900 dark:text-white">
                     {d.code}
                   </td>
-                  <td className="px-4 py-3 font-semibold text-slate-700">
+                  <td className="px-4 py-3 font-semibold text-slate-700 dark:text-slate-200">
                     {d.percent}%
                   </td>
-                  <td className="px-4 py-3 text-slate-600">
+                  <td className="px-4 py-3 text-slate-600 dark:text-slate-400">
                     {d.used_count}/{d.max_uses}
                   </td>
-                  <td className="px-4 py-3 text-slate-500">
+                  <td className="px-4 py-3 text-slate-500 dark:text-slate-400">
                     {d.expiry_date ? formatDate(d.expiry_date) : "Never"}
                   </td>
                   <td className="px-4 py-3">
                     <button
                       onClick={() => toggle(d.id)}
                       className={`relative w-11 h-6 rounded-full transition ${
-                        d.is_active ? "bg-emerald-600" : "bg-slate-300"
+                        d.is_active ? "bg-emerald-600" : "bg-slate-300 dark:bg-slate-700"
                       }`}
                       aria-label={d.is_active ? "Deactivate" : "Activate"}
                     >
@@ -155,11 +155,11 @@ export default function Discounts() {
       >
         <form onSubmit={create} className="space-y-4">
           {error && (
-            <p className="text-sm text-rose-600 bg-rose-50 border border-rose-200 rounded-xl px-4 py-3">
+            <p className="text-sm text-rose-600 bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900 rounded-xl px-4 py-3">
               {error}
             </p>
           )}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className={label}>Code *</label>
               <input

@@ -132,8 +132,8 @@ export default function Slides() {
     <div className="space-y-5">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-extrabold text-slate-900">Slides</h1>
-          <p className="text-sm text-slate-500">
+          <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white">Slides</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400">
             {slides ? `${slides.length} slides` : "Loading..."} — banner shown on
             the storefront homepage
           </p>
@@ -143,7 +143,7 @@ export default function Slides() {
             setEditing(null);
             setModalOpen(true);
           }}
-          className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition text-sm"
+          className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition text-sm shadow-xs"
         >
           <Plus className="w-4 h-4" />
           Add Slide
@@ -151,28 +151,28 @@ export default function Slides() {
       </div>
 
       {error && (
-        <p className="text-sm text-rose-600 bg-rose-50 border border-rose-200 rounded-xl px-4 py-3">
+        <p className="text-sm text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900 rounded-xl px-4 py-3">
           {error}
         </p>
       )}
 
       {slides === null ? (
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 animate-pulse space-y-3">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 animate-pulse space-y-3">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="h-16 bg-slate-200 rounded-xl" />
+            <div key={i} className="h-16 bg-slate-200 dark:bg-slate-800 rounded-xl" />
           ))}
         </div>
       ) : slides.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-dashed border-slate-300 py-16 text-center text-slate-500">
-          <Clapperboard className="w-10 h-10 mx-auto mb-3 text-slate-300" />
+        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 py-16 text-center text-slate-500 dark:text-slate-400">
+          <Clapperboard className="w-10 h-10 mx-auto mb-3 text-slate-300 dark:text-slate-600" />
           No slides yet. Add images, videos or YouTube links to promote your
           store on the homepage.
         </div>
       ) : (
-        <div className="bg-white rounded-2xl border border-slate-200 overflow-x-auto">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 overflow-x-auto shadow-xs">
           <table className="w-full text-sm min-w-[720px]">
             <thead>
-              <tr className="text-left text-xs uppercase tracking-wide text-slate-400 border-b border-slate-200">
+              <tr className="text-left text-xs uppercase tracking-wide text-slate-400 dark:text-slate-500 border-b border-slate-200 dark:border-slate-800">
                 <th className="px-4 py-3 font-semibold">Preview</th>
                 <th className="px-4 py-3 font-semibold">Slide</th>
                 <th className="px-4 py-3 font-semibold">Type</th>
@@ -187,17 +187,17 @@ export default function Slides() {
                 return (
                   <tr
                     key={s.id}
-                    className="border-b border-slate-100 last:border-0 hover:bg-slate-50/60"
+                    className="border-b border-slate-100 dark:border-slate-800/60 last:border-0 hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors"
                   >
                     <td className="px-4 py-3">
                       <SlidePreview slide={s} />
                     </td>
                     <td className="px-4 py-3">
-                      <div className="font-semibold text-slate-900">
+                      <div className="font-semibold text-slate-900 dark:text-white">
                         {s.title || "—"}
                       </div>
                       {s.subtitle && (
-                        <div className="text-xs text-slate-500 mt-0.5 truncate max-w-[220px]">
+                        <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate max-w-[220px]">
                           {s.subtitle}
                         </div>
                       )}

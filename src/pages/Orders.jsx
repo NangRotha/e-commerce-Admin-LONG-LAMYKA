@@ -51,16 +51,16 @@ export default function Orders() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-2xl font-extrabold text-slate-900">
+        <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white">
           {t("orders.title")}
         </h1>
-        <p className="text-sm text-slate-500">
+        <p className="text-sm text-slate-500 dark:text-slate-400">
           {orders ? t("orders.count", { count: orders.length }) : t("common.loading")}
         </p>
       </div>
 
       {error && (
-        <p className="text-sm text-rose-600 bg-rose-50 border border-rose-200 rounded-xl px-4 py-3">
+        <p className="text-sm text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900 rounded-xl px-4 py-3">
           {error}
         </p>
       )}

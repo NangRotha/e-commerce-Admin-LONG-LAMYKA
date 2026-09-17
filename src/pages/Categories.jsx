@@ -62,8 +62,8 @@ export default function Categories() {
     <div className="space-y-5">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-extrabold text-slate-900">Categories</h1>
-          <p className="text-sm text-slate-500">
+          <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white">Categories</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400">
             {categories ? `${categories.length} categories` : "Loading..."}
           </p>
         </div>
@@ -72,7 +72,7 @@ export default function Categories() {
             setEditing(null);
             setModalOpen(true);
           }}
-          className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition text-sm"
+          className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition text-sm shadow-xs"
         >
           <Plus className="w-4 h-4" />
           Add Category
@@ -80,40 +80,40 @@ export default function Categories() {
       </div>
 
       {error && (
-        <p className="text-sm text-rose-600 bg-rose-50 border border-rose-200 rounded-xl px-4 py-3">
+        <p className="text-sm text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900 rounded-xl px-4 py-3">
           {error}
         </p>
       )}
 
-      <div className="relative max-w-sm">
+      <div className="relative w-full max-w-sm">
         <Search className="absolute left-3.5 top-2.5 w-4 h-4 text-slate-400" />
         <input
           type="search"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search categories..."
-          className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm"
+          className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm transition"
         />
       </div>
 
       {categories === null ? (
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 animate-pulse space-y-3">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 animate-pulse space-y-3">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="h-12 bg-slate-200 rounded-xl" />
+            <div key={i} className="h-12 bg-slate-200 dark:bg-slate-800 rounded-xl" />
           ))}
         </div>
       ) : filtered.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-dashed border-slate-300 py-16 text-center text-slate-500">
-          <Tags className="w-10 h-10 mx-auto mb-3 text-slate-300" />
+        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 py-16 text-center text-slate-500 dark:text-slate-400">
+          <Tags className="w-10 h-10 mx-auto mb-3 text-slate-300 dark:text-slate-600" />
           {categories.length === 0
             ? "No categories yet. Add one to organize your products."
             : "No categories match your search."}
         </div>
       ) : (
-        <div className="bg-white rounded-2xl border border-slate-200 overflow-x-auto">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 overflow-x-auto shadow-xs">
           <table className="w-full text-sm min-w-[640px]">
             <thead>
-              <tr className="text-left text-xs uppercase tracking-wide text-slate-400 border-b border-slate-200">
+              <tr className="text-left text-xs uppercase tracking-wide text-slate-400 dark:text-slate-500 border-b border-slate-200 dark:border-slate-800">
                 <th className="px-4 py-3 font-semibold">Name</th>
                 <th className="px-4 py-3 font-semibold">Description</th>
                 <th className="px-4 py-3 font-semibold">Products</th>
@@ -125,23 +125,23 @@ export default function Categories() {
               {filtered.map((c) => (
                 <tr
                   key={c.id}
-                  className="border-b border-slate-100 last:border-0 hover:bg-slate-50/60"
+                  className="border-b border-slate-100 dark:border-slate-800/60 last:border-0 hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors"
                 >
                   <td className="px-4 py-3">
-                    <div className="flex items-center gap-2 font-semibold text-slate-900">
-                      <Tags className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <div className="flex items-center gap-2 font-semibold text-slate-900 dark:text-white">
+                      <Tags className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
                       {c.name}
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-slate-600 max-w-xs truncate">
+                  <td className="px-4 py-3 text-slate-600 dark:text-slate-300 max-w-xs truncate">
                     {c.description || "—"}
                   </td>
                   <td className="px-4 py-3">
                     <span
                       className={`inline-flex px-2 py-1 rounded-full text-xs font-semibold ${
                         c.product_count > 0
-                          ? "bg-emerald-100 text-emerald-700"
-                          : "bg-slate-100 text-slate-500"
+                          ? "bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300"
+                          : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400"
                       }`}
                     >
                       {c.product_count}

@@ -74,14 +74,14 @@ export default function Alerts() {
   };
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
+    <div className="space-y-5">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-extrabold text-slate-900 flex items-center gap-2">
-            <BellRing className="w-6 h-6 text-emerald-600" />
+          <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+            <BellRing className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
             Alerts &amp; Popups
           </h1>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
             Announcements shown to customers on the storefront (banner / popup).
             Updates appear instantly thanks to real-time WebSocket.
           </p>
@@ -91,7 +91,7 @@ export default function Alerts() {
             setEditing(null);
             setModalOpen(true);
           }}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 transition"
+          className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 transition shadow-xs"
         >
           <Plus className="w-4 h-4" />
           New alert
@@ -99,39 +99,39 @@ export default function Alerts() {
       </div>
 
       {error && (
-        <p className="mb-4 text-sm text-rose-600 bg-rose-50 border border-rose-200 rounded-xl px-4 py-3">
+        <p className="text-sm text-rose-600 bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900 rounded-xl px-4 py-3">
           {error}
         </p>
       )}
 
       {alerts === null ? (
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-10 text-center text-slate-400 text-sm">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs p-10 text-center text-slate-400 text-sm">
           Loading alerts...
         </div>
       ) : alerts.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-dashed border-slate-300 p-14 text-center">
-          <BellRing className="w-12 h-12 mx-auto text-slate-300" />
-          <h2 className="mt-4 text-lg font-bold text-slate-800">No alerts yet</h2>
-          <p className="mt-1 text-sm text-slate-500">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 p-10 sm:p-14 text-center">
+          <BellRing className="w-12 h-12 mx-auto text-slate-300 dark:text-slate-600" />
+          <h2 className="mt-4 text-lg font-bold text-slate-800 dark:text-white">No alerts yet</h2>
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
             Create your first announcement — it will appear on the storefront immediately.
           </p>
         </div>
       ) : (
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-x-auto">
-          <table className="w-full text-sm">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-x-auto">
+          <table className="w-full text-sm min-w-[640px]">
             <thead>
-              <tr className="text-left text-xs uppercase tracking-wider text-slate-400 border-b border-slate-100">
-                <th className="px-4 py-3">Alert</th>
-                <th className="px-4 py-3">Display</th>
-                <th className="px-4 py-3">
+              <tr className="text-left text-xs uppercase tracking-wider text-slate-400 dark:text-slate-500 border-b border-slate-200 dark:border-slate-800">
+                <th className="px-4 py-3.5 font-semibold">Alert</th>
+                <th className="px-4 py-3.5 font-semibold">Display</th>
+                <th className="px-4 py-3.5 font-semibold">
                   <CalendarClock className="w-3.5 h-3.5 inline -mt-0.5 mr-1" />
                   Schedule
                 </th>
-                <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3 text-right">Actions</th>
+                <th className="px-4 py-3.5 font-semibold">Status</th>
+                <th className="px-4 py-3.5 font-semibold text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-50">
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
               {alerts.map((a) => {
                 const t = TYPE_META[a.alert_type] || TYPE_META.info;
                 const scheduled =
@@ -139,7 +139,7 @@ export default function Alerts() {
                     ? `${fmtDate(a.starts_at)} → ${fmtDate(a.expires_at)}`
                     : "Always";
                 return (
-                  <tr key={a.id} className="hover:bg-slate-50/70 transition">
+                  <tr key={a.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition">
                     <td className="px-4 py-3">
                       <div className="flex items-start gap-3">
                         <span
@@ -148,21 +148,21 @@ export default function Alerts() {
                           {t.label}
                         </span>
                         <div className="min-w-0">
-                          <p className="font-semibold text-slate-900 truncate">
+                          <p className="font-semibold text-slate-900 dark:text-white truncate">
                             {a.title || "(untitled)"}
                           </p>
-                          <p className="text-xs text-slate-500 line-clamp-1">
+                          <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-1">
                             {a.message || "No message"}
                           </p>
                         </div>
                       </div>
                     </td>
                     <td className="px-4 py-3">
-                      <span className="px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-medium">
+                      <span className="px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-medium">
                         {STYLE_LABEL[a.style] || a.style}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-xs text-slate-500">{scheduled}</td>
+                    <td className="px-4 py-3 text-xs text-slate-500 dark:text-slate-400">{scheduled}</td>
                     <td className="px-4 py-3">
                       <button
                         onClick={() => toggleActive(a)}
