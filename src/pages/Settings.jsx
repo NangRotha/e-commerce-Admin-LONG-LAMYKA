@@ -732,7 +732,7 @@ export default function Settings() {
                   className={input}
                   value={pay.khqrcc_profile_id}
                   onChange={(e) => setPayField("khqrcc_profile_id", e.target.value)}
-                  placeholder="MOgrEmjgLkEmYzovmfTH0HQUPLgJ6DFq"
+                  placeholder="64BHRPOl0tGc3IMdw3V1ysjwhFKVC8EH"
                 />
                 <p className="mt-1.5 text-xs text-slate-400">
                   {t("settings.profileIdHint")}
@@ -747,7 +747,7 @@ export default function Settings() {
                     className={`${input} pr-10`}
                     value={pay.khqrcc_secret_key}
                     onChange={(e) => setPayField("khqrcc_secret_key", e.target.value)}
-                    placeholder="EIiW0sBH4vWjzeovF5bRC6WwDHJYzvfK"
+                    placeholder="cr6NRkWA2q3sq3rbR4VZshMRZQIj56L6"
                   />
                   <button
                     type="button"
