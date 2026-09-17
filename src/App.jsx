@@ -14,6 +14,7 @@ import Orders from "./pages/Orders";
 import Discounts from "./pages/Discounts";
 import Users from "./pages/Users";
 import Settings from "./pages/Settings";
+import NotFound from "./pages/NotFound";
 
 /**
  * អនុវត្ត Branding លើ Browser Tab៖
@@ -83,8 +84,12 @@ export default function App() {
         <Route path="discounts" element={<Discounts />} />
         <Route path="users" element={<Users />} />
         <Route path="settings" element={<Settings />} />
+        <Route path="*" element={<NotFound />} />
       </Route>
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route
+        path="*"
+        element={user ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />}
+      />
     </Routes>
   );
 }

@@ -119,6 +119,12 @@ export const en = {
     phoneHint: "Contact number for calls or Telegram orders",
     saveSocial: "Save social links",
   },
+  notFound: {
+    title: "Page Not Found",
+    desc: "The administration page you requested does not exist or has been moved.",
+    backDashboard: "Back to Dashboard",
+    viewProducts: "View Products",
+  },
 };
 
 export const km = {
@@ -232,6 +238,12 @@ export const km = {
     phone: "លេខទូរស័ព្ទ",
     phoneHint: "លេខទំនាក់ទំនងសម្រាប់ទូរស័ព្ទ ឬកុម្ម៉ង់តាម Telegram",
     saveSocial: "រក្សាទុកបណ្តាញសង្គម",
+  },
+  notFound: {
+    title: "រកមិនឃើញទំព័រនេះទេ",
+    desc: "ទំព័រគ្រប់គ្រងដែលអ្នកចង់បើកមិនមានក្នុងប្រព័ន្ធ Admin ឡើយ ឬត្រូវបានប្តូរឈ្មោះ។",
+    backDashboard: "ទៅកាន់ផ្ទាំងគ្រប់គ្រង",
+    viewProducts: "មើលបញ្ជីផលិតផល",
   },
 };
 
