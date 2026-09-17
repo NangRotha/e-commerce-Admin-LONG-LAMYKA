@@ -13,6 +13,9 @@ import {
   Globe,
   MapPin,
   ExternalLink,
+  Key,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { api } from "../api/client";
 import { useI18n } from "../i18n/I18nContext";
@@ -20,11 +23,13 @@ import { useRealtime } from "../context/RealtimeContext";
 
 // ព័ត៌មាន Bakong Wallet ដែលរក្សាទុកក្នុង Site Settings (key => default)
 const PAYMENT_DEFAULTS = {
-  payment_company_name: "",
-  payment_bakong_id: "",
-  payment_display_name: "",
+  payment_company_name: "ShopeKh",
+  payment_bakong_id: "nang_rotha@bkrt",
+  payment_display_name: "Real Name",
   payment_currency: "USD",
   payment_khr_rate: "4100",
+  khqrcc_profile_id: "",
+  khqrcc_secret_key: "",
 };
 
 const SOCIAL_DEFAULTS = {
@@ -69,6 +74,7 @@ export default function Settings() {
   const [pay, setPay] = useState(PAYMENT_DEFAULTS);
   const [savingPay, setSavingPay] = useState(false);
   const [gatewayEnabled, setGatewayEnabled] = useState(null);
+  const [showSecret, setShowSecret] = useState(false);
 
   const load = useCallback(() => {
     api
@@ -94,11 +100,13 @@ export default function Settings() {
             "Stoeung Meanchey, Damnak Thum, Sangkat Stung Meanchey 2, Khan Meanchey, Phnom Penh, Cambodia",
         });
         setPay({
-          payment_company_name: s.payment_company_name || "",
-          payment_bakong_id: s.payment_bakong_id || "",
-          payment_display_name: s.payment_display_name || "",
+          payment_company_name: s.payment_company_name || "ShopeKh",
+          payment_bakong_id: s.payment_bakong_id || "nang_rotha@bkrt",
+          payment_display_name: s.payment_display_name || "Real Name",
           payment_currency: (s.payment_currency || "USD").toUpperCase(),
           payment_khr_rate: s.payment_khr_rate || "4100",
+          khqrcc_profile_id: s.khqrcc_profile_id || "",
+          khqrcc_secret_key: s.khqrcc_secret_key || "",
         });
       })
       .catch((e) => setError(e.message));
@@ -638,7 +646,7 @@ export default function Settings() {
               className={input}
               value={pay.payment_company_name}
               onChange={(e) => setPayField("payment_company_name", e.target.value)}
-              placeholder="KHMER UDOM ET"
+              placeholder="ShopeKh"
             />
             <p className="mt-1.5 text-xs text-slate-400">
               {t("settings.companyNameHint")}
@@ -651,7 +659,7 @@ export default function Settings() {
               className={input}
               value={pay.payment_display_name}
               onChange={(e) => setPayField("payment_display_name", e.target.value)}
-              placeholder="Udom ET"
+              placeholder="Real Name"
             />
             <p className="mt-1.5 text-xs text-slate-400">
               {t("settings.displayNameHint")}
@@ -664,7 +672,7 @@ export default function Settings() {
               className={input}
               value={pay.payment_bakong_id}
               onChange={(e) => setPayField("payment_bakong_id", e.target.value)}
-              placeholder="yourname@acleda"
+              placeholder="nang_rotha@bkrt"
             />
             <p className="mt-1.5 text-xs text-slate-400">
               {t("settings.bakongIdHint")}
@@ -703,6 +711,57 @@ export default function Settings() {
             <p className="mt-1.5 text-xs text-slate-400">
               {t("settings.khrRateHint")}
             </p>
+          </div>
+
+          {/* ============ API Security Credentials ============ */}
+          <div className="sm:col-span-2 pt-4 border-t border-slate-200/80 dark:border-slate-800">
+            <div className="flex items-center gap-2 mb-1">
+              <Key className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                {t("settings.apiCredentialsTitle")}
+              </h3>
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
+              {t("settings.apiCredentialsHint")}
+            </p>
+
+            <div className="grid sm:grid-cols-2 gap-4">
+              <div>
+                <label className={label}>{t("settings.profileId")}</label>
+                <input
+                  className={input}
+                  value={pay.khqrcc_profile_id}
+                  onChange={(e) => setPayField("khqrcc_profile_id", e.target.value)}
+                  placeholder="MOgrEmjgLkEmYzovmfTH0HQUPLgJ6DFq"
+                />
+                <p className="mt-1.5 text-xs text-slate-400">
+                  {t("settings.profileIdHint")}
+                </p>
+              </div>
+
+              <div>
+                <label className={label}>{t("settings.secretKey")}</label>
+                <div className="relative">
+                  <input
+                    type={showSecret ? "text" : "password"}
+                    className={`${input} pr-10`}
+                    value={pay.khqrcc_secret_key}
+                    onChange={(e) => setPayField("khqrcc_secret_key", e.target.value)}
+                    placeholder="EIiW0sBH4vWjzeovF5bRC6WwDHJYzvfK"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowSecret((v) => !v)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition"
+                  >
+                    {showSecret ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+                <p className="mt-1.5 text-xs text-slate-400">
+                  {t("settings.secretKeyHint")}
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
