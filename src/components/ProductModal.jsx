@@ -262,8 +262,10 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
               <video
                 src={form.video_url}
                 className="w-full max-h-56 object-contain"
-                controls
+                autoPlay
                 muted
+                loop
+                controls
                 playsInline
                 preload="metadata"
               />
