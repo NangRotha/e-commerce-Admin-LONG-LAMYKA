@@ -23,9 +23,9 @@ import { useRealtime } from "../context/RealtimeContext";
 
 // ព័ត៌មាន Bakong Wallet ដែលរក្សាទុកក្នុង Site Settings (key => default)
 const PAYMENT_DEFAULTS = {
-  payment_company_name: "ShopeKh",
-  payment_bakong_id: "nang_rotha@bkrt",
-  payment_display_name: "Real Name",
+  payment_company_name: "Udom Shop",
+  payment_bakong_id: "Udom",
+  payment_display_name: "Udom",
   payment_currency: "USD",
   payment_khr_rate: "4100",
   khqrcc_profile_id: "",
@@ -100,9 +100,9 @@ export default function Settings() {
             "Stoeung Meanchey, Damnak Thum, Sangkat Stung Meanchey 2, Khan Meanchey, Phnom Penh, Cambodia",
         });
         setPay({
-          payment_company_name: s.payment_company_name || "ShopeKh",
-          payment_bakong_id: s.payment_bakong_id || "nang_rotha@bkrt",
-          payment_display_name: s.payment_display_name || "Real Name",
+          payment_company_name: s.payment_company_name || "Udom Shop",
+          payment_bakong_id: s.payment_bakong_id || "Udom",
+          payment_display_name: s.payment_display_name || "Udom",
           payment_currency: (s.payment_currency || "USD").toUpperCase(),
           payment_khr_rate: s.payment_khr_rate || "4100",
           khqrcc_profile_id: s.khqrcc_profile_id || "",
@@ -646,7 +646,7 @@ export default function Settings() {
               className={input}
               value={pay.payment_company_name}
               onChange={(e) => setPayField("payment_company_name", e.target.value)}
-              placeholder="ShopeKh"
+              placeholder="Udom Shop"
             />
             <p className="mt-1.5 text-xs text-slate-400">
               {t("settings.companyNameHint")}
@@ -659,7 +659,7 @@ export default function Settings() {
               className={input}
               value={pay.payment_display_name}
               onChange={(e) => setPayField("payment_display_name", e.target.value)}
-              placeholder="Real Name"
+              placeholder="Udom"
             />
             <p className="mt-1.5 text-xs text-slate-400">
               {t("settings.displayNameHint")}
@@ -672,7 +672,7 @@ export default function Settings() {
               className={input}
               value={pay.payment_bakong_id}
               onChange={(e) => setPayField("payment_bakong_id", e.target.value)}
-              placeholder="nang_rotha@bkrt"
+              placeholder="Udom"
             />
             <p className="mt-1.5 text-xs text-slate-400">
               {t("settings.bakongIdHint")}
@@ -732,7 +732,7 @@ export default function Settings() {
                   className={input}
                   value={pay.khqrcc_profile_id}
                   onChange={(e) => setPayField("khqrcc_profile_id", e.target.value)}
-                  placeholder="64BHRPOl0tGc3IMdw3V1ysjwhFKVC8EH"
+                  placeholder="MOgrEmjgLkEmYzovmfTH0HQUPLgJ6DFq"
                 />
                 <p className="mt-1.5 text-xs text-slate-400">
                   {t("settings.profileIdHint")}
@@ -747,7 +747,7 @@ export default function Settings() {
                     className={`${input} pr-10`}
                     value={pay.khqrcc_secret_key}
                     onChange={(e) => setPayField("khqrcc_secret_key", e.target.value)}
-                    placeholder="cr6NRkWA2q3sq3rbR4VZshMRZQIj56L6"
+                    placeholder="EIiW0sBH4vWjzeovF5bRC6WwDHJYzvfK"
                   />
                   <button
                     type="button"
