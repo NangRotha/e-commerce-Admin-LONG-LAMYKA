@@ -3,8 +3,11 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+  --font-sans: "Inter", "Kantumruy Pro", "Battambang", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-khmer: "Kantumruy Pro", "Battambang", sans-serif;
+  --font-koulen: "Koulen", cursive, sans-serif;
+  --font-battambang: "Battambang", sans-serif;
 
   /* Soft shadows (ប្រើ shadow-soft / shadow-lift ក្នុង Admin) */
   --shadow-soft: 0 6px 24px -6px rgb(15 23 42 / 0.08);
@@ -13,6 +16,36 @@
 
 html {
   scroll-behavior: smooth;
+}
+
+/* =============================================
+   Google Fonts Khmer Typography Enhancement
+   ============================================= */
+html[lang="km"],
+[lang="km"] {
+  font-family: "Kantumruy Pro", "Battambang", "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
+/* Ensure Khmer vowels (ស្រៈលើ ស្រៈក្រោម) and sub-consonants (ជើងព្យញ្ជនៈ) render with optimal spacing */
+html[lang="km"] body {
+  line-height: 1.6;
+}
+
+html[lang="km"] h1,
+html[lang="km"] h2,
+html[lang="km"] h3,
+html[lang="km"] h4,
+html[lang="km"] h5,
+html[lang="km"] h6 {
+  letter-spacing: normal;
+  line-height: 1.35;
+}
+
+html[lang="km"] button,
+html[lang="km"] input,
+html[lang="km"] select,
+html[lang="km"] textarea {
+  letter-spacing: normal;
 }
 
 /* =============================================
