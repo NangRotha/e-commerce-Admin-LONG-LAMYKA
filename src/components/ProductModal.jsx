@@ -14,6 +14,7 @@ const EMPTY = {
   images: [],
   video_url: "",
   variants: [],
+  rating: 5.0,
 };
 
 export default function ProductModal({ open, onClose, onSave, initial }) {
@@ -42,6 +43,10 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
               category: initial.category || "",
               is_on_sale: initial.is_on_sale,
               sale_percent: initial.sale_percent || 0,
+              rating:
+                initial.rating !== undefined && initial.rating !== null
+                  ? initial.rating
+                  : 5.0,
               images:
                 initial.images && initial.images.length
                   ? initial.images
@@ -146,6 +151,7 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
         category: form.category.trim(),
         is_on_sale: form.is_on_sale,
         sale_percent: form.is_on_sale ? parseFloat(form.sale_percent) || 0 : 0,
+        rating: form.rating !== "" ? parseFloat(form.rating) || 5.0 : 5.0,
         image_url: form.images[0] || "",
         images: form.images,
         video_url: form.video_url || "",
@@ -327,7 +333,7 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
           <div>
             <label className={label}>Price ($) *</label>
             <input
@@ -349,6 +355,46 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
               onChange={(e) => set("stock", e.target.value)}
             />
           </div>
+          <div>
+            <div className="flex items-center justify-between">
+              <label className={`${label} flex items-center gap-1.5 text-amber-600 dark:text-amber-400`}>
+                <Star className="w-4 h-4 fill-amber-500 text-amber-500" />
+                Rating / Stars
+              </label>
+              <span className="text-xs font-bold text-amber-500">
+                ★ {Number(form.rating || 5.0).toFixed(1)}
+              </span>
+            </div>
+            <input
+              type="number"
+              step="0.1"
+              min="1"
+              max="5"
+              className={input}
+              value={form.rating}
+              onChange={(e) => set("rating", e.target.value)}
+              placeholder="5.0"
+            />
+          </div>
+        </div>
+
+        {/* Quick Star Presets */}
+        <div className="flex items-center gap-1.5 -mt-1 flex-wrap">
+          <span className="text-slate-400 text-xs">Quick Star:</span>
+          {[5.0, 4.9, 4.8, 4.5, 4.0].map((val) => (
+            <button
+              key={val}
+              type="button"
+              onClick={() => set("rating", val)}
+              className={`px-2 py-0.5 rounded-md font-semibold text-xs border transition ${
+                Number(form.rating) === val
+                  ? "bg-amber-500 text-white border-amber-600 shadow-xs"
+                  : "bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-amber-400"
+              }`}
+            >
+              ★ {val.toFixed(1)}
+            </button>
+          ))}
         </div>
 
         <div>

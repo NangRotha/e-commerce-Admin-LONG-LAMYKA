@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Plus, Pencil, Trash2, Search, Loader2, Clapperboard, Filter, ArrowUpDown, Layers } from "lucide-react";
+import { Plus, Pencil, Trash2, Search, Loader2, Clapperboard, Filter, ArrowUpDown, Layers, Star } from "lucide-react";
 import { api } from "../api/client";
 import ProductModal from "../components/ProductModal";
 import Modal from "../components/Modal";
@@ -57,6 +57,7 @@ export default function Products() {
         return (a.category || "").localeCompare(b.category || "") || a.name.localeCompare(b.name);
       }
       if (sortBy === "name") return a.name.localeCompare(b.name);
+      if (sortBy === "rating_desc") return (b.rating ?? 5.0) - (a.rating ?? 5.0);
       if (sortBy === "price_asc") return a.price - b.price;
       if (sortBy === "price_desc") return b.price - a.price;
       if (sortBy === "stock") return b.stock - a.stock;
@@ -179,6 +180,7 @@ export default function Products() {
                 <option value="newest">Order: Newest first</option>
                 <option value="category">Order: By Category (តាមប្រភេទ)</option>
                 <option value="name">Order: Name (A-Z)</option>
+                <option value="rating_desc">Order: Rating (⭐ High → Low)</option>
                 <option value="price_asc">Order: Price (Low → High)</option>
                 <option value="price_desc">Order: Price (High → Low)</option>
                 <option value="stock">Order: Stock</option>
@@ -206,6 +208,7 @@ export default function Products() {
                 <th className="px-4 py-3.5 font-semibold">Product</th>
                 <th className="px-4 py-3.5 font-semibold">Category</th>
                 <th className="px-4 py-3.5 font-semibold">Variants / Types</th>
+                <th className="px-4 py-3.5 font-semibold">Rating</th>
                 <th className="px-4 py-3.5 font-semibold">Price</th>
                 <th className="px-4 py-3.5 font-semibold">Sale</th>
                 <th className="px-4 py-3.5 font-semibold">Stock</th>
@@ -276,6 +279,13 @@ export default function Products() {
                     ) : (
                       <span className="text-xs text-slate-400">—</span>
                     )}
+                  </td>
+
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    <span className="inline-flex items-center gap-1 text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/60 border border-amber-200/80 dark:border-amber-800/60 px-2.5 py-0.5 rounded-lg">
+                      <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
+                      {Number(p.rating ?? 5.0).toFixed(1)}
+                    </span>
                   </td>
 
                   <td className="px-4 py-3">
