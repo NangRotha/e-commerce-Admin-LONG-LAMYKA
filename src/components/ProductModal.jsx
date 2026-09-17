@@ -13,10 +13,12 @@ const EMPTY = {
   sale_percent: 0,
   images: [],
   video_url: "",
+  variants: [],
 };
 
 export default function ProductModal({ open, onClose, onSave, initial }) {
   const [form, setForm] = useState(EMPTY);
+  const [variantInput, setVariantInput] = useState("");
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploadingVideo, setUploadingVideo] = useState(false);
@@ -47,9 +49,11 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
                   ? [initial.image_url]
                   : [],
               video_url: initial.video_url || "",
+              variants: Array.isArray(initial.variants) ? initial.variants : [],
             }
           : EMPTY
       );
+      setVariantInput("");
       setError("");
     }
   }, [open, initial]);
@@ -109,6 +113,22 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
   const removeImage = (idx) =>
     setForm((f) => ({ ...f, images: f.images.filter((_, i) => i !== idx) }));
 
+  const addVariant = () => {
+    const v = variantInput.trim();
+    if (!v) return;
+    if (!(form.variants || []).includes(v)) {
+      setForm((f) => ({ ...f, variants: [...(f.variants || []), v] }));
+    }
+    setVariantInput("");
+  };
+
+  const removeVariant = (vToRemove) => {
+    setForm((f) => ({
+      ...f,
+      variants: (f.variants || []).filter((v) => v !== vToRemove),
+    }));
+  };
+
   const submit = async (e) => {
     e.preventDefault();
     setError("");
@@ -129,6 +149,7 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
         image_url: form.images[0] || "",
         images: form.images,
         video_url: form.video_url || "",
+        variants: form.variants || [],
       });
       onClose();
     } catch (err) {
@@ -226,9 +247,14 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
 
         {/* Video: វីដេអូផលិតផល (mp4 / webm / mov) — បង្ហាញលើទំព័រផលិតផល */}
         <div>
-          <label className={label}>Product video</label>
+          <div className="flex items-center justify-between">
+            <label className={label}>Product video</label>
+            <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-200/80 dark:border-emerald-800/80">
+              ★ Shows FIRST on Storefront
+            </span>
+          </div>
           <p className="text-xs text-slate-400 mt-0.5">
-            Optional — customers can play it on the product page (mp4, webm, mov).
+            Optional — when added, this video will be displayed <strong>first before images</strong> on the storefront.
           </p>
 
           {form.video_url ? (
@@ -341,6 +367,57 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
             <p className="mt-1.5 text-xs text-slate-400">
               Tip: pick from the categories managed in the Categories page.
             </p>
+          )}
+        </div>
+
+        {/* Types / Variants (ជម្រើសប្រភេទ / ពណ៌ / ម៉ូត) */}
+        <div>
+          <label className={label}>
+            Product Types / Variants (ជម្រើសប្រភេទ / ពណ៌ / ម៉ូត)
+          </label>
+          <p className="text-xs text-slate-400 mt-0.5">
+            Allow customers to order by specific type or color (e.g. Pink, Black, White, Medium, Large).
+          </p>
+          <div className="mt-1.5 flex gap-2">
+            <input
+              className={input}
+              value={variantInput}
+              onChange={(e) => setVariantInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  addVariant();
+                }
+              }}
+              placeholder="Type variant name (e.g. Pink) and press Enter or Add"
+            />
+            <button
+              type="button"
+              onClick={addVariant}
+              className="mt-1.5 px-4 py-2.5 rounded-xl bg-slate-800 dark:bg-slate-700 text-white text-sm font-semibold hover:bg-slate-700 dark:hover:bg-slate-600 transition shrink-0"
+            >
+              Add
+            </button>
+          </div>
+          {form.variants && form.variants.length > 0 && (
+            <div className="mt-2.5 flex flex-wrap gap-2">
+              {form.variants.map((v, i) => (
+                <span
+                  key={`${v}-${i}`}
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 shadow-xs"
+                >
+                  {v}
+                  <button
+                    type="button"
+                    onClick={() => removeVariant(v)}
+                    className="w-4 h-4 rounded-full hover:bg-emerald-200 dark:hover:bg-emerald-800 flex items-center justify-center text-emerald-800 dark:text-emerald-200 text-sm font-bold ml-0.5"
+                    title="Remove variant"
+                  >
+                    ×
+                  </button>
+                </span>
+              ))}
+            </div>
           )}
         </div>
 

@@ -66,20 +66,20 @@ export default function Orders() {
       )}
 
       {orders === null ? (
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 animate-pulse space-y-3">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 animate-pulse space-y-3">
           {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="h-12 bg-slate-200 rounded-xl" />
+            <div key={i} className="h-12 bg-slate-200 dark:bg-slate-800 rounded-xl" />
           ))}
         </div>
       ) : orders.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-dashed border-slate-300 py-16 text-center text-slate-500">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-dashed border-slate-300 dark:border-slate-800 py-16 text-center text-slate-500 dark:text-slate-400">
           {t("orders.noOrders")}
         </div>
       ) : (
-        <div className="bg-white rounded-2xl border border-slate-200 overflow-x-auto">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-x-auto">
           <table className="w-full text-sm min-w-[1000px]">
             <thead>
-              <tr className="text-left text-xs uppercase tracking-wide text-slate-400 border-b border-slate-200">
+              <tr className="text-left text-xs uppercase tracking-wide text-slate-400 dark:text-slate-500 border-b border-slate-200 dark:border-slate-800">
                 <th className="px-4 py-3 font-semibold">{t("orders.order")}</th>
                 <th className="px-4 py-3 font-semibold">{t("orders.customer")}</th>
                 <th className="px-4 py-3 font-semibold">{t("orders.shipping")}</th>
@@ -91,33 +91,33 @@ export default function Orders() {
             </thead>
             <tbody>
               {orders.map((o) => (
-                <tr key={o.id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50">
-                  <td className="px-4 py-3 font-semibold text-slate-900">
+                <tr key={o.id} className="border-b border-slate-100 dark:border-slate-800 last:border-0 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                  <td className="px-4 py-3 font-semibold text-slate-900 dark:text-white">
                     #{o.id}
                     {o.promo_code && (
-                      <span className="ml-2 text-xs font-semibold bg-violet-100 text-violet-700 px-2 py-0.5 rounded-full">
+                      <span className="ml-2 text-xs font-semibold bg-violet-100 text-violet-700 dark:bg-violet-950/70 dark:text-violet-300 px-2 py-0.5 rounded-full">
                         {o.promo_code}
                       </span>
                     )}
                   </td>
                   <td className="px-4 py-3">
-                    <div className="text-slate-800 font-medium">
+                    <div className="text-slate-800 dark:text-slate-100 font-medium">
                       {o.customer_name || "—"}
                     </div>
                     {o.customer_phone && (
-                      <div className="text-xs text-slate-500">
+                      <div className="text-xs text-slate-500 dark:text-slate-400">
                         {o.customer_phone}
                       </div>
                     )}
                     <div className="text-xs text-slate-400">
                       {o.user_email || o.customer_email || (
-                        <span className="font-semibold text-violet-700">
+                        <span className="font-semibold text-violet-700 dark:text-violet-400">
                           {t("orders.guest")}
                         </span>
                       )}
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-slate-600">
+                  <td className="px-4 py-3 text-slate-600 dark:text-slate-300">
                     {o.shipping_address ? (
                       <span
                         className="block max-w-[220px] line-clamp-2"
@@ -126,11 +126,11 @@ export default function Orders() {
                         {o.shipping_address}
                       </span>
                     ) : (
-                      <span className="text-slate-300">—</span>
+                      <span className="text-slate-300 dark:text-slate-600">—</span>
                     )}
                     {o.note && (
                       <span
-                        className="mt-1 block max-w-[220px] text-xs text-amber-700 line-clamp-2"
+                        className="mt-1 block max-w-[220px] text-xs text-amber-700 dark:text-amber-400 line-clamp-2"
                         title={`Note: ${o.note}`}
                       >
                         📝 {o.note}
@@ -138,19 +138,26 @@ export default function Orders() {
                     )}
                   </td>
                   <td className="px-4 py-3">
-                    <div className="text-slate-600">
-                      {o.items.length === 0 ? (
-                        "—"
-                      ) : (
-                        <span>
-                          {o.items
-                            .map((i) => `${i.quantity}× #${i.product_id}`)
-                            .join(", ")}
-                        </span>
-                      )}
-                    </div>
+                    {o.items.length === 0 ? (
+                      <span className="text-slate-400">—</span>
+                    ) : (
+                      <div className="space-y-1">
+                        {o.items.map((i, idx) => (
+                          <div key={idx} className="flex items-center flex-wrap gap-1 text-xs">
+                            <span className="font-semibold text-slate-800 dark:text-slate-200">
+                              {i.quantity}× {i.product_name || `#${i.product_id}`}
+                            </span>
+                            {i.variant && (
+                              <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/70 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                                {i.variant}
+                              </span>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </td>
-                  <td className="px-4 py-3 font-bold text-slate-900">
+                  <td className="px-4 py-3 font-bold text-slate-900 dark:text-white">
                     {formatPrice(o.total_amount)}
                   </td>
                   <td className="px-4 py-3">
@@ -161,13 +168,13 @@ export default function Orders() {
                       className={`text-xs font-semibold px-2.5 py-1.5 rounded-full border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50 ${STATUS_STYLE[o.status] || STATUS_STYLE.pending}`}
                     >
                       {STATUSES.map((s) => (
-                        <option key={s} value={s} className="text-slate-800">
+                        <option key={s} value={s} className="text-slate-800 dark:bg-slate-800 dark:text-white">
                           {s}
                         </option>
                       ))}
                     </select>
                   </td>
-                  <td className="px-4 py-3 text-slate-500 whitespace-nowrap">
+                  <td className="px-4 py-3 text-slate-500 dark:text-slate-400 whitespace-nowrap">
                     {formatDate(o.created_at)}
                   </td>
                 </tr>

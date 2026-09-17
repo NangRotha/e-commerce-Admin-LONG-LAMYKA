@@ -1,5 +1,6 @@
 import { useI18n } from "../i18n/I18nContext";
 import { useTheme } from "../theme/ThemeContext";
+import { CambodiaFlag, EnglishFlag } from "./Flags";
 
 /** Icon ព្រះអាទិត្យ / ព្រះចន្ទ */
 function SunIcon({ className }) {
@@ -37,14 +38,14 @@ function MoonIcon({ className }) {
   );
 }
 
-/** ប៊ូតុងប្តូរភាសា (ខ្មែរ/English) និង Theme (ភ្លឺ/ងងឹត) សម្រាប់ Admin */
+/** ប៊ូតុងប្តូរភាសា (ខ្មែរ 🇰🇭 / English 🇬🇧) និង Theme (ភ្លឺ/ងងឹត) សម្រាប់ Admin */
 export default function HeaderControls({ dark = false, className = "" }) {
   const { lang, setLang, languages, t } = useI18n();
   const { isDark, toggleTheme } = useTheme();
 
   return (
     <div className={`flex items-center gap-2 ${className}`}>
-      {/* ===== Language ===== */}
+      {/* ===== Language with Flags ===== */}
       <div
         role="group"
         aria-label={t("nav.selectLanguage")}
@@ -70,7 +71,7 @@ export default function HeaderControls({ dark = false, className = "" }) {
             type="button"
             onClick={() => setLang(l.code)}
             aria-pressed={lang === l.code}
-            className={`relative z-10 px-2.5 py-1 text-xs font-bold rounded-full transition-colors duration-300 ${
+            className={`relative z-10 flex items-center gap-1.5 px-2 sm:px-2.5 py-1 text-xs font-bold rounded-full transition-colors duration-300 ${
               lang === l.code
                 ? "text-white"
                 : dark
@@ -78,6 +79,11 @@ export default function HeaderControls({ dark = false, className = "" }) {
                 : "text-slate-500 hover:text-slate-800"
             }`}
           >
+            {l.code === "km" ? (
+              <CambodiaFlag className="w-4 h-2.5 rounded-xs shadow-2xs shrink-0" />
+            ) : (
+              <EnglishFlag className="w-4 h-2.5 rounded-xs shadow-2xs shrink-0" />
+            )}
             <span className="hidden sm:inline">{l.label}</span>
             <span className="sm:hidden">{l.short}</span>
           </button>
