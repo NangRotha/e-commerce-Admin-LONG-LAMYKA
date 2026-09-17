@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Package, Users, ShoppingCart, DollarSign, AlertTriangle } from "lucide-react";
 import { api } from "../api/client";
 import StatCard from "../components/StatCard";
 import { formatPrice } from "../lib/format";
+import { useRealtime } from "../context/RealtimeContext";
+import { useI18n } from "../i18n/I18nContext";
 
 const STATUS_COLORS = {
   pending: "bg-amber-100 text-amber-700",
@@ -12,15 +14,25 @@ const STATUS_COLORS = {
 };
 
 export default function Dashboard() {
+  const { t } = useI18n();
   const [stats, setStats] = useState(null);
   const [error, setError] = useState("");
 
-  useEffect(() => {
+  const load = useCallback(() => {
     api
       .getStats()
       .then(setStats)
       .catch((e) => setError(e.message));
   }, []);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  // Real-time: Order ថ្មី / ផលិតផលផ្លាស់ប្តូរ -> Dashboard បច្ចុប្បន្នភាពភ្លាមៗ
+  useRealtime("orders_changed", load);
+  useRealtime("products_changed", load);
+  useRealtime("users_changed", load);
 
   if (error) {
     return (
@@ -46,25 +58,29 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-extrabold text-slate-900">Dashboard</h1>
-        <p className="text-sm text-slate-500">Store overview & performance.</p>
+        <h1 className="text-2xl font-extrabold text-slate-900">
+          {t("dashboard.title")}
+        </h1>
+        <p className="text-sm text-slate-500">{t("dashboard.subtitle")}</p>
       </div>
 
       {/* Stat cards */}
       <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-4">
-        <StatCard icon={<Package className="w-6 h-6" />} label="Total Products" value={stats.total_products} accent="emerald" />
-        <StatCard icon={<Users className="w-6 h-6" />} label="Total Users" value={stats.total_users} accent="blue" />
-        <StatCard icon={<ShoppingCart className="w-6 h-6" />} label="Total Orders" value={stats.total_orders} accent="amber" />
-        <StatCard icon={<DollarSign className="w-6 h-6" />} label="Revenue (paid)" value={formatPrice(stats.total_revenue)} accent="rose" />
+        <StatCard icon={<Package className="w-6 h-6" />} label={t("dashboard.totalProducts")} value={stats.total_products} accent="emerald" />
+        <StatCard icon={<Users className="w-6 h-6" />} label={t("dashboard.totalUsers")} value={stats.total_users} accent="blue" />
+        <StatCard icon={<ShoppingCart className="w-6 h-6" />} label={t("dashboard.totalOrders")} value={stats.total_orders} accent="amber" />
+        <StatCard icon={<DollarSign className="w-6 h-6" />} label={t("dashboard.revenue")} value={formatPrice(stats.total_revenue)} accent="rose" />
       </div>
 
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Recent orders */}
         <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-200 p-5">
-          <h2 className="font-bold text-slate-900 mb-4">Recent Orders</h2>
+          <h2 className="font-bold text-slate-900 mb-4">
+            {t("dashboard.recentOrders")}
+          </h2>
           {stats.recent_orders.length === 0 ? (
             <p className="text-sm text-slate-400 py-8 text-center">
-              No orders yet.
+              {t("dashboard.noOrders")}
             </p>
           ) : (
             <div className="space-y-2">
@@ -101,11 +117,11 @@ export default function Dashboard() {
         <div className="bg-white rounded-2xl border border-slate-200 p-5">
           <h2 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
             <AlertTriangle className="w-4 h-4 text-amber-500" />
-            Low Stock
+            {t("dashboard.lowStock")}
           </h2>
           {stats.low_stock.length === 0 ? (
             <p className="text-sm text-slate-400 py-8 text-center">
-              All products are well stocked. 🎉
+              {t("dashboard.allStocked")}
             </p>
           ) : (
             <div className="space-y-2">
@@ -124,17 +140,19 @@ export default function Dashboard() {
                         : "bg-amber-100 text-amber-700"
                     }`}
                   >
-                    {p.stock} left
+                    {p.stock} {t("dashboard.left")}
                   </span>
                 </div>
               ))}
             </div>
           )}
 
-          <h2 className="font-bold text-slate-900 mt-6 mb-3">Orders by Status</h2>
+          <h2 className="font-bold text-slate-900 mt-6 mb-3">
+            {t("dashboard.ordersByStatus")}
+          </h2>
           <div className="space-y-1.5">
             {Object.keys(stats.orders_by_status).length === 0 && (
-              <p className="text-sm text-slate-400">No orders.</p>
+              <p className="text-sm text-slate-400">{t("dashboard.noOrders")}</p>
             )}
             {Object.entries(stats.orders_by_status).map(([status, count]) => (
               <div key={status} className="flex justify-between text-sm">

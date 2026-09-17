@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Upload, Star, Loader2 } from "lucide-react";
+import { Upload, Star, Loader2, Clapperboard } from "lucide-react";
 import Modal from "./Modal";
 import { api } from "../api/client";
 
@@ -12,12 +12,14 @@ const EMPTY = {
   is_on_sale: false,
   sale_percent: 0,
   images: [],
+  video_url: "",
 };
 
 export default function ProductModal({ open, onClose, onSave, initial }) {
   const [form, setForm] = useState(EMPTY);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [uploadingVideo, setUploadingVideo] = useState(false);
   const [error, setError] = useState("");
   const [categories, setCategories] = useState([]);
 
@@ -44,6 +46,7 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
                   : initial.image_url
                   ? [initial.image_url]
                   : [],
+              video_url: initial.video_url || "",
             }
           : EMPTY
       );
@@ -73,6 +76,25 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
       e.target.value = "";
     }
   };
+
+  // Upload វីដេអូផលិតផល (mp4 / webm / mov / ogg / m4v)
+  const handleVideoUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingVideo(true);
+    setError("");
+    try {
+      const res = await api.uploadImage(file, "video");
+      set("video_url", res.url);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setUploadingVideo(false);
+      e.target.value = "";
+    }
+  };
+
+  const removeVideo = () => set("video_url", "");
 
   // ធ្វើឱ្យរូបភាពក្លាយជារូបមេ (Main Image = រូបទី១)
   const makeMain = (idx) => {
@@ -106,6 +128,7 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
         sale_percent: form.is_on_sale ? parseFloat(form.sale_percent) || 0 : 0,
         image_url: form.images[0] || "",
         images: form.images,
+        video_url: form.video_url || "",
       });
       onClose();
     } catch (err) {
@@ -193,6 +216,60 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
               <>
                 <Upload className="w-4 h-4" />
                 Upload from computer
+              </>
+            )}
+          </label>
+        </div>
+
+        {/* Video: វីដេអូផលិតផល (mp4 / webm / mov) — បង្ហាញលើទំព័រផលិតផល */}
+        <div>
+          <label className={label}>Product video</label>
+          <p className="text-xs text-slate-400 mt-0.5">
+            Optional — customers can play it on the product page (mp4, webm, mov).
+          </p>
+
+          {form.video_url ? (
+            <div className="relative mt-3 rounded-xl overflow-hidden border border-slate-200 bg-black group">
+              <video
+                src={form.video_url}
+                className="w-full max-h-56 object-contain"
+                controls
+                muted
+                playsInline
+                preload="metadata"
+              />
+              <div className="absolute top-1.5 right-1.5 flex gap-1.5">
+                <span className="bg-emerald-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded flex items-center gap-0.5">
+                  <Clapperboard className="w-2.5 h-2.5" />
+                  VIDEO
+                </span>
+                <button
+                  type="button"
+                  onClick={removeVideo}
+                  className="bg-rose-600/90 hover:bg-rose-700 text-white text-[10px] font-semibold px-2 py-0.5 rounded"
+                >
+                  Remove
+                </button>
+              </div>
+            </div>
+          ) : null}
+
+          <label className="mt-3 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-dashed border-slate-400 text-sm font-medium text-slate-600 hover:border-emerald-500 hover:text-emerald-600 cursor-pointer transition">
+            <input
+              type="file"
+              accept="video/mp4,video/webm,video/quicktime,video/ogg,.mp4,.webm,.mov,.m4v"
+              hidden
+              onChange={handleVideoUpload}
+            />
+            {uploadingVideo ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Uploading video...
+              </>
+            ) : (
+              <>
+                <Clapperboard className="w-4 h-4" />
+                {form.video_url ? "Replace video" : "Upload video from computer"}
               </>
             )}
           </label>
@@ -299,7 +376,7 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
           </button>
           <button
             type="submit"
-            disabled={saving || uploading}
+            disabled={saving || uploading || uploadingVideo}
             className="px-5 py-2.5 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition text-sm disabled:opacity-60"
           >
             {saving ? "Saving..." : initial ? "Save changes" : "Create product"}

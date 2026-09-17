@@ -10,3 +10,9 @@ export function formatDate(d) {
     return "—";
   }
 }
+
+/** ពិនិត្យថា URL ជាវីដេអូ ឬរូបភាព (សម្រាប់ Gallery ផលិតផល) */
+export function isVideoUrl(url) {
+  if (!url) return false;
+  return /\.(mp4|webm|mov|ogg|m4v)(\?|#|$)/i.test(String(url));
+}

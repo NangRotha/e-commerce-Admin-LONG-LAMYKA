@@ -3,5 +3,273 @@
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
     Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  /* Soft shadows (ប្រើ shadow-soft / shadow-lift ក្នុង Admin) */
+  --shadow-soft: 0 6px 24px -6px rgb(15 23 42 / 0.08);
+  --shadow-lift: 0 18px 40px -12px rgb(16 185 129 / 0.18);
 }
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* =============================================
+   Animations (ប្រើក្នុង Admin Panel)
+   ============================================= */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes pop-in {
+  0% {
+    transform: scale(0.92);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.03);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.4s ease both;
+}
+.animate-fade-in-up {
+  animation: fade-in-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.animate-pop-in {
+  animation: pop-in 0.35s cubic-bezier(0.34, 1.4, 0.64, 1) both;
+}
+.page-enter {
+  animation: page-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Transition រលូនពេលប្តូរ Dark / Light */
+.theme-transition,
+.theme-transition *,
+.theme-transition *::before,
+.theme-transition *::after {
+  transition: background-color 0.35s ease, border-color 0.35s ease,
+    color 0.35s ease, box-shadow 0.35s ease !important;
+}
+
+/* =============================================
+   Dark mode — override ពណ៌ neutral (white / slate)
+   ============================================= */
+html.dark {
+  --shadow-soft: 0 6px 24px -6px rgb(0 0 0 / 0.55);
+  --shadow-lift: 0 18px 40px -12px rgb(0 0 0 / 0.6);
+  --dm-page: #0b1120;
+  --dm-surface: #141c2e;
+  --dm-surface-2: #1b2437;
+  --dm-surface-3: #24304a;
+  --dm-border: #263349;
+  --dm-text: #e8eefb;
+  --dm-text-muted: #a6b3c9;
+  --dm-text-dim: #8291a9;
+}
+
+html.dark body {
+  background-color: var(--dm-page);
+  color: var(--dm-text);
+}
+
+/* ===== Surfaces ===== */
+html.dark .bg-white,
+html.dark .bg-white\/90 {
+  background-color: var(--dm-surface);
+}
+html.dark .bg-slate-50 {
+  background-color: var(--dm-surface-2);
+}
+html.dark .bg-slate-100 {
+  background-color: var(--dm-surface-3);
+}
+html.dark .bg-slate-200 {
+  background-color: #2c3a55;
+}
+html.dark .bg-slate-300 {
+  background-color: #3b4a68;
+}
+
+/* ===== Text ===== */
+html.dark .text-slate-900 {
+  color: #f4f7fd;
+}
+html.dark .text-slate-800 {
+  color: var(--dm-text);
+}
+html.dark .text-slate-700 {
+  color: #cdd8ea;
+}
+html.dark .text-slate-600 {
+  color: var(--dm-text-muted);
+}
+html.dark .text-slate-500 {
+  color: var(--dm-text-dim);
+}
+html.dark .text-slate-400 {
+  color: #7f8da5;
+}
+html.dark .placeholder\:text-slate-400::placeholder {
+  color: #6b7a91;
+}
+
+/* ===== Borders ===== */
+html.dark .border-slate-100 {
+  border-color: #1f2a3d;
+}
+html.dark .border-slate-200 {
+  border-color: var(--dm-border);
+}
+html.dark .border-slate-300 {
+  border-color: #33415c;
+}
+html.dark .border-dashed {
+  border-color: #33415c;
+}
+
+/* ===== Hover states ===== */
+html.dark .hover\:bg-slate-50:hover {
+  background-color: var(--dm-surface-3);
+}
+html.dark .hover\:bg-slate-100:hover {
+  background-color: #2c3a55;
+}
+html.dark .hover\:text-slate-600:hover {
+  color: #dbe4f3;
+}
+html.dark .hover\:bg-white:hover {
+  background-color: var(--dm-surface-3);
+}
+
+/* ===== Light color tints ===== */
+html.dark .bg-emerald-50 {
+  background-color: rgb(16 185 129 / 0.12);
+}
+html.dark .bg-emerald-100 {
+  background-color: rgb(16 185 129 / 0.2);
+}
+html.dark .text-emerald-700,
+html.dark .text-emerald-800 {
+  color: #6ee7b7;
+}
+html.dark .text-emerald-600 {
+  color: #34d399;
+}
+html.dark .border-emerald-200 {
+  border-color: rgb(16 185 129 / 0.3);
+}
+
+html.dark .bg-rose-50 {
+  background-color: rgb(244 63 94 / 0.12);
+}
+html.dark .bg-rose-100 {
+  background-color: rgb(244 63 94 / 0.2);
+}
+html.dark .text-rose-600,
+html.dark .text-rose-700 {
+  color: #fda4af;
+}
+html.dark .border-rose-200 {
+  border-color: rgb(244 63 94 / 0.3);
+}
+
+html.dark .bg-amber-50 {
+  background-color: rgb(245 158 11 / 0.14);
+}
+html.dark .bg-amber-100 {
+  background-color: rgb(245 158 11 / 0.22);
+}
+html.dark .text-amber-600,
+html.dark .text-amber-700 {
+  color: #fcd34d;
+}
+html.dark .border-amber-200 {
+  border-color: rgb(245 158 11 / 0.3);
+}
+
+html.dark .bg-blue-50 {
+  background-color: rgb(59 130 246 / 0.14);
+}
+html.dark .bg-blue-100 {
+  background-color: rgb(59 130 246 / 0.22);
+}
+html.dark .text-blue-600,
+html.dark .text-blue-700 {
+  color: #93c5fd;
+}
+
+html.dark .bg-violet-100 {
+  background-color: rgb(139 92 246 / 0.22);
+}
+html.dark .text-violet-700 {
+  color: #c4b5fd;
+}
+
+/* ===== Inputs ===== */
+html.dark input,
+html.dark textarea,
+html.dark select {
+  background-color: var(--dm-surface-2);
+  color: var(--dm-text);
+}
+html.dark input::placeholder,
+html.dark textarea::placeholder {
+  color: #6b7a91;
+}
+
+/* ===== Scrollbar ===== */
+html.dark ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+html.dark ::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+/* ===== Reduced motion ===== */
+@media (prefers-reduced-motion: reduce) {
+  .page-enter,
+  .animate-fade-in,
+  .animate-fade-in-up,
+  .animate-pop-in {
+    animation: none !important;
+  }
+  .theme-transition,
+  .theme-transition * {
+    transition: none !important;
+  }
+}
+
 

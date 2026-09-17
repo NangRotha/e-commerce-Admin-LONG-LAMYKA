@@ -3,10 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { Store } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { api } from "../api/client";
+import { useI18n } from "../i18n/I18nContext";
+import HeaderControls from "../components/HeaderControls";
 
 export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const { t } = useI18n();
 
   const [site, setSite] = useState({});
   useEffect(() => {
@@ -38,29 +41,32 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="flex items-center justify-center gap-2 text-white font-extrabold text-2xl mb-8">
-          {siteLogo ? (
-            <img
-              src={siteLogo}
-              alt={siteName}
-              className="h-9 w-auto max-w-[160px] object-contain"
-              onError={(e) => (e.target.style.display = "none")}
-            />
-          ) : (
-            <Store className="w-7 h-7 text-emerald-500" />
-          )}
-          {!siteLogo && siteName}
-        </div>
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
+        <div className="w-full max-w-md">
+          <div className="absolute top-4 right-4">
+            <HeaderControls dark />
+          </div>
+          <div className="flex items-center justify-center gap-2 text-white font-extrabold text-2xl mb-8">
+            {siteLogo ? (
+              <img
+                src={siteLogo}
+                alt={siteName}
+                className="h-9 w-auto max-w-[160px] object-contain"
+                onError={(e) => (e.target.style.display = "none")}
+              />
+            ) : (
+              <Store className="w-7 h-7 text-emerald-500" />
+            )}
+            {!siteLogo && siteName}
+          </div>
 
-        <div className="bg-white rounded-3xl shadow-xl p-8">
-          <h1 className="text-2xl font-extrabold text-slate-900 text-center">
-            Admin Login
-          </h1>
-          <p className="mt-2 text-sm text-slate-500 text-center">
-            Sign in with your admin account.
-          </p>
+          <div className="bg-white rounded-3xl shadow-xl p-8 animate-pop-in">
+            <h1 className="text-2xl font-extrabold text-slate-900 text-center">
+              {t("login.title")}
+            </h1>
+            <p className="mt-2 text-sm text-slate-500 text-center">
+              {t("login.subtitle")}
+            </p>
 
           {error && (
             <p className="mt-5 text-sm text-rose-600 bg-rose-50 border border-rose-200 rounded-xl px-4 py-3">
@@ -71,7 +77,7 @@ export default function Login() {
           <form onSubmit={handleSubmit} className="mt-6 space-y-4">
             <div>
               <label className="block text-sm font-medium text-slate-700">
-                Email
+                {t("login.email")}
               </label>
               <input
                 type="email"
@@ -84,7 +90,7 @@ export default function Login() {
             </div>
             <div>
               <label className="block text-sm font-medium text-slate-700">
-                Password
+                {t("login.password")}
               </label>
               <input
                 type="password"
@@ -100,13 +106,12 @@ export default function Login() {
               disabled={loading}
               className="w-full px-6 py-3 rounded-xl bg-emerald-600 text-white font-semibold transition hover:bg-emerald-700 disabled:opacity-60"
             >
-              {loading ? "Signing in..." : "Sign in"}
+              {loading ? t("login.signingIn") : t("login.signIn")}
             </button>
           </form>
 
           <p className="mt-6 text-center text-xs text-slate-400">
-            Only accounts with the <strong>admin</strong> role can access this
-            panel.
+            {t("login.adminOnly")}
           </p>
         </div>
       </div>

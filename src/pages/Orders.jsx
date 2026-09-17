@@ -1,6 +1,8 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { api } from "../api/client";
 import { formatPrice, formatDate } from "../lib/format";
+import { useRealtime } from "../context/RealtimeContext";
+import { useI18n } from "../i18n/I18nContext";
 
 const STATUSES = ["pending", "paid", "shipped", "cancelled"];
 
@@ -12,19 +14,26 @@ const STATUS_STYLE = {
 };
 
 export default function Orders() {
+  const { t } = useI18n();
   const [orders, setOrders] = useState(null);
   const [error, setError] = useState("");
   const [updatingId, setUpdatingId] = useState(null);
 
-  const load = () =>
-    api
-      .getOrders()
-      .then(setOrders)
-      .catch((e) => setError(e.message));
+  const load = useCallback(
+    () =>
+      api
+        .getOrders()
+        .then(setOrders)
+        .catch((e) => setError(e.message)),
+    []
+  );
 
   useEffect(() => {
     load();
-  }, []);
+  }, [load]);
+
+  // Real-time: មាន Order ថ្មី ឬការបង់ប្រាក់ជោគជ័យ -> បញ្ជីបច្ចុប្បន្នភាពភ្លាមៗ
+  useRealtime("orders_changed", load);
 
   const changeStatus = async (orderId, status) => {
     setUpdatingId(orderId);
@@ -42,9 +51,11 @@ export default function Orders() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="text-2xl font-extrabold text-slate-900">Orders</h1>
+        <h1 className="text-2xl font-extrabold text-slate-900">
+          {t("orders.title")}
+        </h1>
         <p className="text-sm text-slate-500">
-          {orders ? `${orders.length} orders` : "Loading..."}
+          {orders ? t("orders.count", { count: orders.length }) : t("common.loading")}
         </p>
       </div>
 
@@ -62,20 +73,20 @@ export default function Orders() {
         </div>
       ) : orders.length === 0 ? (
         <div className="bg-white rounded-2xl border border-dashed border-slate-300 py-16 text-center text-slate-500">
-          No orders yet.
+          {t("orders.noOrders")}
         </div>
       ) : (
         <div className="bg-white rounded-2xl border border-slate-200 overflow-x-auto">
           <table className="w-full text-sm min-w-[1000px]">
             <thead>
               <tr className="text-left text-xs uppercase tracking-wide text-slate-400 border-b border-slate-200">
-                <th className="px-4 py-3 font-semibold">Order</th>
-                <th className="px-4 py-3 font-semibold">Customer</th>
-                <th className="px-4 py-3 font-semibold">Shipping</th>
-                <th className="px-4 py-3 font-semibold">Items</th>
-                <th className="px-4 py-3 font-semibold">Total</th>
-                <th className="px-4 py-3 font-semibold">Status</th>
-                <th className="px-4 py-3 font-semibold">Date</th>
+                <th className="px-4 py-3 font-semibold">{t("orders.order")}</th>
+                <th className="px-4 py-3 font-semibold">{t("orders.customer")}</th>
+                <th className="px-4 py-3 font-semibold">{t("orders.shipping")}</th>
+                <th className="px-4 py-3 font-semibold">{t("orders.items")}</th>
+                <th className="px-4 py-3 font-semibold">{t("orders.total")}</th>
+                <th className="px-4 py-3 font-semibold">{t("orders.status")}</th>
+                <th className="px-4 py-3 font-semibold">{t("orders.date")}</th>
               </tr>
             </thead>
             <tbody>
@@ -99,7 +110,11 @@ export default function Orders() {
                       </div>
                     )}
                     <div className="text-xs text-slate-400">
-                      {o.user_email || "—"}
+                      {o.user_email || o.customer_email || (
+                        <span className="font-semibold text-violet-700">
+                          {t("orders.guest")}
+                        </span>
+                      )}
                     </div>
                   </td>
                   <td className="px-4 py-3 text-slate-600">

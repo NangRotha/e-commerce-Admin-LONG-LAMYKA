@@ -1,7 +1,8 @@
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
 import { api } from "./api/client";
+import { useRealtime } from "./context/RealtimeContext";
 import Layout from "./components/Layout";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
@@ -48,12 +49,19 @@ export default function App() {
   const { user } = useAuth();
 
   // ដាក់ Title + Icon (Favicon) ពី Database (site_name / site_logo)
-  useEffect(() => {
+  const loadBranding = useCallback(() => {
     api
       .getSettings()
       .then(applyBranding)
       .catch(() => {});
   }, []);
+
+  useEffect(() => {
+    loadBranding();
+  }, [loadBranding]);
+
+  // Real-time: Admin កែ Site Name / Logo -> Title + Favicon បច្ចុប្បន្នភាពភ្លាមៗ
+  useRealtime("settings_changed", loadBranding);
 
   return (
     <Routes>

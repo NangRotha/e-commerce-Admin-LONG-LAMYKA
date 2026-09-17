@@ -1,4 +1,25 @@
-const API_BASE = (import.meta.env.VITE_API_URL || "").replace(/\/$/, "");
+/**
+ * Backend (FastAPI) ពិតប្រាកដនៅលើ Render — ប្រើជា Default ដើម្បីឱ្យ Admin Panel
+ * ដំណើរការបានទាំង Dev និង Production ដោយមិនចាំបាច់កំណត់ .env។
+ * អាចប្តូរបានតាម `VITE_API_URL` ក្នុង `.env` / `.env.development` / `.env.production`
+ * (ឧ. VITE_API_URL=http://localhost:8000 សម្រាប់ Backend ក្នុងម៉ាស៊ីនរបស់អ្នក)
+ */
+export const DEFAULT_API_BASE = "https://backend-e-online.onrender.com";
+
+export const API_BASE = (import.meta.env.VITE_API_URL || DEFAULT_API_BASE).replace(
+  /\/$/,
+  ""
+);
+
+// URL សម្រាប់ WebSocket — real-time ព្រឹត្តិការណ៍ (orders_changed, products_changed, ...)
+export function getWsUrl(path = "/ws/products") {
+  const wsBase = (import.meta.env.VITE_WS_URL || "").replace(/\/$/, "");
+  if (wsBase) return `${wsBase}${path}`;
+  if (API_BASE) return `${API_BASE.replace(/^http/i, "ws")}${path}`;
+  const proto = window.location.protocol === "https:" ? "wss" : "ws";
+  return `${proto}://${window.location.host}${path}`;
+}
+
 const TOKEN_KEY = "admin_token";
 
 export function getToken() {
@@ -72,6 +93,9 @@ export const api = {
   // Dashboard
   getStats: () => request("/api/admin/stats", { auth: true }),
 
+  // Payment (Bakong Wallet / KHQR) — សម្រាប់បង្ហាញស្ថានភាពក្នុង Settings
+  getPaymentConfig: () => request("/api/payments/config"),
+
   // Products
   getProducts: () => request("/api/products", { auth: true }),
   createProduct: (p) =>
@@ -118,16 +142,20 @@ export const api = {
     return absolutizeMedia(data);
   },
 
-  // Image upload (from local PC)
-  uploadImage: async (file) => {
+  // Image / Video upload (from local PC)
+  // kind = "image" (default) ឬ "video" សម្រាប់វីដេអូផលិតផល
+  uploadImage: async (file, kind = "image") => {
     const token = getToken();
     const fd = new FormData();
     fd.append("file", file);
-    const res = await fetch(`${API_BASE}/api/admin/upload`, {
-      method: "POST",
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
-      body: fd,
-    });
+    const res = await fetch(
+      `${API_BASE}/api/admin/upload?kind=${encodeURIComponent(kind)}`,
+      {
+        method: "POST",
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        body: fd,
+      }
+    );
     const data = await res.json().catch(() => ({}));
     if (!res.ok) {
       const msg =

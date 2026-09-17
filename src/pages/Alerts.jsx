@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Plus, Pencil, Trash2, BellRing, CalendarClock } from "lucide-react";
 import { api } from "../api/client";
 import AlertModal from "../components/AlertModal";
 import Modal from "../components/Modal";
+import { useRealtime } from "../context/RealtimeContext";
 
 const TYPE_META = {
   info: { label: "Info", cls: "bg-blue-100 text-blue-700" },
@@ -29,15 +30,21 @@ export default function Alerts() {
   const [editing, setEditing] = useState(null);
   const [confirming, setConfirming] = useState(null);
 
-  const load = () =>
-    api
-      .getAlerts()
-      .then(setAlerts)
-      .catch((e) => setError(e.message));
+  const load = useCallback(
+    () =>
+      api
+        .getAlerts()
+        .then(setAlerts)
+        .catch((e) => setError(e.message)),
+    []
+  );
 
   useEffect(() => {
     load();
-  }, []);
+  }, [load]);
+
+  // Real-time: Alert ផ្លាស់ប្តូរ -> បញ្ជីបច្ចុប្បន្នភាពភ្លាមៗ
+  useRealtime("alerts_changed", load);
 
   const handleSave = async (payload) => {
     if (editing) await api.updateAlert(editing.id, payload);

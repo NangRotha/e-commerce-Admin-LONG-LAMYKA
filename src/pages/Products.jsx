@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
-import { Plus, Pencil, Trash2, Search, Loader2 } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Plus, Pencil, Trash2, Search, Loader2, Clapperboard } from "lucide-react";
 import { api } from "../api/client";
 import ProductModal from "../components/ProductModal";
 import Modal from "../components/Modal";
 import { formatPrice } from "../lib/format";
+import { useRealtime } from "../context/RealtimeContext";
 
 export default function Products() {
   const [products, setProducts] = useState(null);
@@ -15,15 +16,21 @@ export default function Products() {
   const [editingPrice, setEditingPrice] = useState(null); // { id, value } — inline price edit
   const [savingPrice, setSavingPrice] = useState(false);
 
-  const load = () =>
-    api
-      .getProducts()
-      .then(setProducts)
-      .catch((e) => setError(e.message));
+  const load = useCallback(
+    () =>
+      api
+        .getProducts()
+        .then(setProducts)
+        .catch((e) => setError(e.message)),
+    []
+  );
 
   useEffect(() => {
     load();
-  }, []);
+  }, [load]);
+
+  // Real-time: ផលិតផលត្រូវបានបន្ថែម/កែ/លុប -> បញ្ជីបច្ចុប្បន្នភាពភ្លាមៗ
+  useRealtime("products_changed", load);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -163,6 +170,15 @@ export default function Products() {
                         <p className="text-xs text-slate-400 truncate max-w-[220px]">
                           {p.description || "—"}
                         </p>
+                        {p.video_url ? (
+                          <span
+                            className="mt-1 inline-flex items-center gap-1 text-[10px] font-bold text-violet-700 bg-violet-100 px-1.5 py-0.5 rounded"
+                            title="មានវីដេអូ (Has video)"
+                          >
+                            <Clapperboard className="w-2.5 h-2.5" />
+                            VIDEO
+                          </span>
+                        ) : null}
                       </div>
                     </div>
                   </td>

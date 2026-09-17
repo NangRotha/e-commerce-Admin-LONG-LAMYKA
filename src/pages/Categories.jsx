@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Plus, Pencil, Trash2, Search, Tags } from "lucide-react";
 import { api } from "../api/client";
 import CategoryModal from "../components/CategoryModal";
 import Modal from "../components/Modal";
 import { formatDate } from "../lib/format";
+import { useRealtime } from "../context/RealtimeContext";
 
 export default function Categories() {
   const [categories, setCategories] = useState(null);
@@ -13,15 +14,21 @@ export default function Categories() {
   const [editing, setEditing] = useState(null);
   const [confirming, setConfirming] = useState(null);
 
-  const load = () =>
-    api
-      .getCategories()
-      .then(setCategories)
-      .catch((e) => setError(e.message));
+  const load = useCallback(
+    () =>
+      api
+        .getCategories()
+        .then(setCategories)
+        .catch((e) => setError(e.message)),
+    []
+  );
 
   useEffect(() => {
     load();
-  }, []);
+  }, [load]);
+
+  // Real-time: Category ផ្លាស់ប្តូរ (Backend ប្រកាស products_changed)
+  useRealtime("products_changed", load);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
