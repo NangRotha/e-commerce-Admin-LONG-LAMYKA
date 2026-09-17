@@ -142,8 +142,8 @@ export default function SlideModal({ open, onClose, onSave, initial }) {
                 onClick={() => set("media_type", t.value)}
                 className={`flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl border text-sm font-medium transition ${
                   form.media_type === t.value
-                    ? "border-emerald-600 bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600"
-                    : "border-slate-300 text-slate-600 hover:border-emerald-400"
+                    ? "border-emerald-600 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 ring-1 ring-emerald-600"
+                    : "border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-emerald-400 dark:hover:border-emerald-500"
                 }`}
               >
                 <t.icon className="w-4 h-4" />
@@ -166,7 +166,7 @@ export default function SlideModal({ open, onClose, onSave, initial }) {
               <img
                 src={`https://img.youtube.com/vi/${ytId}/hqdefault.jpg`}
                 alt="YouTube preview"
-                className="mt-2 h-32 w-full object-cover rounded-xl border border-slate-200"
+                className="mt-2 h-32 w-full object-cover rounded-xl border border-slate-200 dark:border-slate-800"
               />
             ) : (
               <p className="mt-1.5 text-xs text-slate-400">
@@ -194,7 +194,7 @@ export default function SlideModal({ open, onClose, onSave, initial }) {
               />
               <label
                 htmlFor="slide-media-file"
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-300 text-slate-600 text-sm font-medium cursor-pointer hover:bg-slate-50 transition"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-200 text-sm font-medium cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition"
               >
                 {uploading ? (
                   <>
@@ -292,7 +292,7 @@ export default function SlideModal({ open, onClose, onSave, initial }) {
           </div>
         </div>
 
-        <label className="flex items-center gap-2 text-sm font-medium text-slate-700 cursor-pointer">
+        <label className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300 cursor-pointer">
           <input
             type="checkbox"
             checked={form.is_active}
@@ -306,14 +306,14 @@ export default function SlideModal({ open, onClose, onSave, initial }) {
           <button
             type="button"
             onClick={onClose}
-            className="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-600 font-medium hover:bg-slate-50 transition text-sm"
+            className="px-5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition text-sm"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={saving || uploading}
-            className="px-5 py-2.5 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition text-sm disabled:opacity-60"
+            className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold transition text-sm shadow-md shadow-emerald-900/20 disabled:opacity-60"
           >
             {saving ? "Saving..." : initial ? "Save changes" : "Add slide"}
           </button>

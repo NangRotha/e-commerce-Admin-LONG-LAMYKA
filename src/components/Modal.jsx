@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 
 const MAX_WIDTHS = {
@@ -35,23 +36,27 @@ export default function Modal({
     };
   }, [open, onClose]);
 
-  if (!open) return null;
+  if (!open || typeof document === "undefined") return null;
 
   const widthClass = MAX_WIDTHS[maxWidth] || maxWidth || "max-w-lg";
 
-  return (
-    <div className="fixed inset-0 z-50 overflow-y-auto" role="dialog" aria-modal="true">
+  const modalContent = (
+    <div
+      className="fixed inset-0 z-[100] overflow-y-auto"
+      role="dialog"
+      aria-modal="true"
+    >
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm transition-opacity animate-fade-in"
+        className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm transition-opacity animate-fade-in"
         onClick={onClose}
         aria-hidden="true"
       />
 
-      {/* Alignment container ensures modal is never pushed off top of screen */}
-      <div className="flex min-h-full items-center justify-center p-3 sm:p-6 text-center">
+      {/* Alignment container: Centers dialog and prevents any negative-scroll clipping */}
+      <div className="min-h-full flex items-center justify-center p-3 sm:p-6 text-center">
         <div
-          className={`relative w-full ${widthClass} my-auto transform rounded-2xl bg-white dark:bg-slate-900 text-left shadow-2xl transition-all border border-slate-200/80 dark:border-slate-800 overflow-hidden animate-pop-in flex flex-col max-h-[90vh]`}
+          className={`relative w-full ${widthClass} my-auto transform rounded-2xl bg-white dark:bg-slate-900 text-left shadow-2xl transition-all border border-slate-200/80 dark:border-slate-800 overflow-hidden animate-pop-in flex flex-col max-h-[calc(100vh-2rem)] sm:max-h-[calc(100vh-4rem)]`}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Fixed Header */}
@@ -91,4 +96,6 @@ export default function Modal({
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 }
