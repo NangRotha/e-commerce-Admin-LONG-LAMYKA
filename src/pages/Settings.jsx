@@ -11,6 +11,8 @@ import {
   Share2,
   Phone,
   Globe,
+  MapPin,
+  ExternalLink,
 } from "lucide-react";
 import { api } from "../api/client";
 import { useI18n } from "../i18n/I18nContext";
@@ -30,6 +32,12 @@ const SOCIAL_DEFAULTS = {
   social_facebook: "",
   social_instagram: "",
   contact_phone: "",
+};
+
+const LOCATION_DEFAULTS = {
+  store_maps_url: "",
+  store_address_km: "",
+  store_address_en: "",
 };
 
 const CURRENCIES = ["USD", "KHR"];
@@ -53,6 +61,10 @@ export default function Settings() {
   const [social, setSocial] = useState(SOCIAL_DEFAULTS);
   const [savingSocial, setSavingSocial] = useState(false);
 
+  // Store Location & Google Maps
+  const [loc, setLoc] = useState(LOCATION_DEFAULTS);
+  const [savingLoc, setSavingLoc] = useState(false);
+
   // Bakong / KHQR payment settings
   const [pay, setPay] = useState(PAYMENT_DEFAULTS);
   const [savingPay, setSavingPay] = useState(false);
@@ -69,6 +81,17 @@ export default function Settings() {
           social_facebook: s.social_facebook || s.facebook_url || "",
           social_instagram: s.social_instagram || s.instagram_url || "",
           contact_phone: s.contact_phone || "",
+        });
+        setLoc({
+          store_maps_url:
+            s.store_maps_url ||
+            "https://maps.app.goo.gl/EaQbHNijNE7EHgmFA?g_st=ic",
+          store_address_km:
+            s.store_address_km ||
+            "ផ្លូវចាក់សំរាម ស្ទឹងមានជ័យ, ភូមិដំណាក់ធំ, សង្កាត់ស្ទឹងមានជ័យទី២, ខណ្ឌមានជ័យ, រាជធានីភ្នំពេញ",
+          store_address_en:
+            s.store_address_en ||
+            "Stoeung Meanchey, Damnak Thum, Sangkat Stung Meanchey 2, Khan Meanchey, Phnom Penh, Cambodia",
         });
         setPay({
           payment_company_name: s.payment_company_name || "",
@@ -167,6 +190,25 @@ export default function Settings() {
       setError(err.message);
     } finally {
       setSavingSocial(false);
+    }
+  };
+
+  // ===== Store Location & Google Maps =====
+  const setLocField = (key, value) => setLoc((l) => ({ ...l, [key]: value }));
+
+  const saveLocation = async (e) => {
+    e.preventDefault();
+    setError("");
+    setSavingLoc(true);
+    try {
+      for (const key of Object.keys(LOCATION_DEFAULTS)) {
+        await api.updateSetting(key, String(loc[key] ?? "").trim());
+      }
+      flash(t("settings.saved"));
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSavingLoc(false);
     }
   };
 
@@ -445,6 +487,115 @@ export default function Settings() {
           </div>
         </div>
       </form>
+
+      {/* ============ Store Location & Google Maps ============ */}
+      <form
+        onSubmit={saveLocation}
+        className={`${card}`}
+        style={{ animationDelay: "80ms" }}
+      >
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex items-start gap-3">
+            <span className="shrink-0 w-11 h-11 rounded-xl bg-rose-100 dark:bg-rose-950/40 flex items-center justify-center text-rose-600 dark:text-rose-400">
+              <MapPin className="w-5 h-5" />
+            </span>
+            <div className="min-w-0">
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white">
+                {t("settings.locationTitle")}
+              </h2>
+              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                {t("settings.locationHint")}
+              </p>
+            </div>
+          </div>
+
+          {loc.store_maps_url && (
+            <a
+              href={loc.store_maps_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-50 dark:bg-rose-950/50 hover:bg-rose-100 dark:hover:bg-rose-900/50 text-rose-600 dark:text-rose-400 text-xs font-bold transition border border-rose-200/80 dark:border-rose-900 shrink-0"
+            >
+              <span>Google Maps</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          )}
+        </div>
+
+        <div className="mt-5 space-y-4">
+          {/* Google Maps URL */}
+          <div>
+            <label className={`${label} flex items-center justify-between`}>
+              <span>{t("settings.mapsUrl")}</span>
+              {loc.store_maps_url && (
+                <a
+                  href={loc.store_maps_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="sm:hidden inline-flex items-center gap-1 text-xs font-bold text-rose-600"
+                >
+                  <span>Open Maps</span>
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+              )}
+            </label>
+            <input
+              className={input}
+              value={loc.store_maps_url}
+              onChange={(e) => setLocField("store_maps_url", e.target.value)}
+              placeholder="https://maps.app.goo.gl/..."
+            />
+            <p className="mt-1 text-xs text-slate-400">{t("settings.mapsUrlHint")}</p>
+          </div>
+
+          {/* Address Khmer */}
+          <div>
+            <label className={label}>{t("settings.addressKm")}</label>
+            <textarea
+              rows={2}
+              className={input}
+              value={loc.store_address_km}
+              onChange={(e) => setLocField("store_address_km", e.target.value)}
+              placeholder="ផ្លូវ... ភូមិ... សង្កាត់... ខណ្ឌ... រាជធានីភ្នំពេញ"
+            />
+            <p className="mt-1 text-xs text-slate-400">{t("settings.addressKmHint")}</p>
+          </div>
+
+          {/* Address English */}
+          <div>
+            <label className={label}>{t("settings.addressEn")}</label>
+            <textarea
+              rows={2}
+              className={input}
+              value={loc.store_address_en}
+              onChange={(e) => setLocField("store_address_en", e.target.value)}
+              placeholder="Street... Sangkat... Khan... Phnom Penh, Cambodia"
+            />
+            <p className="mt-1 text-xs text-slate-400">{t("settings.addressEnHint")}</p>
+          </div>
+
+          <div className="pt-2">
+            <button
+              type="submit"
+              disabled={savingLoc}
+              className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold transition-all duration-200 text-sm shadow-md shadow-emerald-900/20 active:scale-95 disabled:opacity-60"
+            >
+              {savingLoc ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  {t("common.saving")}
+                </>
+              ) : (
+                <>
+                  <Save className="w-4 h-4" />
+                  {t("settings.saveLocation")}
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      </form>
+
 
       {/* ============ Bakong Wallet / KHQR payment ============ */}
       <form
