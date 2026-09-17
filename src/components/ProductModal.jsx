@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Upload, Star, Loader2, Clapperboard } from "lucide-react";
+import { Upload, Star, Loader2, Clapperboard, Package } from "lucide-react";
 import Modal from "./Modal";
 import { api } from "../api/client";
 
@@ -139,14 +139,17 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
   };
 
   const input =
-    "mt-1.5 w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm";
-  const label = "block text-sm font-medium text-slate-700";
+    "mt-1.5 w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm transition";
+  const label = "block text-sm font-semibold text-slate-700 dark:text-slate-200";
 
   return (
     <Modal
       open={open}
       onClose={onClose}
-      title={initial ? "Edit Product" : "Add Product"}
+      title={initial ? "Edit Product" : "Create Product"}
+      subtitle={initial ? "Update product details and media" : "Add a new product to your catalog"}
+      icon={Package}
+      maxWidth="2xl"
     >
       <form onSubmit={submit} className="space-y-4">
         {error && (

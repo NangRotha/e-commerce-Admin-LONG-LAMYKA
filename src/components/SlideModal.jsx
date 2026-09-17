@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Upload, Loader2, Image as ImageIcon, Clapperboard, MonitorPlay, Link as LinkIcon } from "lucide-react";
+import { Upload, Loader2, Image as ImageIcon, Clapperboard, MonitorPlay, Link as LinkIcon, GalleryHorizontal } from "lucide-react";
 import Modal from "./Modal";
 import { api } from "../api/client";
 
@@ -111,13 +111,20 @@ export default function SlideModal({ open, onClose, onSave, initial }) {
   };
 
   const input =
-    "mt-1.5 w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm";
-  const label = "block text-sm font-medium text-slate-700";
+    "mt-1.5 w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm transition";
+  const label = "block text-sm font-semibold text-slate-700 dark:text-slate-200";
 
   const ytId = form.media_type === "youtube" ? getYouTubeId(form.youtube_url) : null;
 
   return (
-    <Modal open={open} onClose={onClose} title={initial ? "Edit slide" : "Add slide"}>
+    <Modal
+      open={open}
+      onClose={onClose}
+      title={initial ? "Edit Slide" : "Add Slide"}
+      subtitle={initial ? "Update banner slider item" : "Create a new slide for the storefront hero"}
+      icon={GalleryHorizontal}
+      maxWidth="xl"
+    >
       <form onSubmit={submit} className="space-y-4">
         {error && (
           <p className="text-sm text-rose-600 bg-rose-50 border border-rose-200 rounded-xl px-4 py-3">

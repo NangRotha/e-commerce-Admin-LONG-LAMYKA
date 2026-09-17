@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Tags } from "lucide-react";
 import Modal from "./Modal";
 
 export default function CategoryModal({ open, onClose, onSave, initial }) {
@@ -38,11 +39,18 @@ export default function CategoryModal({ open, onClose, onSave, initial }) {
   };
 
   const input =
-    "mt-1.5 w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm";
-  const label = "block text-sm font-medium text-slate-700";
+    "mt-1.5 w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm transition";
+  const label = "block text-sm font-semibold text-slate-700 dark:text-slate-200";
 
   return (
-    <Modal open={open} onClose={onClose} title={initial ? "Edit category" : "Add category"}>
+    <Modal
+      open={open}
+      onClose={onClose}
+      title={initial ? "Edit Category" : "Add Category"}
+      subtitle={initial ? "Update category information" : "Create a new category for products"}
+      icon={Tags}
+      maxWidth="md"
+    >
       <form onSubmit={submit} className="space-y-4">
         {error && (
           <p className="text-sm text-rose-600 bg-rose-50 border border-rose-200 rounded-xl px-4 py-3">

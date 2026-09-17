@@ -9,6 +9,7 @@ import {
   Loader2,
   Trash2,
   ImagePlus,
+  BellRing,
 } from "lucide-react";
 import Modal from "./Modal";
 import { api } from "../api/client";
@@ -134,14 +135,17 @@ export default function AlertModal({ open, onClose, onSave, initial }) {
   };
 
   const input =
-    "mt-1.5 w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm placeholder:text-slate-400";
-  const label = "block text-sm font-medium text-slate-700";
+    "mt-1.5 w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm placeholder:text-slate-400 transition";
+  const label = "block text-sm font-semibold text-slate-700 dark:text-slate-200";
 
   return (
     <Modal
       open={open}
       onClose={onClose}
-      title={initial ? "Edit alert" : "New alert"}
+      title={initial ? "Edit Alert" : "New Alert"}
+      subtitle={initial ? "Configure popup or banner announcement" : "Create a storefront announcement"}
+      icon={BellRing}
+      maxWidth="xl"
     >
       <form onSubmit={submit} className="space-y-4">
         <div>
