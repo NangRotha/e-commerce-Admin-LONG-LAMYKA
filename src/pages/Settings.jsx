@@ -1,5 +1,17 @@
 import { useCallback, useEffect, useState } from "react";
-import { Save, Upload, Trash2, Loader2, Wallet, CheckCircle2, AlertTriangle } from "lucide-react";
+import {
+  Save,
+  Upload,
+  Trash2,
+  Loader2,
+  Wallet,
+  CheckCircle2,
+  AlertTriangle,
+  Send,
+  Share2,
+  Phone,
+  Globe,
+} from "lucide-react";
 import { api } from "../api/client";
 import { useI18n } from "../i18n/I18nContext";
 import { useRealtime } from "../context/RealtimeContext";
@@ -13,11 +25,19 @@ const PAYMENT_DEFAULTS = {
   payment_khr_rate: "4100",
 };
 
+const SOCIAL_DEFAULTS = {
+  social_telegram: "",
+  social_facebook: "",
+  social_instagram: "",
+  contact_phone: "",
+};
+
 const CURRENCIES = ["USD", "KHR"];
 
 /**
  * Settings — Admin Panel
  * ✅ Site Name / Logo (Branding)
+ * ✅ Social Media (Telegram · Facebook · Instagram · Phone)
  * ✅ Bakong Wallet / KHQR payment: Company Name · Bakong Wallet ID · Display Name · Currency
  * ✅ Real-time: បើ Admin ផ្សេងកែ -> ទំព័រនេះបច្ចុប្បន្នភាពភ្លាមៗ (settings_changed)
  */
@@ -28,6 +48,10 @@ export default function Settings() {
   const [logoUrl, setLogoUrl] = useState("");
   const [uploading, setUploading] = useState(false);
   const [msg, setMsg] = useState("");
+
+  // Social media channels
+  const [social, setSocial] = useState(SOCIAL_DEFAULTS);
+  const [savingSocial, setSavingSocial] = useState(false);
 
   // Bakong / KHQR payment settings
   const [pay, setPay] = useState(PAYMENT_DEFAULTS);
@@ -40,6 +64,12 @@ export default function Settings() {
       .then((s) => {
         setSiteName(s.site_name || "");
         setLogoUrl(s.site_logo || "");
+        setSocial({
+          social_telegram: s.social_telegram || s.telegram_url || "",
+          social_facebook: s.social_facebook || s.facebook_url || "",
+          social_instagram: s.social_instagram || s.instagram_url || "",
+          contact_phone: s.contact_phone || "",
+        });
         setPay({
           payment_company_name: s.payment_company_name || "",
           payment_bakong_id: s.payment_bakong_id || "",
@@ -118,6 +148,25 @@ export default function Settings() {
       flash(t("settings.saved"));
     } catch (err) {
       setError(err.message);
+    }
+  };
+
+  // ===== Social Media Channels =====
+  const setSocialField = (key, value) => setSocial((s) => ({ ...s, [key]: value }));
+
+  const saveSocial = async (e) => {
+    e.preventDefault();
+    setError("");
+    setSavingSocial(true);
+    try {
+      for (const key of Object.keys(SOCIAL_DEFAULTS)) {
+        await api.updateSetting(key, String(social[key] ?? "").trim());
+      }
+      flash(t("settings.saved"));
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSavingSocial(false);
     }
   };
 
@@ -285,6 +334,117 @@ export default function Settings() {
           </div>
         </form>
       </div>
+
+      {/* ============ Social Media & Channels ============ */}
+      <form
+        onSubmit={saveSocial}
+        className={`${card}`}
+        style={{ animationDelay: "60ms" }}
+      >
+        <div className="flex items-start gap-3">
+          <span className="shrink-0 w-11 h-11 rounded-xl bg-sky-100 dark:bg-sky-950/40 flex items-center justify-center text-sky-600 dark:text-sky-400">
+            <Share2 className="w-5 h-5" />
+          </span>
+          <div className="min-w-0">
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white">
+              {t("settings.socialTitle")}
+            </h2>
+            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+              {t("settings.socialHint")}
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-5 space-y-4">
+          {/* Telegram */}
+          <div>
+            <label className={`${label} flex items-center gap-2`}>
+              <span className="w-6 h-6 rounded-lg bg-[#229ED9]/10 text-[#229ED9] flex items-center justify-center shrink-0">
+                <Send className="w-3.5 h-3.5" />
+              </span>
+              {t("settings.telegram")}
+            </label>
+            <input
+              className={input}
+              value={social.social_telegram}
+              onChange={(e) => setSocialField("social_telegram", e.target.value)}
+              placeholder="https://t.me/khmerudomet or @khmerudomet"
+            />
+            <p className="mt-1 text-xs text-slate-400">{t("settings.telegramHint")}</p>
+          </div>
+
+          {/* Facebook */}
+          <div>
+            <label className={`${label} flex items-center gap-2`}>
+              <span className="w-6 h-6 rounded-lg bg-[#1877F2]/10 text-[#1877F2] flex items-center justify-center font-bold text-xs shrink-0">
+                f
+              </span>
+              {t("settings.facebook")}
+            </label>
+            <input
+              className={input}
+              value={social.social_facebook}
+              onChange={(e) => setSocialField("social_facebook", e.target.value)}
+              placeholder="https://facebook.com/khmerudomet"
+            />
+            <p className="mt-1 text-xs text-slate-400">{t("settings.facebookHint")}</p>
+          </div>
+
+          {/* Instagram */}
+          <div>
+            <label className={`${label} flex items-center gap-2`}>
+              <span className="w-6 h-6 rounded-lg bg-pink-500/10 text-pink-600 flex items-center justify-center font-bold text-xs shrink-0">
+                ig
+              </span>
+              {t("settings.instagram")}
+            </label>
+            <input
+              className={input}
+              value={social.social_instagram}
+              onChange={(e) => setSocialField("social_instagram", e.target.value)}
+              placeholder="https://instagram.com/khmerudomet"
+            />
+            <p className="mt-1 text-xs text-slate-400">{t("settings.instagramHint")}</p>
+          </div>
+
+          {/* Phone */}
+          <div>
+            <label className={`${label} flex items-center gap-2`}>
+              <span className="w-6 h-6 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0">
+                <Phone className="w-3.5 h-3.5" />
+              </span>
+              {t("settings.phone")}
+            </label>
+            <input
+              className={input}
+              value={social.contact_phone}
+              onChange={(e) => setSocialField("contact_phone", e.target.value)}
+              placeholder="e.g. 012 345 678"
+            />
+            <p className="mt-1 text-xs text-slate-400">{t("settings.phoneHint")}</p>
+          </div>
+
+          <div className="pt-2">
+            <button
+              type="submit"
+              disabled={savingSocial}
+              className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold transition-all duration-200 text-sm shadow-md shadow-emerald-900/20 active:scale-95 disabled:opacity-60"
+            >
+              {savingSocial ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  {t("common.saving")}
+                </>
+              ) : (
+                <>
+                  <Save className="w-4 h-4" />
+                  {t("settings.saveSocial")}
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      </form>
 
       {/* ============ Bakong Wallet / KHQR payment ============ */}
       <form
