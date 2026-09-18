@@ -1,5 +1,19 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Plus, Pencil, Trash2, Search, Loader2, Clapperboard, Filter, ArrowUpDown, Layers, Star } from "lucide-react";
+import {
+  Plus,
+  Pencil,
+  Trash2,
+  Search,
+  Loader2,
+  Clapperboard,
+  Filter,
+  ArrowUpDown,
+  Layers,
+  Star,
+  TrendingUp,
+  DollarSign,
+  Check,
+} from "lucide-react";
 import { api } from "../api/client";
 import ProductModal from "../components/ProductModal";
 import Modal from "../components/Modal";
@@ -17,6 +31,15 @@ export default function Products() {
   const [confirming, setConfirming] = useState(null);
   const [editingPrice, setEditingPrice] = useState(null); // { id, value } — inline price edit
   const [savingPrice, setSavingPrice] = useState(false);
+
+  // Bulk Price Adjust state
+  const [bulkModalOpen, setBulkModalOpen] = useState(false);
+  const [bulkCategory, setBulkCategory] = useState("All");
+  const [bulkOperation, setBulkOperation] = useState("add_fixed"); // add_fixed | add_percent | sub_fixed | sub_percent
+  const [bulkValue, setBulkValue] = useState("");
+  const [bulkSetOriginalPrice, setBulkSetOriginalPrice] = useState(true);
+  const [bulkSubmitting, setBulkSubmitting] = useState(false);
+  const [bulkMessage, setBulkMessage] = useState({ text: "", type: "" });
 
   const load = useCallback(
     () =>
@@ -107,6 +130,64 @@ export default function Products() {
     }
   };
 
+  // Bulk adjustment calculations
+  const targetBulkProducts = useMemo(() => {
+    if (!products) return [];
+    if (bulkCategory === "All") return products;
+    return products.filter((p) => p.category === bulkCategory);
+  }, [products, bulkCategory]);
+
+  const sampleProduct = targetBulkProducts[0];
+  const sampleCalculatedPrice = useMemo(() => {
+    if (!sampleProduct) return null;
+    const oldPrice = sampleProduct.price;
+    const val = parseFloat(bulkValue);
+    if (Number.isNaN(val) || val <= 0) return null;
+    let newPrice = oldPrice;
+    if (bulkOperation === "add_fixed") newPrice = oldPrice + val;
+    else if (bulkOperation === "add_percent") newPrice = oldPrice + (oldPrice * val) / 100;
+    else if (bulkOperation === "sub_fixed") newPrice = Math.max(0, oldPrice - val);
+    else if (bulkOperation === "sub_percent") newPrice = Math.max(0, oldPrice - (oldPrice * val) / 100);
+    return {
+      name: sampleProduct.name,
+      oldPrice,
+      newPrice: Math.round(newPrice * 100) / 100,
+      savedOriginal: bulkSetOriginalPrice ? oldPrice : null,
+    };
+  }, [sampleProduct, bulkValue, bulkOperation, bulkSetOriginalPrice]);
+
+  const handleBulkSubmit = async (e) => {
+    e?.preventDefault?.();
+    const val = parseFloat(bulkValue);
+    if (Number.isNaN(val) || val <= 0) {
+      setBulkMessage({ text: "សូមបញ្ចូលចំនួនលេខវិជ្ជមានត្រឹមត្រូវ (ឧ. 2 ឬ 10)", type: "error" });
+      return;
+    }
+    setBulkSubmitting(true);
+    setBulkMessage({ text: "", type: "" });
+    try {
+      const res = await api.bulkAdjustPrice({
+        operation: bulkOperation,
+        value: val,
+        category: bulkCategory === "All" ? null : bulkCategory,
+        set_original_price: bulkSetOriginalPrice,
+      });
+      setBulkMessage({
+        text: `✓ បានកែសម្រួលតម្លៃលើ ${res.updated_count} ផលិតផលដោយជោគជ័យ!`,
+        type: "success",
+      });
+      await load();
+      setTimeout(() => {
+        setBulkModalOpen(false);
+        setBulkMessage({ text: "", type: "" });
+      }, 1500);
+    } catch (err) {
+      setBulkMessage({ text: err.message, type: "error" });
+    } finally {
+      setBulkSubmitting(false);
+    }
+  };
+
   return (
     <div className="space-y-5">
       {/* Top Header */}
@@ -119,16 +200,31 @@ export default function Products() {
             {products ? `${products.length} products total` : "Loading..."}
           </p>
         </div>
-        <button
-          onClick={() => {
-            setEditing(null);
-            setModalOpen(true);
-          }}
-          className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition text-sm shadow-xs"
-        >
-          <Plus className="w-4 h-4" />
-          Add Product
-        </button>
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={() => {
+              setBulkCategory(selectedCategory);
+              setBulkValue("");
+              setBulkMessage({ text: "", type: "" });
+              setBulkModalOpen(true);
+            }}
+            className="flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition text-sm shadow-2xs active:scale-95"
+            title="បន្ថែម ឬកែប្រែតម្លៃលើតម្លៃចាស់សម្រាប់ផលិតផលទាំងអស់"
+          >
+            <TrendingUp className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+            <span>កែសម្រួលតម្លៃទាំងអស់ (Bulk Adjust)</span>
+          </button>
+          <button
+            onClick={() => {
+              setEditing(null);
+              setModalOpen(true);
+            }}
+            className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition text-sm shadow-xs active:scale-95"
+          >
+            <Plus className="w-4 h-4" />
+            Add Product
+          </button>
+        </div>
       </div>
 
       {error && (
@@ -313,14 +409,24 @@ export default function Products() {
                         )}
                       </div>
                     ) : (
-                      <button
-                        type="button"
-                        onClick={() => startPriceEdit(p)}
-                        title="Click to edit price"
-                        className="font-bold text-emerald-600 dark:text-emerald-400 hover:underline underline-offset-2"
-                      >
-                        {formatPrice(p.price)}
-                      </button>
+                      <div className="flex flex-col items-start">
+                        <button
+                          type="button"
+                          onClick={() => startPriceEdit(p)}
+                          title="Click to edit price"
+                          className="font-bold text-emerald-600 dark:text-emerald-400 hover:underline underline-offset-2"
+                        >
+                          {formatPrice(p.price)}
+                        </button>
+                        {p.original_price && p.original_price > p.price && (
+                          <span
+                            className="text-[11px] text-slate-400 dark:text-slate-500 line-through"
+                            title={`Original Price: ${formatPrice(p.original_price)}`}
+                          >
+                            {formatPrice(p.original_price)}
+                          </span>
+                        )}
+                      </div>
                     )}
                   </td>
 
@@ -409,6 +515,182 @@ export default function Products() {
             Delete
           </button>
         </div>
+      </Modal>
+
+      {/* Bulk Price Adjustment Modal */}
+      <Modal
+        open={bulkModalOpen}
+        onClose={() => {
+          if (!bulkSubmitting) setBulkModalOpen(false);
+        }}
+        title="កែសម្រួលតម្លៃផលិតផល (Bulk Price Adjust)"
+        subtitle="បន្ថែម ឬកែប្រែតម្លៃផលិតផលទាំងអស់ ឬតាមប្រភេទ (អាចរក្សាទុកតម្លៃចាស់ជា Original Price)"
+        icon={TrendingUp}
+        maxWidth="xl"
+      >
+        <form onSubmit={handleBulkSubmit} className="space-y-4">
+          {bulkMessage.text && (
+            <p
+              className={`text-sm rounded-xl px-4 py-3 border animate-fade-in ${
+                bulkMessage.type === "success"
+                  ? "text-emerald-700 bg-emerald-50 dark:bg-emerald-950/60 border-emerald-200 dark:border-emerald-800"
+                  : "text-rose-700 bg-rose-50 dark:bg-rose-950/60 border-rose-200 dark:border-rose-800"
+              }`}
+            >
+              {bulkMessage.text}
+            </p>
+          )}
+
+          {/* 1. Target Category */}
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-200">
+              ប្រភេទផលិតផលគោលដៅ (Target Category)
+            </label>
+            <select
+              value={bulkCategory}
+              onChange={(e) => setBulkCategory(e.target.value)}
+              className="mt-1.5 w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm font-medium focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+            >
+              {categories.map((cat) => {
+                const count =
+                  cat === "All"
+                    ? products?.length || 0
+                    : (products || []).filter((p) => p.category === cat).length;
+                return (
+                  <option key={cat} value={cat}>
+                    {cat === "All" ? `ផលិតផលទាំងអស់ (${count} មុខ)` : `${cat} (${count} មុខ)`}
+                  </option>
+                );
+              })}
+            </select>
+            <p className="mt-1 text-xs text-slate-400">
+              នឹងអនុវត្តលើ <strong>{targetBulkProducts.length} ផលិតផល</strong> ក្នុងបញ្ជី។
+            </p>
+          </div>
+
+          {/* 2. Adjustment Type / Operation */}
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1.5">
+              រូបមន្តកែប្រែតម្លៃ (Adjustment Operation)
+            </label>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {[
+                { id: "add_fixed", label: "+ $ បន្ថែមទឹកប្រាក់", desc: "ឧ. +$2 លើតម្លៃចាស់" },
+                { id: "add_percent", label: "+ % បន្ថែមភាគរយ", desc: "ឧ. +10% លើតម្លៃចាស់" },
+                { id: "sub_fixed", label: "- $ បញ្ចុះទឹកប្រាក់", desc: "ឧ. -$2 ពីតម្លៃចាស់" },
+                { id: "sub_percent", label: "- % បញ្ចុះភាគរយ", desc: "ឧ. -10% ពីតម្លៃចាស់" },
+              ].map((op) => (
+                <button
+                  key={op.id}
+                  type="button"
+                  onClick={() => setBulkOperation(op.id)}
+                  className={`p-2.5 rounded-xl text-left border text-xs font-semibold transition ${
+                    bulkOperation === op.id
+                      ? "bg-emerald-50 dark:bg-emerald-950/60 border-emerald-500 text-emerald-800 dark:text-emerald-300 ring-2 ring-emerald-500/20"
+                      : "bg-slate-50 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
+                  }`}
+                >
+                  <span className="block font-bold text-xs sm:text-sm">{op.label}</span>
+                  <span className="block text-[10px] text-slate-400 mt-0.5">{op.desc}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* 3. Adjustment Value */}
+          <div>
+            <label className="block text-sm font-semibold text-slate-700 dark:text-slate-200">
+              {bulkOperation.includes("percent")
+                ? "ចំនួនភាគរយ (%) ដែលត្រូវបន្ថែម/កែប្រែ *"
+                : "ចំនួនទឹកប្រាក់ ($) ដែលត្រូវបន្ថែម/កែប្រែ *"}
+            </label>
+            <div className="relative mt-1.5">
+              <input
+                type="number"
+                step={bulkOperation.includes("percent") ? "1" : "0.01"}
+                min="0.01"
+                required
+                value={bulkValue}
+                onChange={(e) => setBulkValue(e.target.value)}
+                placeholder={bulkOperation.includes("percent") ? "e.g. 10 (សម្រាប់ 10%)" : "e.g. 2.50 (សម្រាប់ +$2.50)"}
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm font-semibold focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+              />
+              <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400 font-bold text-sm">
+                {bulkOperation.includes("percent") ? "%" : "$"}
+              </span>
+            </div>
+          </div>
+
+          {/* 4. Keep Previous Price as Original Price (ឆ្នូតកាត់) */}
+          <div className="rounded-xl p-3.5 bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex items-start gap-3">
+            <input
+              id="set_original_price_check"
+              type="checkbox"
+              checked={bulkSetOriginalPrice}
+              onChange={(e) => setBulkSetOriginalPrice(e.target.checked)}
+              className="mt-0.5 w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 cursor-pointer"
+            />
+            <label htmlFor="set_original_price_check" className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 cursor-pointer select-none">
+              <strong className="text-slate-900 dark:text-white">រក្សាទុកតម្លៃបច្ចុប្បន្នជា “តម្លៃចាស់ / Original Price”</strong>
+              <p className="text-xs text-slate-400 mt-0.5">
+                បើធីក៖ តម្លៃមុននឹងក្លាយជាតម្លៃចាស់ (Original Price) ហើយតម្លៃថ្មីត្រូវបានបង្ហាញជាមួយឆ្នូតកាត់លើ Storefront។
+              </p>
+            </label>
+          </div>
+
+          {/* 5. Live Calculation Preview */}
+          {sampleCalculatedPrice && (
+            <div className="rounded-xl p-3.5 bg-emerald-50/80 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-xs sm:text-sm space-y-1">
+              <p className="font-bold text-emerald-900 dark:text-emerald-300 flex items-center gap-1.5">
+                <span>🔍 ឧទាហរណ៍ជាក់ស្តែងលើផលិតផលគំរូ៖</span>
+              </p>
+              <p className="text-slate-700 dark:text-slate-300">
+                <strong>{sampleCalculatedPrice.name}</strong>
+              </p>
+              <div className="flex items-center gap-2 pt-1 font-semibold flex-wrap">
+                <span className="text-slate-500">តម្លៃចាស់៖ {formatPrice(sampleCalculatedPrice.oldPrice)}</span>
+                <span>➔</span>
+                <span className="text-emerald-600 dark:text-emerald-400 font-bold text-sm sm:text-base">
+                  តម្លៃថ្មី៖ {formatPrice(sampleCalculatedPrice.newPrice)}
+                </span>
+                {sampleCalculatedPrice.savedOriginal !== null && (
+                  <span className="text-[11px] text-slate-400 line-through">
+                    ({formatPrice(sampleCalculatedPrice.savedOriginal)})
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Buttons */}
+          <div className="mt-6 flex gap-3 justify-end pt-3 border-t border-slate-100 dark:border-slate-800">
+            <button
+              type="button"
+              disabled={bulkSubmitting}
+              onClick={() => setBulkModalOpen(false)}
+              className="px-5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition text-sm"
+            >
+              បោះបង់ (Cancel)
+            </button>
+            <button
+              type="submit"
+              disabled={bulkSubmitting || targetBulkProducts.length === 0}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition text-sm shadow-xs disabled:opacity-60"
+            >
+              {bulkSubmitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>កំពុងអនុវត្ត...</span>
+                </>
+              ) : (
+                <>
+                  <Check className="w-4 h-4 stroke-[2.5]" />
+                  <span>អនុវត្តលើ {targetBulkProducts.length} ផលិតផល</span>
+                </>
+              )}
+            </button>
+          </div>
+        </form>
       </Modal>
     </div>
   );

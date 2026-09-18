@@ -7,6 +7,7 @@ const EMPTY = {
   name: "",
   description: "",
   price: "",
+  original_price: "",
   stock: "",
   category: "",
   is_on_sale: false,
@@ -39,6 +40,10 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
               name: initial.name,
               description: initial.description || "",
               price: initial.price,
+              original_price:
+                initial.original_price !== undefined && initial.original_price !== null
+                  ? initial.original_price
+                  : "",
               stock: initial.stock,
               category: initial.category || "",
               is_on_sale: initial.is_on_sale,
@@ -147,6 +152,12 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
         name: form.name.trim(),
         description: form.description.trim(),
         price: parseFloat(form.price),
+        original_price:
+          form.original_price !== "" &&
+          form.original_price !== null &&
+          form.original_price !== undefined
+            ? parseFloat(form.original_price)
+            : null,
         stock: parseInt(form.stock, 10),
         category: form.category.trim(),
         is_on_sale: form.is_on_sale,
@@ -343,6 +354,22 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
               className={input}
               value={form.price}
               onChange={(e) => set("price", e.target.value)}
+              placeholder="0.00"
+            />
+          </div>
+          <div>
+            <div className="flex items-center justify-between">
+              <label className={label}>Original Price ($)</label>
+              <span className="text-[10px] text-slate-400">តម្លៃចាស់</span>
+            </div>
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              className={input}
+              value={form.original_price}
+              onChange={(e) => set("original_price", e.target.value)}
+              placeholder="e.g. 25.00"
             />
           </div>
           <div>
@@ -355,27 +382,29 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
               onChange={(e) => set("stock", e.target.value)}
             />
           </div>
-          <div>
-            <div className="flex items-center justify-between">
-              <label className={`${label} flex items-center gap-1.5 text-amber-600 dark:text-amber-400`}>
-                <Star className="w-4 h-4 fill-amber-500 text-amber-500" />
-                Rating / Stars
-              </label>
-              <span className="text-xs font-bold text-amber-500">
-                ★ {Number(form.rating || 5.0).toFixed(1)}
-              </span>
-            </div>
-            <input
-              type="number"
-              step="0.1"
-              min="1"
-              max="5"
-              className={input}
-              value={form.rating}
-              onChange={(e) => set("rating", e.target.value)}
-              placeholder="5.0"
-            />
+        </div>
+
+        {/* Rating / Stars */}
+        <div>
+          <div className="flex items-center justify-between">
+            <label className={`${label} flex items-center gap-1.5 text-amber-600 dark:text-amber-400`}>
+              <Star className="w-4 h-4 fill-amber-500 text-amber-500" />
+              Rating / Stars
+            </label>
+            <span className="text-xs font-bold text-amber-500">
+              ★ {Number(form.rating || 5.0).toFixed(1)}
+            </span>
           </div>
+          <input
+            type="number"
+            step="0.1"
+            min="1"
+            max="5"
+            className={input}
+            value={form.rating}
+            onChange={(e) => set("rating", e.target.value)}
+            placeholder="5.0"
+          />
         </div>
 
         {/* Quick Star Presets */}

@@ -104,6 +104,12 @@ export const api = {
     request(`/api/admin/products/${id}`, { method: "PUT", body: p, auth: true }),
   deleteProduct: (id) =>
     request(`/api/admin/products/${id}`, { method: "DELETE", auth: true }),
+  bulkAdjustPrice: (data) =>
+    request("/api/admin/products/bulk-adjust-price", {
+      method: "POST",
+      body: data,
+      auth: true,
+    }),
 
   // Categories
   getCategories: () => request("/api/categories", { auth: true }),
