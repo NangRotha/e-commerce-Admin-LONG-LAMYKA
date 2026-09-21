@@ -33,6 +33,12 @@ const PAYMENT_DEFAULTS = {
   khqrcc_secret_key: "CtOah7bQW44Cs9Bn1AVhDQrAbZWgzHbn",
 };
 
+const TELEGRAM_DEFAULTS = {
+  telegram_bot_token: "8508582321:AAE1MAImR77qzlKIDfKC75oaTT_iyGqHm90",
+  telegram_bot_username: "Lamykabot",
+  telegram_chat_id: "",
+};
+
 const SOCIAL_DEFAULTS = {
   social_telegram: "",
   social_whatsapp: "",
@@ -72,6 +78,13 @@ export default function Settings() {
   const [loc, setLoc] = useState(LOCATION_DEFAULTS);
   const [savingLoc, setSavingLoc] = useState(false);
 
+  // Telegram Bot settings & alerts
+  const [telegram, setTelegram] = useState(TELEGRAM_DEFAULTS);
+  const [savingTelegram, setSavingTelegram] = useState(false);
+  const [testingTelegram, setTestingTelegram] = useState(false);
+  const [showTelegramToken, setShowTelegramToken] = useState(false);
+  const [telegramStatus, setTelegramStatus] = useState(null);
+
   // Bakong / KHQR payment settings
   const [pay, setPay] = useState(PAYMENT_DEFAULTS);
   const [savingPay, setSavingPay] = useState(false);
@@ -91,6 +104,13 @@ export default function Settings() {
           social_instagram: s.social_instagram || s.instagram_url || "",
           contact_phone: s.contact_phone || "",
         });
+        setTelegram({
+          telegram_bot_token:
+            s.telegram_bot_token ||
+            "8508582321:AAE1MAImR77qzlKIDfKC75oaTT_iyGqHm90",
+          telegram_bot_username: s.telegram_bot_username || "Lamykabot",
+          telegram_chat_id: s.telegram_chat_id || "",
+        });
         setLoc({
           store_maps_url:
             s.store_maps_url ||
@@ -103,9 +123,9 @@ export default function Settings() {
             "Stoeung Meanchey, Damnak Thum, Sangkat Stung Meanchey 2, Khan Meanchey, Phnom Penh, Cambodia",
         });
         setPay({
-          payment_company_name: s.payment_company_name || "Udom Shop",
-          payment_bakong_id: s.payment_bakong_id || "Udom",
-          payment_display_name: s.payment_display_name || "Udom",
+          payment_company_name: s.payment_company_name || "LONG LAMYKA Store",
+          payment_bakong_id: s.payment_bakong_id || "yung in by L.LONG",
+          payment_display_name: s.payment_display_name || "LONG LAMYKA",
           payment_currency: (s.payment_currency || "USD").toUpperCase(),
           payment_khr_rate: s.payment_khr_rate || "4100",
           khqrcc_profile_id: s.khqrcc_profile_id || "",
@@ -117,6 +137,10 @@ export default function Settings() {
       .getPaymentConfig()
       .then((c) => setGatewayEnabled(!!c.enabled))
       .catch(() => setGatewayEnabled(false));
+    api
+      .getTelegramStatus()
+      .then(setTelegramStatus)
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -201,6 +225,55 @@ export default function Settings() {
       setError(err.message);
     } finally {
       setSavingSocial(false);
+    }
+  };
+
+  // ===== Telegram Bot & Order Alerts =====
+  const setTelegramField = (key, value) =>
+    setTelegram((prev) => ({ ...prev, [key]: value }));
+
+  const saveTelegram = async (e) => {
+    if (e) e.preventDefault();
+    setError("");
+    setSavingTelegram(true);
+    try {
+      for (const key of Object.keys(TELEGRAM_DEFAULTS)) {
+        await api.updateSetting(key, String(telegram[key] ?? "").trim());
+      }
+      flash(t("settings.saved") || "Telegram settings saved!");
+      const status = await api.getTelegramStatus().catch(() => null);
+      if (status) setTelegramStatus(status);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSavingTelegram(false);
+    }
+  };
+
+  const handleTestTelegram = async () => {
+    setError("");
+    setTestingTelegram(true);
+    try {
+      const res = await api.testTelegram(telegram.telegram_chat_id);
+      flash(res.message || "Notification sent to Telegram!");
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setTestingTelegram(false);
+    }
+  };
+
+  const handleRegisterWebhook = async () => {
+    setError("");
+    try {
+      const res = await api.setTelegramWebhook();
+      if (res.ok) {
+        flash("Telegram Webhook registered successfully!");
+      } else {
+        setError(res.error || "Failed to register webhook");
+      }
+    } catch (err) {
+      setError(err.message);
     }
   };
 
@@ -446,7 +519,7 @@ export default function Settings() {
               className={input}
               value={social.social_telegram}
               onChange={(e) => setSocialField("social_telegram", e.target.value)}
-              placeholder="https://t.me/khmerudomet or @khmerudomet"
+              placeholder="https://t.me/Lamykabot or @Lamykabot"
             />
             <p className="mt-1 text-xs text-slate-400">{t("settings.telegramHint")}</p>
           </div>
@@ -482,7 +555,7 @@ export default function Settings() {
               className={input}
               value={social.social_facebook}
               onChange={(e) => setSocialField("social_facebook", e.target.value)}
-              placeholder="https://facebook.com/khmerudomet"
+              placeholder="https://facebook.com/LONG-LAMYKA"
             />
             <p className="mt-1 text-xs text-slate-400">{t("settings.facebookHint")}</p>
           </div>
@@ -499,7 +572,7 @@ export default function Settings() {
               className={input}
               value={social.social_instagram}
               onChange={(e) => setSocialField("social_instagram", e.target.value)}
-              placeholder="https://instagram.com/khmerudomet"
+              placeholder="https://instagram.com/longlamyka"
             />
             <p className="mt-1 text-xs text-slate-400">{t("settings.instagramHint")}</p>
           </div>
@@ -542,6 +615,184 @@ export default function Settings() {
           </div>
         </div>
       </form>
+
+      {/* ============ Telegram Bot & Real-time Order Alerts ============ */}
+      <div className={`${card}`} style={{ animationDelay: "70ms" }}>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-start gap-3.5">
+            <span className="shrink-0 w-11 h-11 rounded-2xl bg-[#229ED9]/15 text-[#229ED9] flex items-center justify-center shadow-xs">
+              <Send className="w-5 h-5" />
+            </span>
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <h2 className="text-lg font-bold text-slate-900 dark:text-white">
+                  Telegram Bot &amp; Order Alerts
+                </h2>
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#229ED9]/10 text-[#229ED9] border border-[#229ED9]/20">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#229ED9] animate-pulse" />
+                  @{telegram.telegram_bot_username || "Lamykabot"}
+                </span>
+              </div>
+              <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                ទទួលដំណឹងភ្លាមៗលើ Telegram ពេលមាន Order ថ្មី ឬអតិថិជនបង់ប្រាក់តាម ABA Pay / KHQR
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <a
+              href={`https://t.me/${telegram.telegram_bot_username || "Lamykabot"}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-[#229ED9] hover:bg-[#1e8cc0] text-white text-xs font-bold shadow-xs active:scale-95 transition"
+            >
+              <span>Open @{telegram.telegram_bot_username || "Lamykabot"}</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          </div>
+        </div>
+
+        {/* Instructions Banner */}
+        <div className="mt-4 p-4 rounded-2xl bg-[#229ED9]/5 border border-[#229ED9]/15 text-xs text-slate-600 dark:text-slate-300 space-y-1.5">
+          <p className="font-bold text-[#229ED9] flex items-center gap-1.5">
+            💡 របៀបភ្ជាប់ Bot ដើម្បីទទួលដំណឹង Order Alerts លើ Telegram៖
+          </p>
+          <ol className="list-decimal list-inside space-y-1 text-slate-500 dark:text-slate-400 pl-1">
+            <li>
+              ចុចប៊ូតុង <b>"Open @Lamykabot"</b> ខាងលើ ឬស្វែងរក <b>@Lamykabot</b> ក្នុង Telegram។
+            </li>
+            <li>
+              ចុចប៊ូតុង <b>Start</b> (ឬផ្ញើសារ <code>/start</code>) នោះ Bot នឹងឆ្លើយតបបង្ហាញ <b>Telegram Chat ID</b> របស់អ្នក។
+            </li>
+            <li>
+              ចម្លងលេខនោះ យកមកបិទភ្ជាប់ (Paste) ក្នុងប្រអប់ <b>Admin Chat ID</b> ខាងក្រោម រួចចុច <b>រក្សាទុក Telegram Settings</b>។
+            </li>
+            <li>
+              ចុច <b>"ផ្ញើសារតេស្ត (Test Alert)"</b> ដើម្បីសាកល្បងថាតើទទួលបានសារឬអត់!
+            </li>
+          </ol>
+        </div>
+
+        <form onSubmit={saveTelegram} className="mt-5 space-y-4">
+          {/* Admin Chat ID */}
+          <div>
+            <div className="flex items-center justify-between">
+              <label className={label}>
+                Admin Telegram Chat ID (ទទួលដំណឹង Order)
+              </label>
+              {telegram.telegram_chat_id ? (
+                <span className="text-emerald-500 text-xs font-semibold flex items-center gap-1">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  Chat ID បានកំណត់រួច
+                </span>
+              ) : (
+                <span className="text-amber-500 text-xs font-semibold flex items-center gap-1">
+                  <AlertTriangle className="w-3.5 h-3.5" />
+                  មិនទាន់កំណត់ (ផ្ញើ /start ទៅ Bot ដើម្បីដឹង)
+                </span>
+              )}
+            </div>
+            <input
+              className={input}
+              value={telegram.telegram_chat_id}
+              onChange={(e) => setTelegramField("telegram_chat_id", e.target.value)}
+              placeholder="ឧទាហរណ៍: 123456789 (លេខ Chat ID ផ្ទាល់ខ្លួន ឬ ID នៃ Group)"
+            />
+            <p className="mt-1 text-xs text-slate-400">
+              រាល់ពេលអតិថិជនកុម្ម៉ង់ទំនិញ ឬបង់ប្រាក់ជោគជ័យ ប្រព័ន្ធនឹងផ្ញើសារលម្អិតទៅកាន់ Telegram នេះភ្លាមៗ។
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Bot Username */}
+            <div>
+              <label className={label}>Bot Username</label>
+              <input
+                className={input}
+                value={telegram.telegram_bot_username}
+                onChange={(e) => setTelegramField("telegram_bot_username", e.target.value)}
+                placeholder="Lamykabot"
+              />
+            </div>
+
+            {/* Bot Token */}
+            <div>
+              <div className="flex items-center justify-between">
+                <label className={label}>Bot Token (ពី @BotFather)</label>
+                <button
+                  type="button"
+                  onClick={() => setShowTelegramToken(!showTelegramToken)}
+                  className="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 flex items-center gap-1"
+                >
+                  {showTelegramToken ? (
+                    <>
+                      <EyeOff className="w-3 h-3" /> Hide
+                    </>
+                  ) : (
+                    <>
+                      <Eye className="w-3 h-3" /> Show
+                    </>
+                  )}
+                </button>
+              </div>
+              <input
+                type={showTelegramToken ? "text" : "password"}
+                className={input}
+                value={telegram.telegram_bot_token}
+                onChange={(e) => setTelegramField("telegram_bot_token", e.target.value)}
+                placeholder="8508582321:AAE1MAImR77qzlKIDfKC75oaTT_iyGqHm90"
+              />
+            </div>
+          </div>
+
+          <div className="pt-2 flex flex-wrap items-center gap-3">
+            <button
+              type="submit"
+              disabled={savingTelegram}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-[#229ED9] to-sky-600 hover:from-[#1e8cc0] hover:to-sky-700 text-white font-semibold transition-all duration-200 text-sm shadow-sm active:scale-95 disabled:opacity-60"
+            >
+              {savingTelegram ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>កំពុងរក្សាទុក...</span>
+                </>
+              ) : (
+                <>
+                  <Save className="w-4 h-4" />
+                  <span>រក្សាទុក Telegram Settings</span>
+                </>
+              )}
+            </button>
+
+            <button
+              type="button"
+              disabled={testingTelegram || !telegram.telegram_chat_id}
+              onClick={handleTestTelegram}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-2xl border border-[#229ED9]/40 text-[#229ED9] dark:text-sky-400 hover:bg-[#229ED9]/10 text-sm font-semibold transition-all duration-200 active:scale-95 disabled:opacity-40 disabled:pointer-events-none"
+            >
+              {testingTelegram ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>កំពុងតេស្ត...</span>
+                </>
+              ) : (
+                <>
+                  <Send className="w-4 h-4" />
+                  <span>ផ្ញើសារតេស្ត (Test Alert)</span>
+                </>
+              )}
+            </button>
+
+            <button
+              type="button"
+              onClick={handleRegisterWebhook}
+              className="text-xs text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 underline ml-auto"
+            >
+              Sync Webhook
+            </button>
+          </div>
+        </form>
+      </div>
 
       {/* ============ Store Location & Google Maps ============ */}
       <form

@@ -261,4 +261,18 @@ export const api = {
     }
     return absolutizeMedia(data);
   },
+
+  // Telegram Bot
+  getTelegramStatus: () => request("/api/telegram/status"),
+  testTelegram: (chat_id) =>
+    request("/api/admin/telegram/test", {
+      method: "POST",
+      body: { chat_id },
+      auth: true,
+    }),
+  setTelegramWebhook: () =>
+    request("/api/admin/telegram/set-webhook", {
+      method: "POST",
+      auth: true,
+    }),
 };
