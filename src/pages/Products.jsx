@@ -54,8 +54,8 @@ export default function Products() {
     load();
   }, [load]);
 
-  // Real-time: ផលិតផលត្រូវបានបន្ថែម/កែ/លុប -> បញ្ជីបច្ចុប្បន្នភាពភ្លាមៗ
-  useRealtime("products_changed", load);
+  // Real-time: ផលិតផល ឬ Category ត្រូវបានបន្ថែម/កែ/លុប -> បញ្ជីបច្ចុប្បន្នភាពភ្លាមៗ
+  useRealtime(["products_changed", "categories_changed"], load);
 
   const categories = useMemo(() => {
     const list = [...new Set((products || []).map((p) => p.category).filter(Boolean))];
