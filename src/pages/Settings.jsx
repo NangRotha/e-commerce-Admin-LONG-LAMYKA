@@ -244,18 +244,18 @@ export default function Settings() {
   };
 
   const input =
-    "mt-1.5 w-full px-4 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-pink-500/30 focus:border-pink-500 transition duration-200 text-sm shadow-2xs";
-  const label = "block text-sm font-semibold text-slate-700 dark:text-slate-300";
+    "mt-1.5 w-full px-4 py-2.5 rounded-2xl border border-pink-100/90 dark:border-pink-950/70 bg-white dark:bg-[#150e1b] text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-pink-500/30 focus:border-pink-500 transition duration-200 text-sm shadow-2xs";
+  const label = "block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-pink-200/70";
   const card =
-    "bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800/80 p-5 sm:p-7 transition-all duration-300 shadow-xs";
+    "luxury-card rounded-[28px] p-5 sm:p-7 shadow-xs transition-all duration-300 relative overflow-hidden";
 
   return (
-    <div className="space-y-6 max-w-2xl">
+    <div className="space-y-6 sm:space-y-8 max-w-3xl">
       <div>
-        <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white">
+        <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
           {t("settings.title")}
         </h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400">{t("settings.subtitle")}</p>
+        <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">{t("settings.subtitle")}</p>
       </div>
 
       {error && (

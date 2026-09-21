@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { Plus, Pencil, Trash2, TicketPercent } from "lucide-react";
+import { Plus, Pencil, Trash2, TicketPercent, Copy, Check, Calendar, AlertCircle } from "lucide-react";
 import { api } from "../api/client";
 import Modal from "../components/Modal";
 import { formatDate } from "../lib/format";
@@ -12,6 +12,7 @@ export default function Discounts() {
   const [editing, setEditing] = useState(null);
   const [confirmingDelete, setConfirmingDelete] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [copiedId, setCopiedId] = useState(null);
 
   const [form, setForm] = useState({
     code: "",
@@ -32,7 +33,6 @@ export default function Discounts() {
     load();
   }, [load]);
 
-  // Real-time: Discounts ត្រូវបានកែប្រែ -> ផ្ទុកឡើងវិញភ្លាមៗ
   useRealtime("discounts_changed", load);
 
   const openCreate = () => {
@@ -51,6 +51,12 @@ export default function Discounts() {
       is_active: d.is_active,
     });
     setModalOpen(true);
+  };
+
+  const copyCode = (d) => {
+    navigator.clipboard?.writeText(d.code);
+    setCopiedId(d.id);
+    setTimeout(() => setCopiedId(null), 1500);
   };
 
   const handleSave = async (e) => {
@@ -109,113 +115,168 @@ export default function Discounts() {
   };
 
   const input =
-    "mt-1.5 w-full px-3.5 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-pink-500/30 focus:border-pink-500 text-sm transition shadow-2xs";
-  const label = "block text-sm font-semibold text-slate-700 dark:text-slate-300";
+    "mt-1.5 w-full px-4 py-2.5 rounded-2xl border border-pink-100 dark:border-pink-950/70 bg-white dark:bg-[#150e1b] text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-pink-500/30 focus:border-pink-500 text-sm transition shadow-2xs";
+  const label = "block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-pink-200/70";
 
   return (
-    <div className="space-y-5">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-pink-50 dark:bg-pink-950/50 border border-pink-100 dark:border-pink-900/50 flex items-center justify-center shrink-0">
-              <TicketPercent className="w-5 h-5 text-pink-500 dark:text-pink-400" />
-            </div>
-            Discounts &amp; Promo Codes
-          </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            {discounts ? `${discounts.length} promo codes` : "Loading..."}
-          </p>
+    <div className="space-y-6 sm:space-y-8">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-pink-500 via-rose-500 to-pink-600 text-white flex items-center justify-center shadow-lg shadow-pink-500/25 shrink-0">
+            <TicketPercent className="w-6 h-6" />
+          </div>
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+              Discounts &amp; Promo Codes
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+              {discounts ? `${discounts.length} promo codes active in store` : "Loading discounts..."}
+            </p>
+          </div>
         </div>
+
         <button
           onClick={openCreate}
-          className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 hover:from-pink-600 hover:to-rose-600 text-white font-semibold shadow-sm shadow-pink-500/25 hover:shadow-md hover:shadow-pink-500/30 active:scale-[0.98] transition-all text-sm"
+          className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 hover:from-pink-600 hover:to-rose-600 text-white font-bold shadow-md shadow-pink-500/25 hover:shadow-lg hover:shadow-pink-500/35 hover:scale-[1.02] active:scale-95 transition-all text-sm shrink-0"
         >
-          <Plus className="w-4 h-4" />
-          Create promo
+          <Plus className="w-4 h-4 stroke-[3]" />
+          <span>Create Promo</span>
         </button>
       </div>
 
       {error && (
-        <p className="text-sm text-rose-600 bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900 rounded-2xl px-4 py-3">
-          {error}
-        </p>
+        <div className="flex items-center gap-3 text-sm text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 rounded-2xl p-4 animate-fade-in">
+          <AlertCircle className="w-5 h-5 shrink-0" />
+          <span>{error}</span>
+        </div>
       )}
 
       {discounts === null ? (
-        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 animate-pulse space-y-3">
+        <div className="luxury-card rounded-[28px] p-6 animate-pulse space-y-3">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="h-12 bg-slate-100 dark:bg-slate-800/60 rounded-2xl" />
+            <div key={i} className="h-16 bg-slate-100 dark:bg-slate-800/50 rounded-2xl" />
           ))}
         </div>
       ) : discounts.length === 0 ? (
-        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-dashed border-pink-200 dark:border-slate-800 py-16 text-center text-slate-500 dark:text-slate-400">
-          No promo codes yet. Create one to start offering discounts.
+        <div className="luxury-card rounded-[28px] py-16 text-center text-slate-500 dark:text-slate-400 space-y-3">
+          <div className="text-4xl">🏷️</div>
+          <p className="font-bold">No promo codes yet. Create one to start offering discounts.</p>
         </div>
       ) : (
-        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs overflow-x-auto">
-          <table className="w-full text-sm min-w-[640px]">
+        <div className="luxury-card rounded-[28px] overflow-hidden shadow-xs">
+          <table className="w-full text-sm min-w-[700px]">
             <thead>
-              <tr className="text-left text-xs uppercase tracking-wider text-slate-400 dark:text-slate-500 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/20">
-                <th className="px-5 py-3.5 font-bold">Code</th>
-                <th className="px-5 py-3.5 font-bold">Percent</th>
-                <th className="px-5 py-3.5 font-bold">Uses</th>
-                <th className="px-5 py-3.5 font-bold">Expiry</th>
-                <th className="px-5 py-3.5 font-bold">Active</th>
-                <th className="px-5 py-3.5 font-bold text-right">Actions</th>
+              <tr className="text-left text-xs uppercase tracking-wider text-slate-400 dark:text-pink-300/60 border-b border-pink-100/70 dark:border-pink-950/70 bg-pink-50/30 dark:bg-white/[0.02]">
+                <th className="px-5 py-4 font-bold">Code</th>
+                <th className="px-4 py-4 font-bold">Discount</th>
+                <th className="px-4 py-4 font-bold">Usage Progress</th>
+                <th className="px-4 py-4 font-bold">Expiry Date</th>
+                <th className="px-4 py-4 font-bold">Status</th>
+                <th className="px-5 py-4 font-bold text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
-              {discounts.map((d) => (
-                <tr key={d.id} className="hover:bg-pink-50/20 dark:hover:bg-pink-950/10 transition">
-                  <td className="px-5 py-3.5 font-mono font-bold text-pink-600 dark:text-pink-400">
-                    <span className="px-2.5 py-1 rounded-xl bg-pink-50 dark:bg-pink-950/60 border border-pink-200/60 dark:border-pink-900/50">
-                      {d.code}
-                    </span>
-                  </td>
-                  <td className="px-5 py-3.5 font-semibold text-slate-700 dark:text-slate-200">
-                    {d.percent}%
-                  </td>
-                  <td className="px-5 py-3.5 text-slate-600 dark:text-slate-400">
-                    {d.used_count}/{d.max_uses}
-                  </td>
-                  <td className="px-5 py-3.5 text-slate-500 dark:text-slate-400">
-                    {d.expiry_date ? formatDate(d.expiry_date) : "Never"}
-                  </td>
-                  <td className="px-5 py-3.5">
-                    <button
-                      onClick={() => toggle(d.id)}
-                      className={`relative w-11 h-6 rounded-full transition-colors ${
-                        d.is_active ? "bg-gradient-to-r from-pink-500 to-rose-500" : "bg-slate-300 dark:bg-slate-700"
-                      }`}
-                      aria-label={d.is_active ? "Deactivate" : "Activate"}
-                    >
-                      <span
-                        className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${
-                          d.is_active ? "left-[22px]" : "left-0.5"
+            <tbody className="divide-y divide-pink-100/60 dark:divide-pink-950/60">
+              {discounts.map((d) => {
+                const isExpired = d.expiry_date && new Date(d.expiry_date) < new Date();
+                const usagePct = Math.min(100, Math.round(((d.used_count || 0) / (d.max_uses || 1)) * 100));
+                return (
+                  <tr
+                    key={d.id}
+                    className="hover:bg-pink-50/20 dark:hover:bg-pink-950/20 transition-colors"
+                  >
+                    <td className="px-5 py-4">
+                      <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-pink-50 dark:bg-pink-950/70 border border-pink-200/70 dark:border-pink-900/60 shadow-2xs font-mono font-black text-pink-600 dark:text-pink-400 text-sm">
+                        <span>{d.code}</span>
+                        <button
+                          type="button"
+                          onClick={() => copyCode(d)}
+                          title="Copy promo code"
+                          className="p-1 rounded-md text-slate-400 hover:text-pink-600 dark:hover:text-white transition"
+                        >
+                          {copiedId === d.id ? (
+                            <Check className="w-3.5 h-3.5 text-emerald-500" />
+                          ) : (
+                            <Copy className="w-3.5 h-3.5" />
+                          )}
+                        </button>
+                      </div>
+                    </td>
+
+                    <td className="px-4 py-4">
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-xl text-xs font-black bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/70 dark:border-rose-900/60">
+                        {d.percent}% OFF
+                      </span>
+                    </td>
+
+                    <td className="px-4 py-4 min-w-[150px]">
+                      <div className="space-y-1">
+                        <div className="flex justify-between text-xs font-semibold text-slate-600 dark:text-slate-300">
+                          <span>{d.used_count} used</span>
+                          <span className="text-slate-400">of {d.max_uses}</span>
+                        </div>
+                        <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-gradient-to-r from-pink-500 to-rose-500 rounded-full transition-all duration-300"
+                            style={{ width: `${usagePct}%` }}
+                          />
+                        </div>
+                      </div>
+                    </td>
+
+                    <td className="px-4 py-4 text-xs font-medium text-slate-500 dark:text-slate-400">
+                      {d.expiry_date ? (
+                        <div className="flex items-center gap-1.5">
+                          <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                          <span>{formatDate(d.expiry_date)}</span>
+                          {isExpired && (
+                            <span className="px-1.5 py-0.2 rounded text-[10px] font-bold bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300">
+                              Expired
+                            </span>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-slate-400">Never expires</span>
+                      )}
+                    </td>
+
+                    <td className="px-4 py-4">
+                      <button
+                        onClick={() => toggle(d.id)}
+                        className={`relative w-11 h-6 rounded-full transition-colors ${
+                          d.is_active ? "bg-gradient-to-r from-pink-500 to-rose-500" : "bg-slate-200 dark:bg-slate-700"
                         }`}
-                      />
-                    </button>
-                  </td>
-                  <td className="px-5 py-3.5 text-right">
-                    <div className="flex items-center justify-end gap-1">
-                      <button
-                        onClick={() => openEdit(d)}
-                        className="p-2 rounded-xl text-slate-400 hover:text-pink-600 hover:bg-pink-50 dark:hover:bg-pink-950/40 transition"
-                        title="Edit Promo"
+                        aria-label={d.is_active ? "Deactivate" : "Activate"}
                       >
-                        <Pencil className="w-4 h-4" />
+                        <span
+                          className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow-xs transition-transform ${
+                            d.is_active ? "left-[22px]" : "left-0.5"
+                          }`}
+                        />
                       </button>
-                      <button
-                        onClick={() => setConfirmingDelete(d)}
-                        className="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition"
-                        title="Delete Promo"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                    </td>
+
+                    <td className="px-5 py-4 text-right">
+                      <div className="flex items-center justify-end gap-1.5">
+                        <button
+                          onClick={() => openEdit(d)}
+                          className="p-2 rounded-xl text-slate-400 hover:text-pink-600 hover:bg-pink-50 dark:hover:bg-pink-950/40 transition"
+                          title="Edit Promo"
+                        >
+                          <Pencil className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => setConfirmingDelete(d)}
+                          className="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition"
+                          title="Delete Promo"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -228,24 +289,20 @@ export default function Discounts() {
         title={editing ? "Edit promo code" : "Create promo code"}
       >
         <form onSubmit={handleSave} className="space-y-4">
-          {error && (
-            <p className="text-sm text-rose-600 bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900 rounded-2xl px-4 py-3">
-              {error}
-            </p>
-          )}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className={label}>Code *</label>
+              <label className={label}>Promo Code *</label>
               <input
                 className={input}
                 value={form.code}
                 onChange={(e) => setForm({ ...form, code: e.target.value.toUpperCase() })}
                 placeholder="SAVE10"
                 maxLength={20}
+                required
               />
             </div>
             <div>
-              <label className={label}>Percent (%) *</label>
+              <label className={label}>Discount (%) *</label>
               <input
                 type="number"
                 min="1"
@@ -253,12 +310,15 @@ export default function Discounts() {
                 className={input}
                 value={form.percent}
                 onChange={(e) => setForm({ ...form, percent: e.target.value })}
+                placeholder="10"
+                required
               />
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className={label}>Max uses</label>
+              <label className={label}>Max Uses</label>
               <input
                 type="number"
                 min="1"
@@ -268,7 +328,7 @@ export default function Discounts() {
               />
             </div>
             <div>
-              <label className={label}>Expiry date</label>
+              <label className={label}>Expiry Date (optional)</label>
               <input
                 type="datetime-local"
                 className={input}
@@ -277,20 +337,34 @@ export default function Discounts() {
               />
             </div>
           </div>
-          <div className="pt-2 flex gap-3 justify-end">
+
+          <div className="flex items-center gap-2 pt-2">
+            <input
+              type="checkbox"
+              id="is_active_check"
+              checked={form.is_active}
+              onChange={(e) => setForm({ ...form, is_active: e.target.checked })}
+              className="w-4 h-4 rounded text-pink-600 focus:ring-pink-500 accent-pink-600"
+            />
+            <label htmlFor="is_active_check" className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+              Active immediately
+            </label>
+          </div>
+
+          <div className="flex justify-end gap-2 pt-4 border-t border-pink-100 dark:border-pink-950/70">
             <button
               type="button"
               onClick={() => setModalOpen(false)}
-              className="px-5 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition text-sm"
+              className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={saving}
-              className="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 hover:from-pink-600 hover:to-rose-600 text-white font-semibold shadow-sm shadow-pink-500/25 active:scale-[0.98] transition-all text-sm disabled:opacity-60"
+              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 hover:from-pink-600 hover:to-rose-600 text-white text-sm font-bold shadow-md shadow-pink-500/25 disabled:opacity-50"
             >
-              {saving ? "Saving..." : editing ? "Save Changes" : "Create"}
+              {saving ? "Saving..." : editing ? "Update Promo" : "Create Promo"}
             </button>
           </div>
         </form>
@@ -305,9 +379,9 @@ export default function Discounts() {
         <div className="space-y-4">
           <p className="text-sm text-slate-600 dark:text-slate-300">
             Are you sure you want to delete promo code{" "}
-            <span className="font-mono font-bold text-pink-600">
-              {confirmingDelete?.code}
-            </span>
+            <strong className="text-slate-900 dark:text-white font-mono">
+              "{confirmingDelete?.code}"
+            </strong>
             ? This action cannot be undone.
           </p>
           <div className="flex justify-end gap-2 pt-2">

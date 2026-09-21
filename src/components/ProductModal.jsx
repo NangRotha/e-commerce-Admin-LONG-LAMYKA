@@ -523,11 +523,11 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
           )}
         </div>
 
-        <div className="pt-2 flex gap-3 justify-end">
+        <div className="pt-3 flex gap-3 justify-end border-t border-pink-100 dark:border-pink-950/60">
           <button
             type="button"
             onClick={onClose}
-            className="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-600 font-medium hover:bg-slate-50 transition text-sm"
+            className="px-5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition text-sm"
           >
             Cancel
           </button>

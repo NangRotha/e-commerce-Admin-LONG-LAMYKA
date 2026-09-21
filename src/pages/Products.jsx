@@ -189,18 +189,24 @@ export default function Products() {
   };
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6 sm:space-y-8">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white">
-            Products
-          </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            {products ? `${products.length} products total` : "Loading..."}
-          </p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-pink-500 via-rose-500 to-pink-600 text-white flex items-center justify-center shadow-lg shadow-pink-500/25 shrink-0">
+            <Layers className="w-6 h-6" />
+          </div>
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+              Products Management
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
+              {products ? `${products.length} products total in catalog` : "Loading products..."}
+            </p>
+          </div>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
+
+        <div className="flex flex-wrap items-center gap-2.5">
           <button
             onClick={() => {
               setBulkCategory(selectedCategory);
@@ -208,54 +214,54 @@ export default function Products() {
               setBulkMessage({ text: "", type: "" });
               setBulkModalOpen(true);
             }}
-            className="flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition text-sm shadow-2xs active:scale-95"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl border border-pink-200/70 dark:border-pink-900/60 bg-white dark:bg-[#181120] text-slate-700 dark:text-slate-200 font-bold hover:bg-pink-50 dark:hover:bg-pink-950/40 hover:text-pink-600 dark:hover:text-pink-300 transition-all text-xs sm:text-sm shadow-2xs active:scale-95"
             title="បន្ថែម ឬកែប្រែតម្លៃលើតម្លៃចាស់សម្រាប់ផលិតផលទាំងអស់"
           >
-            <TrendingUp className="w-4 h-4 text-pink-600 dark:text-pink-400" />
-            <span>កែសម្រួលតម្លៃទាំងអស់ (Bulk Adjust)</span>
+            <TrendingUp className="w-4 h-4 text-pink-500" />
+            <span>Bulk Price Adjust</span>
           </button>
           <button
             onClick={() => {
               setEditing(null);
               setModalOpen(true);
             }}
-            className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 hover:from-pink-600 hover:to-rose-600 text-white font-semibold transition text-sm shadow-md shadow-pink-500/25 active:scale-95 cursor-pointer"
+            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 hover:from-pink-600 hover:to-rose-600 text-white font-bold transition-all text-xs sm:text-sm shadow-md shadow-pink-500/25 hover:shadow-lg hover:shadow-pink-500/35 hover:scale-[1.02] active:scale-95 cursor-pointer"
           >
-            <Plus className="w-4 h-4" />
-            Add Product
+            <Plus className="w-4 h-4 stroke-[3]" />
+            <span>Add Product</span>
           </button>
         </div>
       </div>
 
       {error && (
-        <p className="text-sm text-rose-600 bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900 rounded-xl px-4 py-3">
-          {error}
-        </p>
+        <div className="flex items-center gap-3 text-sm text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 rounded-2xl p-4 animate-fade-in">
+          <span>{error}</span>
+        </div>
       )}
 
       {/* Filter and Search Bar */}
-      <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-3">
+      <div className="luxury-card rounded-[26px] p-4 sm:p-5 shadow-xs space-y-3">
         <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
           {/* Search Input */}
           <div className="relative flex-1">
-            <Search className="absolute left-3.5 top-2.5 w-4 h-4 text-slate-400" />
+            <Search className="absolute left-3.5 top-3 w-4 h-4 text-slate-400" />
             <input
               type="search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search products or types..."
-              className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800/80 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500/30 focus:border-pink-400 text-sm transition"
+              placeholder="Search products by title, type, or variant..."
+              className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-pink-100/80 dark:border-pink-950/70 bg-pink-50/20 dark:bg-[#140d1a] text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-pink-500/30 focus:border-pink-500 text-sm transition"
             />
           </div>
 
           <div className="flex flex-wrap items-center gap-2.5">
-            {/* Category Filter ("Order តាមប្រភេទ") */}
+            {/* Category Filter */}
             <div className="flex items-center gap-1.5">
-              <Filter className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+              <Filter className="w-3.5 h-3.5 text-pink-500 shrink-0" />
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-pink-500/30 focus:border-pink-400"
+                className="px-3.5 py-2.5 rounded-2xl border border-pink-100/80 dark:border-pink-950/70 bg-white dark:bg-[#181120] text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-pink-500/30 focus:border-pink-500 shadow-2xs"
               >
                 {categories.map((cat) => (
                   <option key={cat} value={cat}>
@@ -265,16 +271,16 @@ export default function Products() {
               </select>
             </div>
 
-            {/* Sort / Order Dropdown */}
+            {/* Sort Dropdown */}
             <div className="flex items-center gap-1.5">
-              <ArrowUpDown className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+              <ArrowUpDown className="w-3.5 h-3.5 text-pink-500 shrink-0" />
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-pink-500/30 focus:border-pink-400"
+                className="px-3.5 py-2.5 rounded-2xl border border-pink-100/80 dark:border-pink-950/70 bg-white dark:bg-[#181120] text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-pink-500/30 focus:border-pink-500 shadow-2xs"
               >
                 <option value="newest">Order: Newest first</option>
-                <option value="category">Order: By Category (តាមប្រភេទ)</option>
+                <option value="category">Order: By Category</option>
                 <option value="name">Order: Name (A-Z)</option>
                 <option value="rating_desc">Order: Rating (⭐ High → Low)</option>
                 <option value="price_asc">Order: Price (Low → High)</option>
@@ -287,31 +293,31 @@ export default function Products() {
       </div>
 
       {products === null ? (
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 animate-pulse space-y-3">
+        <div className="luxury-card rounded-[28px] p-6 animate-pulse space-y-3">
           {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="h-12 bg-slate-200 dark:bg-slate-800 rounded-xl" />
+            <div key={i} className="h-14 bg-slate-100 dark:bg-slate-800/50 rounded-2xl" />
           ))}
         </div>
       ) : filtered.length === 0 ? (
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 py-16 text-center text-slate-500 dark:text-slate-400">
-          No products found.
+        <div className="luxury-card rounded-[28px] py-16 text-center text-slate-500 dark:text-slate-400">
+          No products found matching your search.
         </div>
       ) : (
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 overflow-x-auto shadow-xs">
-          <table className="w-full text-sm min-w-[760px]">
+        <div className="luxury-card rounded-[28px] overflow-hidden shadow-xs">
+          <table className="w-full text-sm min-w-[780px]">
             <thead>
-              <tr className="text-left text-xs uppercase tracking-wide text-slate-400 border-b border-slate-200 dark:border-slate-800">
-                <th className="px-4 py-3.5 font-semibold">Product</th>
-                <th className="px-4 py-3.5 font-semibold">Category</th>
-                <th className="px-4 py-3.5 font-semibold">Variants / Types</th>
-                <th className="px-4 py-3.5 font-semibold">Rating</th>
-                <th className="px-4 py-3.5 font-semibold">Price</th>
-                <th className="px-4 py-3.5 font-semibold">Sale</th>
-                <th className="px-4 py-3.5 font-semibold">Stock</th>
-                <th className="px-4 py-3.5 font-semibold text-right">Actions</th>
+              <tr className="text-left text-xs uppercase tracking-wider text-slate-400 dark:text-pink-300/60 border-b border-pink-100/70 dark:border-pink-950/70 bg-pink-50/30 dark:bg-white/[0.02]">
+                <th className="px-5 py-4 font-bold">Product</th>
+                <th className="px-4 py-4 font-bold">Category</th>
+                <th className="px-4 py-4 font-bold">Variants / Types</th>
+                <th className="px-4 py-4 font-bold">Rating</th>
+                <th className="px-4 py-4 font-bold">Price</th>
+                <th className="px-4 py-4 font-bold">Sale</th>
+                <th className="px-4 py-4 font-bold">Stock</th>
+                <th className="px-5 py-4 font-bold text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
+            <tbody className="divide-y divide-pink-100/60 dark:divide-pink-950/60">
               {filtered.map((p) => (
                 <tr key={p.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors">
                   <td className="px-4 py-3">
