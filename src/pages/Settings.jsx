@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   Save,
   Upload,
@@ -385,6 +386,31 @@ export default function Settings() {
             </button>
           </div>
         </form>
+      </div>
+
+      {/* ============ Free Delivery & Milestone Goals Quick Card ============ */}
+      <div className={card}>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5">
+            <div className="w-11 h-11 rounded-2xl bg-pink-50 dark:bg-pink-950/60 border border-pink-200/60 dark:border-pink-900/50 flex items-center justify-center text-2xl shrink-0">
+              🎁
+            </div>
+            <div>
+              <h2 className="text-base font-bold text-slate-900 dark:text-white">
+                Delivery Goals &amp; Milestone Banners
+              </h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                Set order amounts for Free Delivery, hide or show the progress banner, and update rewards in real time.
+              </p>
+            </div>
+          </div>
+          <Link
+            to="/delivery-goals"
+            className="shrink-0 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 hover:from-pink-600 hover:to-rose-600 text-white font-semibold text-xs shadow-sm shadow-pink-500/25 active:scale-95 transition"
+          >
+            Manage Goals &rarr;
+          </Link>
+        </div>
       </div>
 
       {/* ============ Social Media & Channels ============ */}

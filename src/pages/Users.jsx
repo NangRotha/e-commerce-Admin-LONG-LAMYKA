@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { ShieldCheck, User as UserIcon, Search, Trash2 } from "lucide-react";
 import { api } from "../api/client";
 import { useAuth } from "../context/AuthContext";
 import { formatDate } from "../lib/format";
 import Modal from "../components/Modal";
+import { useRealtime } from "../context/RealtimeContext";
 
 export default function Users() {
   const { user: currentUser } = useAuth();
@@ -14,15 +15,20 @@ export default function Users() {
   const [confirming, setConfirming] = useState(null);
   const [deleting, setDeleting] = useState(false);
 
-  const load = () =>
+  const load = useCallback(() => {
     api
       .getUsers()
       .then(setUsers)
       .catch((e) => setError(e.message));
+  }, []);
 
   useEffect(() => {
     load();
-  }, []);
+  }, [load]);
+
+  // Real-time: User role ឬ Delete user ត្រូវបានកែប្រែ -> ផ្ទុកឡើងវិញភ្លាមៗ
+  useRealtime("users_changed", load);
+
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();

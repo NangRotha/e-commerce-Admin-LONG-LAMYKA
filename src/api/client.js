@@ -186,12 +186,33 @@ export const api = {
   getDiscounts: () => request("/api/admin/discounts", { auth: true }),
   createDiscount: (d) =>
     request("/api/discounts/admin/create", { method: "POST", body: d, auth: true }),
+  updateDiscount: (id, d) =>
+    request(`/api/admin/discounts/${id}`, { method: "PUT", body: d, auth: true }),
   toggleDiscount: (id) =>
     request(`/api/admin/discounts/${id}/toggle`, {
       method: "PUT",
       body: {},
       auth: true,
     }),
+  deleteDiscount: (id) =>
+    request(`/api/admin/discounts/${id}`, { method: "DELETE", auth: true }),
+
+  // Milestones / Delivery Goals (Free Sweet Delivery & Gift)
+  getMilestones: () => request("/api/milestones"),
+  getAdminMilestones: () => request("/api/milestones/admin", { auth: true }),
+  createMilestone: (m) =>
+    request("/api/milestones/admin", { method: "POST", body: m, auth: true }),
+  updateMilestone: (id, m) =>
+    request(`/api/milestones/admin/${id}`, { method: "PUT", body: m, auth: true }),
+  toggleMilestone: (id) =>
+    request(`/api/milestones/admin/${id}/toggle`, {
+      method: "PUT",
+      body: {},
+      auth: true,
+    }),
+  deleteMilestone: (id) =>
+    request(`/api/milestones/admin/${id}`, { method: "DELETE", auth: true }),
+
 
   // Users
   getUsers: () => request("/api/admin/users", { auth: true }),

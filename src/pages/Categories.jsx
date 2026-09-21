@@ -27,8 +27,10 @@ export default function Categories() {
     load();
   }, [load]);
 
-  // Real-time: Category ផ្លាស់ប្តូរ (Backend ប្រកាស products_changed)
+  // Real-time: Category ផ្លាស់ប្តូរ
   useRealtime("products_changed", load);
+  useRealtime("categories_changed", load);
+
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();

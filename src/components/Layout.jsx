@@ -6,6 +6,7 @@ import {
   Tags,
   GalleryHorizontal,
   BellRing,
+  Gift,
   ShoppingCart,
   TicketPercent,
   Users,
@@ -26,12 +27,14 @@ const NAV_ITEMS = [
   { to: "/products", key: "nav.products", icon: Package },
   { to: "/categories", key: "nav.categories", icon: Tags },
   { to: "/slides", key: "nav.slides", icon: GalleryHorizontal },
+  { to: "/delivery-goals", key: "nav.deliveryGoals", icon: Gift },
   { to: "/alerts", key: "nav.alerts", icon: BellRing },
   { to: "/orders", key: "nav.orders", icon: ShoppingCart },
   { to: "/discounts", key: "nav.discounts", icon: TicketPercent },
   { to: "/users", key: "nav.users", icon: Users },
   { to: "/settings", key: "nav.settings", icon: SettingsIcon },
 ];
+
 
 /**
  * Layout — Admin Panel
