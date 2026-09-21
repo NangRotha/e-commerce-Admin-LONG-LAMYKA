@@ -177,7 +177,7 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
   };
 
   const input =
-    "mt-1.5 w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm transition";
+    "mt-1.5 w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500/30 focus:border-pink-400 text-sm transition";
   const label = "block text-sm font-semibold text-slate-700 dark:text-slate-200";
 
   return (
@@ -212,7 +212,7 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
                 >
                   <img src={url} alt="" className="w-full h-full object-cover" />
                   {i === 0 && (
-                    <span className="absolute top-1 left-1 bg-emerald-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded flex items-center gap-0.5">
+                    <span className="absolute top-1 left-1 bg-gradient-to-r from-pink-500 to-rose-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded flex items-center gap-0.5 shadow-xs">
                       <Star className="w-2.5 h-2.5" />
                       MAIN
                     </span>
@@ -222,7 +222,7 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
                       <button
                         type="button"
                         onClick={() => makeMain(i)}
-                        className="text-[10px] text-white hover:text-emerald-300"
+                        className="text-[10px] text-white hover:text-pink-300 font-semibold"
                       >
                         Make main
                       </button>
@@ -240,7 +240,7 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
             </div>
           )}
 
-          <label className="mt-3 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-dashed border-slate-400 text-sm font-medium text-slate-600 hover:border-emerald-500 hover:text-emerald-600 cursor-pointer transition">
+          <label className="mt-3 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-dashed border-pink-300 dark:border-pink-900 text-sm font-medium text-slate-600 dark:text-slate-300 hover:border-pink-500 hover:text-pink-600 cursor-pointer transition">
             <input
               type="file"
               accept="image/*"
@@ -266,7 +266,7 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
         <div>
           <div className="flex items-center justify-between">
             <label className={label}>Product video</label>
-            <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-200/80 dark:border-emerald-800/80">
+            <span className="text-[11px] font-bold text-pink-600 dark:text-pink-400 bg-pink-50 dark:bg-pink-950/60 px-2 py-0.5 rounded-full border border-pink-200/80 dark:border-pink-800/80">
               ★ Shows FIRST on Storefront
             </span>
           </div>
@@ -287,7 +287,7 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
                 preload="metadata"
               />
               <div className="absolute top-1.5 right-1.5 flex gap-1.5">
-                <span className="bg-emerald-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded flex items-center gap-0.5">
+                <span className="bg-gradient-to-r from-pink-500 to-rose-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded flex items-center gap-0.5 shadow-xs">
                   <Clapperboard className="w-2.5 h-2.5" />
                   VIDEO
                 </span>
@@ -302,7 +302,7 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
             </div>
           ) : null}
 
-          <label className="mt-3 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-dashed border-slate-400 text-sm font-medium text-slate-600 hover:border-emerald-500 hover:text-emerald-600 cursor-pointer transition">
+          <label className="mt-3 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-dashed border-pink-300 dark:border-pink-900 text-sm font-medium text-slate-600 dark:text-slate-300 hover:border-pink-500 hover:text-pink-600 cursor-pointer transition">
             <input
               type="file"
               accept="video/mp4,video/webm,video/quicktime,video/ogg,.mp4,.webm,.mov,.m4v"
@@ -481,13 +481,13 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
               {form.variants.map((v, i) => (
                 <span
                   key={`${v}-${i}`}
-                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 shadow-xs"
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-pink-50 dark:bg-pink-950/60 text-pink-700 dark:text-pink-300 border border-pink-200 dark:border-pink-800 shadow-xs"
                 >
                   {v}
                   <button
                     type="button"
                     onClick={() => removeVariant(v)}
-                    className="w-4 h-4 rounded-full hover:bg-emerald-200 dark:hover:bg-emerald-800 flex items-center justify-center text-emerald-800 dark:text-emerald-200 text-sm font-bold ml-0.5"
+                    className="w-4 h-4 rounded-full hover:bg-pink-200 dark:hover:bg-pink-800 flex items-center justify-center text-pink-800 dark:text-pink-200 text-sm font-bold ml-0.5"
                     title="Remove variant"
                   >
                     ×
@@ -499,12 +499,12 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
         </div>
 
         <div className="flex items-center gap-4">
-          <label className="flex items-center gap-2 text-sm font-medium text-slate-700 cursor-pointer">
+          <label className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300 cursor-pointer">
             <input
               type="checkbox"
               checked={form.is_on_sale}
               onChange={(e) => set("is_on_sale", e.target.checked)}
-              className="w-4 h-4 rounded accent-emerald-600"
+              className="w-4 h-4 rounded accent-pink-600"
             />
             On sale
           </label>
@@ -534,7 +534,7 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
           <button
             type="submit"
             disabled={saving || uploading || uploadingVideo}
-            className="px-5 py-2.5 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition text-sm disabled:opacity-60"
+            className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 hover:from-pink-600 hover:to-rose-600 text-white font-semibold shadow-md shadow-pink-500/25 transition text-sm disabled:opacity-60 cursor-pointer"
           >
             {saving ? "Saving..." : initial ? "Save changes" : "Create product"}
           </button>

@@ -66,41 +66,41 @@ export default function Orders() {
       )}
 
       {orders === null ? (
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 animate-pulse space-y-3">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 animate-pulse space-y-3">
           {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="h-12 bg-slate-200 dark:bg-slate-800 rounded-xl" />
+            <div key={i} className="h-12 bg-slate-100 dark:bg-slate-800/60 rounded-2xl" />
           ))}
         </div>
       ) : orders.length === 0 ? (
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-dashed border-slate-300 dark:border-slate-800 py-16 text-center text-slate-500 dark:text-slate-400">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-dashed border-pink-200 dark:border-slate-800 py-16 text-center text-slate-500 dark:text-slate-400">
           {t("orders.noOrders")}
         </div>
       ) : (
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-x-auto">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs overflow-x-auto">
           <table className="w-full text-sm min-w-[1000px]">
             <thead>
-              <tr className="text-left text-xs uppercase tracking-wide text-slate-400 dark:text-slate-500 border-b border-slate-200 dark:border-slate-800">
-                <th className="px-4 py-3 font-semibold">{t("orders.order")}</th>
-                <th className="px-4 py-3 font-semibold">{t("orders.customer")}</th>
-                <th className="px-4 py-3 font-semibold">{t("orders.shipping")}</th>
-                <th className="px-4 py-3 font-semibold">{t("orders.items")}</th>
-                <th className="px-4 py-3 font-semibold">{t("orders.total")}</th>
-                <th className="px-4 py-3 font-semibold">{t("orders.status")}</th>
-                <th className="px-4 py-3 font-semibold">{t("orders.date")}</th>
+              <tr className="text-left text-xs uppercase tracking-wider text-slate-400 dark:text-slate-500 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/20">
+                <th className="px-5 py-3.5 font-bold">{t("orders.order")}</th>
+                <th className="px-5 py-3.5 font-bold">{t("orders.customer")}</th>
+                <th className="px-5 py-3.5 font-bold">{t("orders.shipping")}</th>
+                <th className="px-5 py-3.5 font-bold">{t("orders.items")}</th>
+                <th className="px-5 py-3.5 font-bold">{t("orders.total")}</th>
+                <th className="px-5 py-3.5 font-bold">{t("orders.status")}</th>
+                <th className="px-5 py-3.5 font-bold">{t("orders.date")}</th>
               </tr>
             </thead>
             <tbody>
               {orders.map((o) => (
-                <tr key={o.id} className="border-b border-slate-100 dark:border-slate-800 last:border-0 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                  <td className="px-4 py-3 font-semibold text-slate-900 dark:text-white">
+                <tr key={o.id} className="border-b border-slate-100 dark:border-slate-800/60 last:border-0 hover:bg-pink-50/20 dark:hover:bg-pink-950/10 transition-colors">
+                  <td className="px-5 py-3.5 font-semibold text-slate-900 dark:text-white">
                     #{o.id}
                     {o.promo_code && (
-                      <span className="ml-2 text-xs font-semibold bg-violet-100 text-violet-700 dark:bg-violet-950/70 dark:text-violet-300 px-2 py-0.5 rounded-full">
+                      <span className="ml-2 text-xs font-semibold bg-pink-50 text-pink-700 dark:bg-pink-950/70 dark:text-pink-300 border border-pink-200/60 dark:border-pink-800/60 px-2 py-0.5 rounded-full">
                         {o.promo_code}
                       </span>
                     )}
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-5 py-3.5">
                     <div className="text-slate-800 dark:text-slate-100 font-medium">
                       {o.customer_name || "—"}
                     </div>
@@ -111,13 +111,13 @@ export default function Orders() {
                     )}
                     <div className="text-xs text-slate-400">
                       {o.user_email || o.customer_email || (
-                        <span className="font-semibold text-violet-700 dark:text-violet-400">
+                        <span className="font-semibold text-pink-600 dark:text-pink-400">
                           {t("orders.guest")}
                         </span>
                       )}
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-slate-600 dark:text-slate-300">
+                  <td className="px-5 py-3.5 text-slate-600 dark:text-slate-300">
                     {o.shipping_address ? (
                       <span
                         className="block max-w-[220px] line-clamp-2"
@@ -137,7 +137,7 @@ export default function Orders() {
                       </span>
                     )}
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-5 py-3.5">
                     {o.items.length === 0 ? (
                       <span className="text-slate-400">—</span>
                     ) : (
@@ -148,7 +148,7 @@ export default function Orders() {
                               {i.quantity}× {i.product_name || `#${i.product_id}`}
                             </span>
                             {i.variant && (
-                              <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/70 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                              <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-pink-50 text-pink-700 dark:bg-pink-950/70 dark:text-pink-300 border border-pink-200/60 dark:border-pink-800/60">
                                 {i.variant}
                               </span>
                             )}
@@ -157,15 +157,15 @@ export default function Orders() {
                       </div>
                     )}
                   </td>
-                  <td className="px-4 py-3 font-bold text-slate-900 dark:text-white">
+                  <td className="px-5 py-3.5 font-bold text-slate-900 dark:text-white">
                     {formatPrice(o.total_amount)}
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-5 py-3.5">
                     <select
                       value={o.status}
                       disabled={updatingId === o.id}
                       onChange={(e) => changeStatus(o.id, e.target.value)}
-                      className={`text-xs font-semibold px-2.5 py-1.5 rounded-full border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500 disabled:opacity-50 ${STATUS_STYLE[o.status] || STATUS_STYLE.pending}`}
+                      className={`text-xs font-semibold px-2.5 py-1.5 rounded-full border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-pink-500/30 disabled:opacity-50 ${STATUS_STYLE[o.status] || STATUS_STYLE.pending}`}
                     >
                       {STATUSES.map((s) => (
                         <option key={s} value={s} className="text-slate-800 dark:bg-slate-800 dark:text-white">
@@ -174,7 +174,7 @@ export default function Orders() {
                       ))}
                     </select>
                   </td>
-                  <td className="px-4 py-3 text-slate-500 dark:text-slate-400 whitespace-nowrap">
+                  <td className="px-5 py-3.5 text-slate-500 dark:text-slate-400 whitespace-nowrap">
                     {formatDate(o.created_at)}
                   </td>
                 </tr>

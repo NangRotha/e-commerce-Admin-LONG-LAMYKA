@@ -66,7 +66,7 @@ export default function HeaderControls({ dark = false, className = "" }) {
               aria-pressed={active}
               className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 text-[11px] sm:text-xs rounded-full transition-all duration-200 select-none ${
                 active
-                  ? "bg-emerald-600 text-white font-bold shadow-xs"
+                  ? "bg-gradient-to-r from-pink-500 to-rose-500 text-white font-bold shadow-xs"
                   : dark
                   ? "font-medium text-slate-400 hover:text-white hover:bg-slate-700/60"
                   : "font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-slate-700/50"
@@ -92,8 +92,8 @@ export default function HeaderControls({ dark = false, className = "" }) {
         title={isDark ? t("nav.lightMode") : t("nav.darkMode")}
         className={`relative w-8 h-8 sm:w-9 sm:h-9 rounded-full border flex items-center justify-center transition-all duration-300 active:scale-90 overflow-hidden shrink-0 ${
           dark
-            ? "border-slate-700 bg-slate-800 text-slate-300 hover:text-white hover:border-slate-600"
-            : "border-slate-200/80 dark:border-slate-700/80 bg-white dark:bg-slate-800/90 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:border-emerald-500"
+            ? "border-pink-950/40 bg-[#1e1526] text-slate-300 hover:text-white hover:border-pink-500/50"
+            : "border-pink-100 dark:border-pink-950/50 bg-white dark:bg-[#1e1526] text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:border-pink-500 hover:ring-2 hover:ring-pink-500/20"
         }`}
       >
         <span

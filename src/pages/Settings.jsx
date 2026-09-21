@@ -243,13 +243,13 @@ export default function Settings() {
   };
 
   const input =
-    "mt-1.5 w-full px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-400 transition duration-200 text-sm";
-  const label = "block text-sm font-medium text-slate-700 dark:text-slate-300";
+    "mt-1.5 w-full px-4 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-pink-500/30 focus:border-pink-500 transition duration-200 text-sm shadow-2xs";
+  const label = "block text-sm font-semibold text-slate-700 dark:text-slate-300";
   const card =
-    "bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-4 sm:p-6 transition-all duration-300 hover:shadow-soft animate-fade-in-up";
+    "bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800/80 p-5 sm:p-7 transition-all duration-300 shadow-xs";
 
   return (
-    <div className="space-y-5 max-w-2xl">
+    <div className="space-y-6 max-w-2xl">
       <div>
         <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white">
           {t("settings.title")}
@@ -258,13 +258,13 @@ export default function Settings() {
       </div>
 
       {error && (
-        <p className="text-sm text-rose-600 bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900 rounded-xl px-4 py-3 animate-fade-in">
+        <p className="text-sm text-rose-600 bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900 rounded-2xl px-4 py-3 animate-fade-in">
           {error}
         </p>
       )}
 
       {msg && (
-        <p className="text-sm text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 rounded-xl px-4 py-3 animate-pop-in">
+        <p className="text-sm text-pink-700 dark:text-pink-300 bg-pink-50 dark:bg-pink-950/50 border border-pink-200 dark:border-pink-800 rounded-2xl px-4 py-3 animate-pop-in font-medium">
           {msg}
         </p>
       )}
@@ -287,7 +287,7 @@ export default function Settings() {
           />
           <button
             type="submit"
-            className="shrink-0 flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition-all duration-200 text-sm active:scale-95"
+            className="shrink-0 flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 hover:from-pink-600 hover:to-rose-600 text-white font-semibold shadow-sm shadow-pink-500/25 active:scale-[0.98] transition-all duration-200 text-sm"
           >
             <Save className="w-4 h-4" />
             {t("common.save")}
@@ -297,7 +297,7 @@ export default function Settings() {
         {siteName && (
           <button
             onClick={clearSiteName}
-            className="mt-1 text-xs font-medium text-rose-500 hover:text-rose-700 transition-colors"
+            className="mt-1 text-xs font-semibold text-rose-500 hover:text-rose-700 transition-colors"
           >
             {t("settings.clearSiteName")}
           </button>
@@ -312,11 +312,11 @@ export default function Settings() {
             <img
               src={logoUrl}
               alt="Site logo preview"
-              className="h-16 w-16 rounded-xl border border-slate-200 bg-slate-50 object-contain p-1.5 transition-transform duration-300 hover:scale-105"
+              className="h-16 w-16 rounded-2xl border border-pink-200/80 dark:border-pink-900/50 bg-pink-50/50 dark:bg-slate-800 object-contain p-2 transition-transform duration-300 hover:scale-105"
               onError={(e) => (e.target.style.display = "none")}
             />
           ) : (
-            <div className="h-16 w-16 rounded-xl border border-dashed border-slate-300 bg-slate-50 flex items-center justify-center text-2xl">
+            <div className="h-16 w-16 rounded-2xl border border-dashed border-pink-300 dark:border-pink-900/50 bg-pink-50/40 dark:bg-slate-800 flex items-center justify-center text-2xl">
               🛍️
             </div>
           )}
@@ -330,16 +330,16 @@ export default function Settings() {
             />
             <label
               htmlFor="logo-file"
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-slate-300 text-slate-600 text-sm font-medium cursor-pointer hover:bg-slate-50 transition-all duration-200 active:scale-95"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-sm font-semibold cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-200 active:scale-95"
             >
               {uploading ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <Loader2 className="w-4 h-4 animate-spin text-pink-500" />
                   {t("settings.uploading")}
                 </>
               ) : (
                 <>
-                  <Upload className="w-4 h-4" />
+                  <Upload className="w-4 h-4 text-pink-500" />
                   {t("settings.uploadLogo")}
                 </>
               )}
@@ -347,7 +347,7 @@ export default function Settings() {
             {logoUrl && (
               <button
                 onClick={removeLogo}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-rose-200 text-rose-600 text-sm font-medium hover:bg-rose-50 transition-all duration-200 active:scale-95"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-2xl border border-rose-200 dark:border-rose-900/50 text-rose-600 dark:text-rose-400 text-sm font-semibold hover:bg-rose-50 dark:hover:bg-rose-950/50 transition-all duration-200 active:scale-95"
               >
                 <Trash2 className="w-4 h-4" />
                 {t("settings.remove")}
@@ -378,7 +378,7 @@ export default function Settings() {
             />
             <button
               type="submit"
-              className="shrink-0 flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition-all duration-200 text-sm active:scale-95"
+              className="shrink-0 flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 hover:from-pink-600 hover:to-rose-600 text-white font-semibold shadow-sm shadow-pink-500/25 active:scale-[0.98] transition-all duration-200 text-sm"
             >
               <Save className="w-4 h-4" />
               {t("common.save")}
@@ -481,7 +481,7 @@ export default function Settings() {
           {/* Phone */}
           <div>
             <label className={`${label} flex items-center gap-2`}>
-              <span className="w-6 h-6 rounded-lg bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0">
+              <span className="w-6 h-6 rounded-lg bg-pink-500/10 text-pink-600 flex items-center justify-center shrink-0">
                 <Phone className="w-3.5 h-3.5" />
               </span>
               {t("settings.phone")}
@@ -499,7 +499,7 @@ export default function Settings() {
             <button
               type="submit"
               disabled={savingSocial}
-              className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold transition-all duration-200 text-sm shadow-md shadow-emerald-900/20 active:scale-95 disabled:opacity-60"
+              className="flex items-center gap-2 px-6 py-2.5 rounded-2xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 hover:from-pink-600 hover:to-rose-600 text-white font-semibold transition-all duration-200 text-sm shadow-sm shadow-pink-500/25 active:scale-95 disabled:opacity-60"
             >
               {savingSocial ? (
                 <>
@@ -525,7 +525,7 @@ export default function Settings() {
       >
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-start gap-3">
-            <span className="shrink-0 w-11 h-11 rounded-xl bg-rose-100 dark:bg-rose-950/40 flex items-center justify-center text-rose-600 dark:text-rose-400">
+            <span className="shrink-0 w-11 h-11 rounded-2xl bg-pink-100 dark:bg-pink-950/40 flex items-center justify-center text-pink-600 dark:text-pink-400">
               <MapPin className="w-5 h-5" />
             </span>
             <div className="min-w-0">
@@ -543,7 +543,7 @@ export default function Settings() {
               href={loc.store_maps_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-50 dark:bg-rose-950/50 hover:bg-rose-100 dark:hover:bg-rose-900/50 text-rose-600 dark:text-rose-400 text-xs font-bold transition border border-rose-200/80 dark:border-rose-900 shrink-0"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-pink-50 dark:bg-pink-950/50 hover:bg-pink-100 dark:hover:bg-pink-900/50 text-pink-600 dark:text-pink-400 text-xs font-bold transition border border-pink-200/80 dark:border-pink-900 shrink-0"
             >
               <span>Google Maps</span>
               <ExternalLink className="w-3.5 h-3.5" />
@@ -561,7 +561,7 @@ export default function Settings() {
                   href={loc.store_maps_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="sm:hidden inline-flex items-center gap-1 text-xs font-bold text-rose-600"
+                  className="sm:hidden inline-flex items-center gap-1 text-xs font-bold text-pink-600"
                 >
                   <span>Open Maps</span>
                   <ExternalLink className="w-3 h-3" />
@@ -607,7 +607,7 @@ export default function Settings() {
             <button
               type="submit"
               disabled={savingLoc}
-              className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold transition-all duration-200 text-sm shadow-md shadow-emerald-900/20 active:scale-95 disabled:opacity-60"
+              className="flex items-center gap-2 px-6 py-2.5 rounded-2xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 hover:from-pink-600 hover:to-rose-600 text-white font-semibold transition-all duration-200 text-sm shadow-sm shadow-pink-500/25 active:scale-95 disabled:opacity-60"
             >
               {savingLoc ? (
                 <>
@@ -633,14 +633,14 @@ export default function Settings() {
         style={{ animationDelay: "80ms" }}
       >
         <div className="flex items-start gap-3">
-          <span className="shrink-0 w-11 h-11 rounded-xl bg-emerald-100 flex items-center justify-center">
-            <Wallet className="w-5 h-5 text-emerald-600" />
+          <span className="shrink-0 w-11 h-11 rounded-2xl bg-pink-100 dark:bg-pink-950/50 flex items-center justify-center text-pink-600 dark:text-pink-400">
+            <Wallet className="w-5 h-5" />
           </span>
           <div className="min-w-0">
-            <h2 className="text-lg font-bold text-slate-900">
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white">
               {t("settings.bakongTitle")}
             </h2>
-            <p className="mt-1 text-sm text-slate-500">{t("settings.bakongHint")}</p>
+            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{t("settings.bakongHint")}</p>
           </div>
         </div>
 
@@ -737,7 +737,7 @@ export default function Settings() {
           {/* ============ API Security Credentials ============ */}
           <div className="sm:col-span-2 pt-4 border-t border-slate-200/80 dark:border-slate-800">
             <div className="flex items-center gap-2 mb-1">
-              <Key className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+              <Key className="w-4 h-4 text-pink-500 dark:text-pink-400" />
               <h3 className="text-sm font-bold text-slate-900 dark:text-white">
                 {t("settings.apiCredentialsTitle")}
               </h3>
@@ -787,7 +787,7 @@ export default function Settings() {
         </div>
 
         {!pay.payment_bakong_id && (
-          <p className="mt-4 text-xs font-medium text-amber-700 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2">
+          <p className="mt-4 text-xs font-medium text-amber-700 bg-amber-50 border border-amber-200 rounded-2xl px-3 py-2">
             ⚠️ {t("settings.bakongMissing")}
           </p>
         )}
@@ -796,7 +796,7 @@ export default function Settings() {
           <button
             type="submit"
             disabled={savingPay}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition-all duration-200 text-sm active:scale-95 disabled:opacity-60"
+            className="flex items-center gap-2 px-6 py-2.5 rounded-2xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 hover:from-pink-600 hover:to-rose-600 text-white font-semibold transition-all duration-200 text-sm shadow-sm shadow-pink-500/25 active:scale-95 disabled:opacity-60"
           >
             {savingPay ? (
               <>

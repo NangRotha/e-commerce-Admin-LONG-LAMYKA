@@ -5,7 +5,7 @@ import tailwindcss from '@tailwindcss/vite'
 
 // Backend (FastAPI) ពិតប្រាកដនៅលើ Render — ប្រើជា Default សម្រាប់ Dev Server Proxy
 // អាចប្តូរបានតាម VITE_API_URL ក្នុង .env (ឧ. http://localhost:8000)
-const DEFAULT_API_BASE = 'https://backend-e-online.onrender.com'
+const DEFAULT_API_BASE = 'https://e-commerce-backend-long-lamyka.onrender.com'
 
 // ថតឫសនៃ Project (vite.config.js ស្ថិតនៅ root) — ដើម្បីអានឯកសារ .env
 const PROJECT_ROOT = fileURLToPath(new URL('.', import.meta.url))

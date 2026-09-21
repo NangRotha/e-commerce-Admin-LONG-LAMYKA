@@ -211,7 +211,7 @@ export default function Products() {
             className="flex items-center justify-center gap-2 px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition text-sm shadow-2xs active:scale-95"
             title="បន្ថែម ឬកែប្រែតម្លៃលើតម្លៃចាស់សម្រាប់ផលិតផលទាំងអស់"
           >
-            <TrendingUp className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+            <TrendingUp className="w-4 h-4 text-pink-600 dark:text-pink-400" />
             <span>កែសម្រួលតម្លៃទាំងអស់ (Bulk Adjust)</span>
           </button>
           <button
@@ -219,7 +219,7 @@ export default function Products() {
               setEditing(null);
               setModalOpen(true);
             }}
-            className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition text-sm shadow-xs active:scale-95"
+            className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 hover:from-pink-600 hover:to-rose-600 text-white font-semibold transition text-sm shadow-md shadow-pink-500/25 active:scale-95 cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             Add Product
@@ -244,7 +244,7 @@ export default function Products() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search products or types..."
-              className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800/80 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm transition"
+              className="w-full pl-10 pr-4 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800/80 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500/30 focus:border-pink-400 text-sm transition"
             />
           </div>
 
@@ -255,7 +255,7 @@ export default function Products() {
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-pink-500/30 focus:border-pink-400"
               >
                 {categories.map((cat) => (
                   <option key={cat} value={cat}>
@@ -271,7 +271,7 @@ export default function Products() {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-pink-500/30 focus:border-pink-400"
               >
                 <option value="newest">Order: Newest first</option>
                 <option value="category">Order: By Category (តាមប្រភេទ)</option>
@@ -402,10 +402,10 @@ export default function Products() {
                             if (e.key === "Escape") cancelPriceEdit();
                           }}
                           onBlur={savePrice}
-                          className="w-24 px-2 py-1 rounded-lg border border-emerald-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm font-semibold text-slate-900 dark:text-white bg-white dark:bg-slate-800"
+                          className="w-24 px-2 py-1 rounded-lg border border-pink-400 focus:outline-none focus:ring-2 focus:ring-pink-500/30 text-sm font-semibold text-slate-900 dark:text-white bg-white dark:bg-slate-800"
                         />
                         {savingPrice && (
-                          <Loader2 className="w-4 h-4 text-emerald-600 animate-spin" />
+                          <Loader2 className="w-4 h-4 text-pink-600 animate-spin" />
                         )}
                       </div>
                     ) : (
@@ -414,7 +414,7 @@ export default function Products() {
                           type="button"
                           onClick={() => startPriceEdit(p)}
                           title="Click to edit price"
-                          className="font-bold text-emerald-600 dark:text-emerald-400 hover:underline underline-offset-2"
+                          className="font-bold text-pink-600 dark:text-pink-400 hover:underline underline-offset-2"
                         >
                           {formatPrice(p.price)}
                         </button>
@@ -533,7 +533,7 @@ export default function Products() {
             <p
               className={`text-sm rounded-xl px-4 py-3 border animate-fade-in ${
                 bulkMessage.type === "success"
-                  ? "text-emerald-700 bg-emerald-50 dark:bg-emerald-950/60 border-emerald-200 dark:border-emerald-800"
+                  ? "text-pink-700 bg-pink-50 dark:bg-pink-950/60 border-pink-200 dark:border-pink-800"
                   : "text-rose-700 bg-rose-50 dark:bg-rose-950/60 border-rose-200 dark:border-rose-800"
               }`}
             >
@@ -549,7 +549,7 @@ export default function Products() {
             <select
               value={bulkCategory}
               onChange={(e) => setBulkCategory(e.target.value)}
-              className="mt-1.5 w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm font-medium focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+              className="mt-1.5 w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm font-medium focus:ring-2 focus:ring-pink-500/30 focus:border-pink-400 focus:outline-none"
             >
               {categories.map((cat) => {
                 const count =
@@ -586,7 +586,7 @@ export default function Products() {
                   onClick={() => setBulkOperation(op.id)}
                   className={`p-2.5 rounded-xl text-left border text-xs font-semibold transition ${
                     bulkOperation === op.id
-                      ? "bg-emerald-50 dark:bg-emerald-950/60 border-emerald-500 text-emerald-800 dark:text-emerald-300 ring-2 ring-emerald-500/20"
+                      ? "bg-pink-50 dark:bg-pink-950/60 border-pink-500 text-pink-800 dark:text-pink-300 ring-2 ring-pink-500/20"
                       : "bg-slate-50 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700"
                   }`}
                 >
@@ -613,7 +613,7 @@ export default function Products() {
                 value={bulkValue}
                 onChange={(e) => setBulkValue(e.target.value)}
                 placeholder={bulkOperation.includes("percent") ? "e.g. 10 (សម្រាប់ 10%)" : "e.g. 2.50 (សម្រាប់ +$2.50)"}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm font-semibold focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm font-semibold focus:ring-2 focus:ring-pink-500/30 focus:border-pink-400 focus:outline-none"
               />
               <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400 font-bold text-sm">
                 {bulkOperation.includes("percent") ? "%" : "$"}
@@ -628,7 +628,7 @@ export default function Products() {
               type="checkbox"
               checked={bulkSetOriginalPrice}
               onChange={(e) => setBulkSetOriginalPrice(e.target.checked)}
-              className="mt-0.5 w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 cursor-pointer"
+              className="mt-0.5 w-4 h-4 rounded text-pink-600 focus:ring-pink-500 cursor-pointer accent-pink-600"
             />
             <label htmlFor="set_original_price_check" className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 cursor-pointer select-none">
               <strong className="text-slate-900 dark:text-white">រក្សាទុកតម្លៃបច្ចុប្បន្នជា “តម្លៃចាស់ / Original Price”</strong>
@@ -640,8 +640,8 @@ export default function Products() {
 
           {/* 5. Live Calculation Preview */}
           {sampleCalculatedPrice && (
-            <div className="rounded-xl p-3.5 bg-emerald-50/80 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-xs sm:text-sm space-y-1">
-              <p className="font-bold text-emerald-900 dark:text-emerald-300 flex items-center gap-1.5">
+            <div className="rounded-xl p-3.5 bg-pink-50/80 dark:bg-pink-950/40 border border-pink-200 dark:border-pink-800 text-xs sm:text-sm space-y-1">
+              <p className="font-bold text-pink-900 dark:text-pink-300 flex items-center gap-1.5">
                 <span>🔍 ឧទាហរណ៍ជាក់ស្តែងលើផលិតផលគំរូ៖</span>
               </p>
               <p className="text-slate-700 dark:text-slate-300">
@@ -650,7 +650,7 @@ export default function Products() {
               <div className="flex items-center gap-2 pt-1 font-semibold flex-wrap">
                 <span className="text-slate-500">តម្លៃចាស់៖ {formatPrice(sampleCalculatedPrice.oldPrice)}</span>
                 <span>➔</span>
-                <span className="text-emerald-600 dark:text-emerald-400 font-bold text-sm sm:text-base">
+                <span className="text-pink-600 dark:text-pink-400 font-bold text-sm sm:text-base">
                   តម្លៃថ្មី៖ {formatPrice(sampleCalculatedPrice.newPrice)}
                 </span>
                 {sampleCalculatedPrice.savedOriginal !== null && (
@@ -675,7 +675,7 @@ export default function Products() {
             <button
               type="submit"
               disabled={bulkSubmitting || targetBulkProducts.length === 0}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition text-sm shadow-xs disabled:opacity-60"
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 hover:from-pink-600 hover:to-rose-600 text-white font-semibold transition text-sm shadow-md shadow-pink-500/25 disabled:opacity-60 cursor-pointer"
             >
               {bulkSubmitting ? (
                 <>

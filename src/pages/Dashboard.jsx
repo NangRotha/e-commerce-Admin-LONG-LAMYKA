@@ -66,7 +66,7 @@ export default function Dashboard() {
 
       {/* Stat cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4">
-        <StatCard icon={<Package className="w-6 h-6" />} label={t("dashboard.totalProducts")} value={stats.total_products} accent="emerald" />
+        <StatCard icon={<Package className="w-6 h-6" />} label={t("dashboard.totalProducts")} value={stats.total_products} accent="pink" />
         <StatCard icon={<Users className="w-6 h-6" />} label={t("dashboard.totalUsers")} value={stats.total_users} accent="blue" />
         <StatCard icon={<ShoppingCart className="w-6 h-6" />} label={t("dashboard.totalOrders")} value={stats.total_orders} accent="amber" />
         <StatCard icon={<DollarSign className="w-6 h-6" />} label={t("dashboard.revenue")} value={formatPrice(stats.total_revenue)} accent="rose" />
@@ -74,7 +74,7 @@ export default function Dashboard() {
 
       <div className="grid lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Recent orders */}
-        <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 sm:p-5 shadow-xs">
+        <div className="lg:col-span-2 bg-white dark:bg-[#160f1c] rounded-3xl border border-pink-100/80 dark:border-pink-950/50 p-4 sm:p-5 shadow-xs">
           <h2 className="font-bold text-slate-900 dark:text-white mb-4">
             {t("dashboard.recentOrders")}
           </h2>
@@ -87,7 +87,7 @@ export default function Dashboard() {
               {stats.recent_orders.map((o) => (
                 <div
                   key={o.id}
-                  className="flex items-center justify-between gap-3 py-2 border-b border-slate-100 dark:border-slate-800 last:border-0"
+                  className="flex items-center justify-between gap-3 py-2 border-b border-pink-50 dark:border-pink-950/40 last:border-0"
                 >
                   <div className="min-w-0">
                     <p className="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate">
@@ -114,7 +114,7 @@ export default function Dashboard() {
         </div>
 
         {/* Low stock */}
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-4 sm:p-5 shadow-xs">
+        <div className="bg-white dark:bg-[#160f1c] rounded-3xl border border-pink-100/80 dark:border-pink-950/50 p-4 sm:p-5 shadow-xs">
           <h2 className="font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
             <AlertTriangle className="w-4 h-4 text-amber-500" />
             {t("dashboard.lowStock")}

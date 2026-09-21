@@ -111,7 +111,7 @@ export default function SlideModal({ open, onClose, onSave, initial }) {
   };
 
   const input =
-    "mt-1.5 w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm transition";
+    "mt-1.5 w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500/30 focus:border-pink-400 text-sm transition";
   const label = "block text-sm font-semibold text-slate-700 dark:text-slate-200";
 
   const ytId = form.media_type === "youtube" ? getYouTubeId(form.youtube_url) : null;
@@ -142,8 +142,8 @@ export default function SlideModal({ open, onClose, onSave, initial }) {
                 onClick={() => set("media_type", t.value)}
                 className={`flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl border text-sm font-medium transition ${
                   form.media_type === t.value
-                    ? "border-emerald-600 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 ring-1 ring-emerald-600"
-                    : "border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-emerald-400 dark:hover:border-emerald-500"
+                    ? "border-pink-500 bg-pink-50 dark:bg-pink-950/50 text-pink-700 dark:text-pink-300 ring-1 ring-pink-500 font-semibold"
+                    : "border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-pink-400 dark:hover:border-pink-500"
                 }`}
               >
                 <t.icon className="w-4 h-4" />
@@ -297,7 +297,7 @@ export default function SlideModal({ open, onClose, onSave, initial }) {
             type="checkbox"
             checked={form.is_active}
             onChange={(e) => set("is_active", e.target.checked)}
-            className="w-4 h-4 rounded accent-emerald-600"
+            className="w-4 h-4 rounded accent-pink-600"
           />
           Active (show on storefront)
         </label>
@@ -313,7 +313,7 @@ export default function SlideModal({ open, onClose, onSave, initial }) {
           <button
             type="submit"
             disabled={saving || uploading}
-            className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold transition text-sm shadow-md shadow-emerald-900/20 disabled:opacity-60"
+            className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 hover:from-pink-600 hover:to-rose-600 text-white font-semibold transition text-sm shadow-md shadow-pink-500/25 disabled:opacity-60 cursor-pointer"
           >
             {saving ? "Saving..." : initial ? "Save changes" : "Add slide"}
           </button>

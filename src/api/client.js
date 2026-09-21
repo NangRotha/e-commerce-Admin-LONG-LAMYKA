@@ -4,7 +4,7 @@
  * អាចប្តូរបានតាម `VITE_API_URL` ក្នុង `.env` / `.env.development` / `.env.production`
  * (ឧ. VITE_API_URL=http://localhost:8000 សម្រាប់ Backend ក្នុងម៉ាស៊ីនរបស់អ្នក)
  */
-export const DEFAULT_API_BASE = "https://backend-e-online.onrender.com";
+export const DEFAULT_API_BASE = "https://e-commerce-backend-long-lamyka.onrender.com";
 
 export const API_BASE = (import.meta.env.VITE_API_URL || DEFAULT_API_BASE).replace(
   /\/$/,

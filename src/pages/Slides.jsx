@@ -143,7 +143,7 @@ export default function Slides() {
             setEditing(null);
             setModalOpen(true);
           }}
-          className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition text-sm shadow-xs"
+          className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 hover:from-pink-600 hover:to-rose-600 text-white font-semibold shadow-sm shadow-pink-500/25 hover:shadow-md hover:shadow-pink-500/30 active:scale-[0.98] transition-all text-sm"
         >
           <Plus className="w-4 h-4" />
           Add Slide
@@ -151,34 +151,34 @@ export default function Slides() {
       </div>
 
       {error && (
-        <p className="text-sm text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900 rounded-xl px-4 py-3">
+        <p className="text-sm text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900 rounded-2xl px-4 py-3">
           {error}
         </p>
       )}
 
       {slides === null ? (
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 animate-pulse space-y-3">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 animate-pulse space-y-3">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="h-16 bg-slate-200 dark:bg-slate-800 rounded-xl" />
+            <div key={i} className="h-16 bg-slate-100 dark:bg-slate-800/60 rounded-2xl" />
           ))}
         </div>
       ) : slides.length === 0 ? (
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 py-16 text-center text-slate-500 dark:text-slate-400">
-          <Clapperboard className="w-10 h-10 mx-auto mb-3 text-slate-300 dark:text-slate-600" />
+        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-dashed border-pink-200 dark:border-slate-800 py-16 text-center text-slate-500 dark:text-slate-400">
+          <Clapperboard className="w-10 h-10 mx-auto mb-3 text-pink-300 dark:text-pink-900/60" />
           No slides yet. Add images, videos or YouTube links to promote your
           store on the homepage.
         </div>
       ) : (
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 overflow-x-auto shadow-xs">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800/80 overflow-x-auto shadow-xs">
           <table className="w-full text-sm min-w-[720px]">
             <thead>
-              <tr className="text-left text-xs uppercase tracking-wide text-slate-400 dark:text-slate-500 border-b border-slate-200 dark:border-slate-800">
-                <th className="px-4 py-3 font-semibold">Preview</th>
-                <th className="px-4 py-3 font-semibold">Slide</th>
-                <th className="px-4 py-3 font-semibold">Type</th>
-                <th className="px-4 py-3 font-semibold">Order</th>
-                <th className="px-4 py-3 font-semibold">Active</th>
-                <th className="px-4 py-3 font-semibold text-right">Actions</th>
+              <tr className="text-left text-xs uppercase tracking-wider text-slate-400 dark:text-slate-500 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/20">
+                <th className="px-5 py-3.5 font-bold">Preview</th>
+                <th className="px-5 py-3.5 font-bold">Slide</th>
+                <th className="px-5 py-3.5 font-bold">Type</th>
+                <th className="px-5 py-3.5 font-bold">Order</th>
+                <th className="px-5 py-3.5 font-bold">Active</th>
+                <th className="px-5 py-3.5 font-bold text-right">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -187,12 +187,12 @@ export default function Slides() {
                 return (
                   <tr
                     key={s.id}
-                    className="border-b border-slate-100 dark:border-slate-800/60 last:border-0 hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors"
+                    className="border-b border-slate-100 dark:border-slate-800/60 last:border-0 hover:bg-pink-50/20 dark:hover:bg-pink-950/10 transition-colors"
                   >
-                    <td className="px-4 py-3">
+                    <td className="px-5 py-3.5">
                       <SlidePreview slide={s} />
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-5 py-3.5">
                       <div className="font-semibold text-slate-900 dark:text-white">
                         {s.title || "—"}
                       </div>
@@ -202,67 +202,67 @@ export default function Slides() {
                         </div>
                       )}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-5 py-3.5">
                       <span
-                        className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold ${meta.cls}`}
+                        className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold ${meta.cls}`}
                       >
                         <meta.icon className="w-3 h-3" />
                         {meta.label}
                       </span>
                     </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-1">
-                        <span className="font-mono text-slate-600">{s.sort_order}</span>
+                    <td className="px-5 py-3.5">
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-mono text-slate-600 dark:text-slate-300 font-semibold">{s.sort_order}</span>
                         <div className="flex flex-col">
                           <button
                             onClick={() => move(s.id, -1)}
                             disabled={idx === 0}
-                            className="p-0.5 text-slate-400 hover:text-emerald-600 disabled:opacity-30"
+                            className="p-0.5 text-slate-400 hover:text-pink-600 dark:hover:text-pink-400 disabled:opacity-30 transition"
                             aria-label="Move up"
                           >
-                            <MoveUp className="w-3 h-3" />
+                            <MoveUp className="w-3.5 h-3.5" />
                           </button>
                           <button
                             onClick={() => move(s.id, 1)}
                             disabled={idx === slides.length - 1}
-                            className="p-0.5 text-slate-400 hover:text-emerald-600 disabled:opacity-30"
+                            className="p-0.5 text-slate-400 hover:text-pink-600 dark:hover:text-pink-400 disabled:opacity-30 transition"
                             aria-label="Move down"
                           >
-                            <MoveDown className="w-3 h-3" />
+                            <MoveDown className="w-3.5 h-3.5" />
                           </button>
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-5 py-3.5">
                       <button
                         onClick={() => toggleActive(s)}
-                        className={`relative w-11 h-6 rounded-full transition ${
-                          s.is_active ? "bg-emerald-600" : "bg-slate-300"
+                        className={`relative w-11 h-6 rounded-full transition-colors ${
+                          s.is_active ? "bg-gradient-to-r from-pink-500 to-rose-500" : "bg-slate-300 dark:bg-slate-700"
                         }`}
                         aria-label={s.is_active ? "Deactivate" : "Activate"}
                       >
                         <span
-                          className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition ${
+                          className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${
                             s.is_active ? "left-[22px]" : "left-0.5"
                           }`}
                         />
                       </button>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-5 py-3.5">
                       <div className="flex items-center justify-end gap-1.5">
                         <button
                           onClick={() => {
                             setEditing(s);
                             setModalOpen(true);
                           }}
-                          className="p-2 rounded-lg text-slate-500 hover:bg-blue-50 hover:text-blue-600 transition"
+                          className="p-2 rounded-xl text-slate-500 hover:bg-pink-50 dark:hover:bg-pink-950/50 hover:text-pink-600 dark:hover:text-pink-400 transition"
                           aria-label="Edit"
                         >
                           <Pencil className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => setConfirming(s)}
-                          className="p-2 rounded-lg text-slate-500 hover:bg-rose-50 hover:text-rose-600 transition"
+                          className="p-2 rounded-xl text-slate-500 hover:bg-rose-50 dark:hover:bg-rose-950/50 hover:text-rose-600 dark:hover:text-rose-400 transition"
                           aria-label="Delete"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -286,9 +286,9 @@ export default function Slides() {
       />
 
       <Modal open={!!confirming} onClose={() => setConfirming(null)} title="Delete slide">
-        <p className="text-sm text-slate-600">
+        <p className="text-sm text-slate-600 dark:text-slate-300">
           Are you sure you want to delete{" "}
-          <strong className="text-slate-900">
+          <strong className="text-slate-900 dark:text-white">
             {confirming?.title || `slide #${confirming?.id}`}
           </strong>
           ? This action cannot be undone.
@@ -296,13 +296,13 @@ export default function Slides() {
         <div className="mt-6 flex gap-3 justify-end">
           <button
             onClick={() => setConfirming(null)}
-            className="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-600 font-medium hover:bg-slate-50 transition text-sm"
+            className="px-5 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition text-sm"
           >
             Cancel
           </button>
           <button
             onClick={handleDelete}
-            className="px-5 py-2.5 rounded-xl bg-rose-600 text-white font-semibold hover:bg-rose-700 transition text-sm"
+            className="px-5 py-2.5 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white font-semibold shadow-sm shadow-rose-600/25 active:scale-[0.98] transition-all text-sm"
           >
             Delete
           </button>

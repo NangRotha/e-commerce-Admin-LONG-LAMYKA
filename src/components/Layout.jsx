@@ -79,17 +79,17 @@ export default function Layout() {
   };
 
   const linkClass = ({ isActive }) =>
-    `group flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+    `group flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
       isActive
-        ? "bg-emerald-600 text-white shadow-md shadow-emerald-900/30"
-        : "text-slate-300 hover:bg-slate-800 hover:text-white hover:translate-x-0.5"
+        ? "bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 text-white shadow-md shadow-pink-500/25 translate-x-0.5"
+        : "text-slate-300 hover:bg-white/10 hover:text-white hover:translate-x-0.5"
     }`;
 
   return (
-    <div className="min-h-screen bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300">
+    <div className="min-h-screen bg-[#fcf8fa] dark:bg-[#0f0b12] text-slate-900 dark:text-slate-100 transition-colors duration-300">
       {/* Sidebar (desktop) */}
-      <aside className="hidden lg:flex fixed inset-y-0 left-0 w-60 bg-slate-900 flex-col z-30">
-        <div className="h-16 flex items-center gap-2 px-5 text-white font-extrabold text-lg border-b border-slate-800">
+      <aside className="hidden lg:flex fixed inset-y-0 left-0 w-60 bg-[#120e17] border-r border-pink-950/40 flex-col z-30 shadow-xl">
+        <div className="h-16 flex items-center gap-2.5 px-5 text-white font-extrabold text-lg border-b border-pink-950/40">
           {siteLogo ? (
             <img
               src={siteLogo}
@@ -98,11 +98,13 @@ export default function Layout() {
               onError={(e) => (e.target.style.display = "none")}
             />
           ) : (
-            <Store className="w-5 h-5 text-emerald-500 shrink-0" />
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-pink-500 to-rose-500 text-white flex items-center justify-center shadow-md shadow-pink-500/30 shrink-0">
+              <Store className="w-4 h-4" />
+            </div>
           )}
-          <span className="truncate">{siteName}</span>
+          <span className="truncate bg-gradient-to-r from-white via-pink-100 to-pink-200 bg-clip-text text-transparent font-bold tracking-tight">{siteName}</span>
         </div>
-        <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
+        <nav className="flex-1 p-3 space-y-1.5 overflow-y-auto">
           {NAV_ITEMS.map((item) => (
             <NavLink key={item.to} to={item.to} className={linkClass}>
               <item.icon className="w-4 h-4 shrink-0 transition-transform duration-200 group-hover:scale-110" />
@@ -110,14 +112,14 @@ export default function Layout() {
             </NavLink>
           ))}
         </nav>
-        <div className="p-3 border-t border-slate-800 space-y-2">
-          <div className="px-4 py-2 text-sm text-slate-400 truncate">
+        <div className="p-3 border-t border-pink-950/40 space-y-2">
+          <div className="px-4 py-2 text-xs text-pink-200/60 truncate font-medium">
             {user?.email}
           </div>
           <HeaderControls dark />
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-2 px-4 py-2 text-sm text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition"
+            className="w-full flex items-center gap-2 px-4 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/10 rounded-xl transition font-medium"
           >
             <LogOut className="w-4 h-4" />
             {t("nav.logout")}
@@ -134,8 +136,8 @@ export default function Layout() {
             onClick={() => setMobileMenuOpen(false)}
           />
           {/* Drawer content */}
-          <div className="fixed inset-y-0 left-0 w-72 max-w-[85vw] bg-slate-900 z-50 flex flex-col shadow-2xl animate-fade-in">
-            <div className="h-16 flex items-center justify-between px-5 text-white font-extrabold text-base border-b border-slate-800">
+          <div className="fixed inset-y-0 left-0 w-72 max-w-[85vw] bg-[#120e17] border-r border-pink-950/40 z-50 flex flex-col shadow-2xl animate-fade-in">
+            <div className="h-16 flex items-center justify-between px-5 text-white font-extrabold text-base border-b border-pink-950/40">
               <div className="flex items-center gap-2 min-w-0">
                 {siteLogo ? (
                   <img
@@ -145,21 +147,23 @@ export default function Layout() {
                     onError={(e) => (e.target.style.display = "none")}
                   />
                 ) : (
-                  <Store className="w-5 h-5 text-emerald-500 shrink-0" />
+                  <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-pink-500 to-rose-500 text-white flex items-center justify-center shadow-md shadow-pink-500/30 shrink-0">
+                    <Store className="w-3.5 h-3.5" />
+                  </div>
                 )}
-                <span className="truncate">{siteName}</span>
+                <span className="truncate bg-gradient-to-r from-white via-pink-100 to-pink-200 bg-clip-text text-transparent">{siteName}</span>
               </div>
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(false)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition"
                 aria-label="Close menu"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
+            <nav className="flex-1 p-3 space-y-1.5 overflow-y-auto">
               {NAV_ITEMS.map((item) => (
                 <NavLink key={item.to} to={item.to} className={linkClass}>
                   <item.icon className="w-4 h-4 shrink-0 transition-transform duration-200 group-hover:scale-110" />
@@ -168,14 +172,14 @@ export default function Layout() {
               ))}
             </nav>
 
-            <div className="p-4 border-t border-slate-800 space-y-3">
-              <div className="text-xs text-slate-400 truncate">
+            <div className="p-4 border-t border-pink-950/40 space-y-3">
+              <div className="text-xs text-pink-200/60 truncate font-medium">
                 {user?.email}
               </div>
               <HeaderControls dark />
               <button
                 onClick={handleLogout}
-                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition"
+                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/10 rounded-xl transition font-medium"
               >
                 <LogOut className="w-4 h-4" />
                 {t("nav.logout")}
@@ -188,13 +192,13 @@ export default function Layout() {
       {/* Main area */}
       <div className="lg:pl-60">
         {/* Topbar */}
-        <header className="sticky top-0 z-30 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 h-16 flex items-center justify-between px-3 sm:px-6 transition-colors gap-2">
+        <header className="sticky top-0 z-30 bg-white/90 dark:bg-[#140e1b]/90 backdrop-blur-md border-b border-pink-100 dark:border-pink-950/50 h-16 flex items-center justify-between px-3 sm:px-6 transition-colors gap-2 shadow-xs">
           {/* Mobile hamburger + Brand */}
           <div className="flex items-center gap-1.5 sm:gap-2 lg:hidden min-w-0">
             <button
               type="button"
               onClick={() => setMobileMenuOpen(true)}
-              className="p-2 -ml-1 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition shrink-0"
+              className="p-2 -ml-1 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-pink-50 dark:hover:bg-pink-950/30 transition shrink-0"
               aria-label="Open navigation menu"
             >
               <Menu className="w-5 h-5" />
@@ -208,13 +212,13 @@ export default function Layout() {
               />
             ) : (
               <div className="flex items-center gap-1.5 font-extrabold text-slate-900 dark:text-white truncate">
-                <Store className="w-5 h-5 text-emerald-600 shrink-0" />
+                <Store className="w-5 h-5 text-pink-600 shrink-0" />
                 <span className="truncate max-w-[100px] xs:max-w-[140px]">{siteName}</span>
               </div>
             )}
           </div>
 
-          <div className="hidden lg:block text-sm font-semibold text-slate-500 dark:text-slate-400 truncate">
+          <div className="hidden lg:block text-sm font-bold text-slate-700 dark:text-pink-100 truncate">
             {site.site_name
               ? `${site.site_name} ${t("nav.management")}`
               : t("nav.adminPanel")}
@@ -223,16 +227,16 @@ export default function Layout() {
           <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
             {/* Real-time indicator */}
             <span
-              className={`inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] font-semibold px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-full transition-colors duration-300 ${
+              className={`inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] font-semibold px-2.5 sm:px-3 py-1 rounded-full border transition-colors duration-300 ${
                 online
-                  ? "bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300"
-                  : "bg-slate-100 dark:bg-slate-800 text-slate-500"
+                  ? "bg-pink-50 dark:bg-pink-950/60 text-pink-700 dark:text-pink-300 border-pink-200 dark:border-pink-800/60 shadow-2xs"
+                  : "bg-slate-100 dark:bg-slate-800 text-slate-500 border-slate-200 dark:border-slate-700"
               }`}
               title={t("common.autoRefresh")}
             >
               <span
                 className={`w-1.5 h-1.5 rounded-full ${
-                  online ? "bg-emerald-500 animate-pulse" : "bg-slate-400"
+                  online ? "bg-pink-500 animate-pulse" : "bg-slate-400"
                 }`}
               />
               <span className="hidden xs:inline">{t("common.live")}</span>
@@ -242,12 +246,12 @@ export default function Layout() {
               {user?.email}
             </span>
 
-            {/* Language & Theme Controls — visible on both mobile and desktop */}
+            {/* Language & Theme Controls */}
             <HeaderControls />
 
             <button
               onClick={handleLogout}
-              className="flex items-center gap-1.5 p-2 sm:px-3 sm:py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all duration-200 active:scale-95 shrink-0"
+              className="flex items-center gap-1.5 p-2 sm:px-3 sm:py-2 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-pink-50 dark:hover:bg-pink-950/30 hover:text-pink-600 dark:hover:text-pink-400 transition-all duration-200 active:scale-95 shrink-0"
               title={t("nav.logout")}
               aria-label={t("nav.logout")}
             >
@@ -258,16 +262,16 @@ export default function Layout() {
         </header>
 
         {/* Mobile quick tab nav */}
-        <nav className="lg:hidden bg-slate-900 px-2 py-2 flex gap-1 overflow-x-auto sticky top-16 z-20 scrollbar-none">
+        <nav className="lg:hidden bg-[#120e17] border-b border-pink-950/40 px-2 py-2 flex gap-1.5 overflow-x-auto sticky top-16 z-20 scrollbar-none">
           {NAV_ITEMS.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
               className={({ isActive }) =>
-                `flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all duration-200 shrink-0 ${
+                `flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all duration-200 shrink-0 ${
                   isActive
-                    ? "bg-emerald-600 text-white shadow-xs"
-                    : "text-slate-300 hover:bg-slate-800"
+                    ? "bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-xs"
+                    : "text-slate-300 hover:bg-white/10"
                 }`
               }
             >

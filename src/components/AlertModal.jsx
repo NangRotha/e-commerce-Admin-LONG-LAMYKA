@@ -135,7 +135,7 @@ export default function AlertModal({ open, onClose, onSave, initial }) {
   };
 
   const input =
-    "mt-1.5 w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm placeholder:text-slate-400 transition";
+    "mt-1.5 w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-pink-500/30 focus:border-pink-400 text-sm placeholder:text-slate-400 transition";
   const label = "block text-sm font-semibold text-slate-700 dark:text-slate-200";
 
   return (
@@ -180,7 +180,7 @@ export default function AlertModal({ open, onClose, onSave, initial }) {
                   onClick={() => set("alert_type", t.value)}
                   className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium transition border ${
                     form.alert_type === t.value
-                      ? "border-emerald-500 ring-2 ring-emerald-200 " + t.cls
+                      ? "border-pink-500 ring-2 ring-pink-200 dark:ring-pink-900 " + t.cls
                       : "border-slate-200 text-slate-500 hover:border-slate-300 bg-white"
                   }`}
                 >
@@ -294,12 +294,12 @@ export default function AlertModal({ open, onClose, onSave, initial }) {
           </div>
         </div>
 
-        <label className="flex items-center gap-2 text-sm font-medium text-slate-700 cursor-pointer">
+        <label className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300 cursor-pointer">
           <input
             type="checkbox"
             checked={form.is_active}
             onChange={(e) => set("is_active", e.target.checked)}
-            className="w-4 h-4 rounded accent-emerald-600"
+            className="w-4 h-4 rounded accent-pink-600"
           />
           Active (show on storefront)
         </label>
@@ -314,14 +314,14 @@ export default function AlertModal({ open, onClose, onSave, initial }) {
           <button
             type="button"
             onClick={onClose}
-            className="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-600 font-medium hover:bg-slate-50 transition text-sm"
+            className="px-5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition text-sm"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={saving}
-            className="px-5 py-2.5 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition text-sm disabled:opacity-60"
+            className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 hover:from-pink-600 hover:to-rose-600 text-white font-semibold transition text-sm shadow-md shadow-pink-500/25 disabled:opacity-60 cursor-pointer"
           >
             {saving ? "Saving..." : initial ? "Save changes" : "Add alert"}
           </button>

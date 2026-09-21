@@ -56,14 +56,14 @@ export default function Modal({
       {/* Alignment container: Centers dialog and prevents any negative-scroll clipping */}
       <div className="min-h-full flex items-center justify-center p-3 sm:p-6 text-center">
         <div
-          className={`relative w-full ${widthClass} my-auto transform rounded-2xl bg-white dark:bg-slate-900 text-left shadow-2xl transition-all border border-slate-200/80 dark:border-slate-800 overflow-hidden animate-pop-in flex flex-col max-h-[calc(100vh-2rem)] sm:max-h-[calc(100vh-4rem)]`}
+          className={`relative w-full ${widthClass} my-auto transform rounded-3xl bg-white dark:bg-[#160f1c] text-left shadow-2xl transition-all border border-pink-100 dark:border-pink-950/60 overflow-hidden animate-pop-in flex flex-col max-h-[calc(100vh-2rem)] sm:max-h-[calc(100vh-4rem)]`}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Fixed Header */}
-          <div className="flex-shrink-0 flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm z-10">
+          <div className="flex-shrink-0 flex items-center justify-between px-6 py-4 border-b border-pink-100 dark:border-pink-950/60 bg-white/95 dark:bg-[#160f1c]/95 backdrop-blur-sm z-10">
             <div className="flex items-center gap-3 pr-4 min-w-0">
               {Icon && (
-                <div className="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                <div className="w-9 h-9 rounded-2xl bg-pink-50 dark:bg-pink-950/50 text-pink-600 dark:text-pink-400 border border-pink-100 dark:border-pink-900/50 flex items-center justify-center shrink-0 shadow-2xs">
                   <Icon className="w-5 h-5" />
                 </div>
               )}
@@ -72,7 +72,7 @@ export default function Modal({
                   {title}
                 </h2>
                 {subtitle && (
-                  <p className="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">
+                  <p className="text-xs text-slate-500 dark:text-pink-200/60 truncate mt-0.5">
                     {subtitle}
                   </p>
                 )}
@@ -81,7 +81,7 @@ export default function Modal({
             <button
               onClick={onClose}
               type="button"
-              className="p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500 shrink-0"
+              className="p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-pink-50 dark:hover:bg-pink-950/30 transition-colors focus:outline-none focus:ring-2 focus:ring-pink-500 shrink-0"
               aria-label="Close"
             >
               <X className="w-5 h-5" />

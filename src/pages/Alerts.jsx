@@ -77,8 +77,10 @@ export default function Alerts() {
     <div className="space-y-5">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
-            <BellRing className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+          <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-xl bg-pink-50 dark:bg-pink-950/50 border border-pink-100 dark:border-pink-900/50 flex items-center justify-center shrink-0">
+              <BellRing className="w-5 h-5 text-pink-500 dark:text-pink-400" />
+            </div>
             Alerts &amp; Popups
           </h1>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
@@ -91,7 +93,7 @@ export default function Alerts() {
             setEditing(null);
             setModalOpen(true);
           }}
-          className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 transition shadow-xs"
+          className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 hover:from-pink-600 hover:to-rose-600 text-white text-sm font-semibold shadow-sm shadow-pink-500/25 hover:shadow-md hover:shadow-pink-500/30 active:scale-[0.98] transition-all"
         >
           <Plus className="w-4 h-4" />
           New alert
@@ -99,36 +101,36 @@ export default function Alerts() {
       </div>
 
       {error && (
-        <p className="text-sm text-rose-600 bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900 rounded-xl px-4 py-3">
+        <p className="text-sm text-rose-600 bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900 rounded-2xl px-4 py-3">
           {error}
         </p>
       )}
 
       {alerts === null ? (
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs p-10 text-center text-slate-400 text-sm">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xs p-10 text-center text-slate-400 text-sm">
           Loading alerts...
         </div>
       ) : alerts.length === 0 ? (
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 p-10 sm:p-14 text-center">
-          <BellRing className="w-12 h-12 mx-auto text-slate-300 dark:text-slate-600" />
+        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-dashed border-pink-200 dark:border-slate-800 p-10 sm:p-14 text-center">
+          <BellRing className="w-12 h-12 mx-auto text-pink-300 dark:text-pink-900/60" />
           <h2 className="mt-4 text-lg font-bold text-slate-800 dark:text-white">No alerts yet</h2>
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
             Create your first announcement — it will appear on the storefront immediately.
           </p>
         </div>
       ) : (
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-x-auto">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs overflow-x-auto">
           <table className="w-full text-sm min-w-[640px]">
             <thead>
-              <tr className="text-left text-xs uppercase tracking-wider text-slate-400 dark:text-slate-500 border-b border-slate-200 dark:border-slate-800">
-                <th className="px-4 py-3.5 font-semibold">Alert</th>
-                <th className="px-4 py-3.5 font-semibold">Display</th>
-                <th className="px-4 py-3.5 font-semibold">
-                  <CalendarClock className="w-3.5 h-3.5 inline -mt-0.5 mr-1" />
+              <tr className="text-left text-xs uppercase tracking-wider text-slate-400 dark:text-slate-500 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/20">
+                <th className="px-5 py-3.5 font-bold">Alert</th>
+                <th className="px-5 py-3.5 font-bold">Display</th>
+                <th className="px-5 py-3.5 font-bold">
+                  <CalendarClock className="w-3.5 h-3.5 inline -mt-0.5 mr-1 text-pink-500" />
                   Schedule
                 </th>
-                <th className="px-4 py-3.5 font-semibold">Status</th>
-                <th className="px-4 py-3.5 font-semibold text-right">Actions</th>
+                <th className="px-5 py-3.5 font-bold">Status</th>
+                <th className="px-5 py-3.5 font-bold text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
@@ -139,11 +141,11 @@ export default function Alerts() {
                     ? `${fmtDate(a.starts_at)} → ${fmtDate(a.expires_at)}`
                     : "Always";
                 return (
-                  <tr key={a.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition">
-                    <td className="px-4 py-3">
+                  <tr key={a.id} className="hover:bg-pink-50/20 dark:hover:bg-pink-950/10 transition">
+                    <td className="px-5 py-3.5">
                       <div className="flex items-start gap-3">
                         <span
-                          className={`mt-0.5 shrink-0 px-2 py-0.5 rounded-full text-[11px] font-semibold ${t.cls}`}
+                          className={`mt-0.5 shrink-0 px-2.5 py-0.5 rounded-full text-[11px] font-semibold ${t.cls}`}
                         >
                           {t.label}
                         </span>
@@ -157,42 +159,42 @@ export default function Alerts() {
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-5 py-3.5">
                       <span className="px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-medium">
                         {STYLE_LABEL[a.style] || a.style}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-xs text-slate-500 dark:text-slate-400">{scheduled}</td>
-                    <td className="px-4 py-3">
+                    <td className="px-5 py-3.5 text-xs text-slate-500 dark:text-slate-400">{scheduled}</td>
+                    <td className="px-5 py-3.5">
                       <button
                         onClick={() => toggleActive(a)}
-                        className={`relative w-11 h-6 rounded-full transition ${
-                          a.is_active ? "bg-emerald-600" : "bg-slate-300"
+                        className={`relative w-11 h-6 rounded-full transition-colors ${
+                          a.is_active ? "bg-gradient-to-r from-pink-500 to-rose-500" : "bg-slate-300 dark:bg-slate-700"
                         }`}
                         aria-label={a.is_active ? "Deactivate" : "Activate"}
                       >
                         <span
-                          className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition ${
+                          className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${
                             a.is_active ? "left-[22px]" : "left-0.5"
                           }`}
                         />
                       </button>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-5 py-3.5">
                       <div className="flex items-center justify-end gap-1.5">
                         <button
                           onClick={() => {
                             setEditing(a);
                             setModalOpen(true);
                           }}
-                          className="p-2 rounded-lg text-slate-500 hover:bg-blue-50 hover:text-blue-600 transition"
+                          className="p-2 rounded-xl text-slate-500 hover:bg-pink-50 dark:hover:bg-pink-950/50 hover:text-pink-600 dark:hover:text-pink-400 transition"
                           aria-label="Edit"
                         >
                           <Pencil className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => setConfirming(a)}
-                          className="p-2 rounded-lg text-slate-500 hover:bg-rose-50 hover:text-rose-600 transition"
+                          className="p-2 rounded-xl text-slate-500 hover:bg-rose-50 dark:hover:bg-rose-950/50 hover:text-rose-600 dark:hover:text-rose-400 transition"
                           aria-label="Delete"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -215,9 +217,9 @@ export default function Alerts() {
       />
 
       <Modal open={!!confirming} onClose={() => setConfirming(null)} title="Delete alert">
-        <p className="text-sm text-slate-600">
+        <p className="text-sm text-slate-600 dark:text-slate-300">
           Are you sure you want to delete{" "}
-          <strong className="text-slate-900">
+          <strong className="text-slate-900 dark:text-white">
             {confirming?.title || `alert #${confirming?.id}`}
           </strong>
           ? It will disappear from the storefront immediately.
@@ -225,13 +227,13 @@ export default function Alerts() {
         <div className="mt-6 flex gap-3 justify-end">
           <button
             onClick={() => setConfirming(null)}
-            className="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-600 font-medium hover:bg-slate-50 transition text-sm"
+            className="px-5 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition text-sm"
           >
             Cancel
           </button>
           <button
             onClick={handleDelete}
-            className="px-5 py-2.5 rounded-xl bg-rose-600 text-white font-semibold hover:bg-rose-700 transition text-sm"
+            className="px-5 py-2.5 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white font-semibold shadow-sm shadow-rose-600/25 active:scale-[0.98] transition-all text-sm"
           >
             Delete
           </button>

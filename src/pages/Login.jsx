@@ -42,19 +42,19 @@ export default function Login() {
   };
 
   return (
-    <div className="relative min-h-screen w-full bg-gradient-to-br from-[#EBF3FE] via-[#F3F7FF] to-[#DFEDFE] dark:from-[#0b1120] dark:via-[#0f172a] dark:to-[#090d16] flex items-center justify-center p-3 sm:p-6 md:p-10 overflow-x-hidden">
+    <div className="relative min-h-screen w-full bg-gradient-to-br from-[#FFF5F8] via-[#FDF2F6] to-[#FCE7F0] dark:from-[#0b080e] dark:via-[#130d17] dark:to-[#0f0b12] flex items-center justify-center p-3 sm:p-6 md:p-10 overflow-x-hidden">
       {/* Decorative ambient background curves */}
-      <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-blue-300/20 dark:bg-blue-600/10 blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-24 -right-24 w-[30rem] h-[30rem] rounded-full bg-indigo-300/20 dark:bg-indigo-600/10 blur-3xl pointer-events-none" />
-      <div className="absolute top-1/2 left-1/4 w-72 h-72 rounded-full bg-sky-200/30 dark:bg-sky-600/5 blur-2xl pointer-events-none" />
+      <div className="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-pink-300/25 dark:bg-pink-600/10 blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-24 -right-24 w-[30rem] h-[30rem] rounded-full bg-rose-300/20 dark:bg-rose-600/10 blur-3xl pointer-events-none" />
+      <div className="absolute top-1/2 left-1/4 w-72 h-72 rounded-full bg-pink-200/30 dark:bg-pink-600/5 blur-2xl pointer-events-none" />
 
       {/* Top right language & theme controls */}
       <div className="absolute top-3 right-3 sm:top-6 sm:right-8 z-20">
-        <HeaderControls className="backdrop-blur-md bg-white/70 dark:bg-slate-800/80 p-1 rounded-full shadow-xs border border-slate-200/60 dark:border-slate-700" />
+        <HeaderControls className="backdrop-blur-md bg-white/80 dark:bg-[#160f1c]/80 p-1 rounded-full shadow-xs border border-pink-100 dark:border-pink-950/60" />
       </div>
 
-      {/* Main Container Card (inspired by modern dashboard login mockup) */}
-      <div className="relative w-full max-w-5xl rounded-2xl sm:rounded-[36px] bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-2 border-blue-200/70 dark:border-blue-900/40 shadow-2xl shadow-blue-500/10 dark:shadow-black/50 overflow-hidden animate-pop-in my-10 sm:my-0">
+      {/* Main Container Card */}
+      <div className="relative w-full max-w-5xl rounded-2xl sm:rounded-[36px] bg-white/95 dark:bg-[#150e1b]/95 backdrop-blur-xl border border-pink-200/80 dark:border-pink-900/40 shadow-2xl shadow-pink-500/10 dark:shadow-black/60 overflow-hidden animate-pop-in my-10 sm:my-0">
         <div className="grid grid-cols-1 lg:grid-cols-12 min-h-0 sm:min-h-[580px]">
           {/* Left Column: Login Form */}
           <div className="lg:col-span-5 flex flex-col justify-between p-5 sm:p-10 md:p-12 z-10">
@@ -69,21 +69,21 @@ export default function Login() {
                     onError={(e) => (e.target.style.display = "none")}
                   />
                 ) : (
-                  <div className="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-md shadow-blue-500/30">
+                  <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-pink-500 via-rose-500 to-pink-600 text-white flex items-center justify-center shadow-md shadow-pink-500/30">
                     <Store className="w-5 h-5" />
                   </div>
                 )}
-                <span className="font-extrabold tracking-wider text-sm sm:text-base text-slate-800 dark:text-white uppercase">
+                <span className="font-extrabold tracking-wider text-sm sm:text-base bg-gradient-to-r from-slate-900 via-pink-950 to-rose-900 dark:from-white dark:via-pink-100 dark:to-pink-200 bg-clip-text text-transparent uppercase">
                   {siteName}
                 </span>
               </div>
 
               {/* Heading */}
               <div className="mb-6 sm:mb-8">
-                <h1 className="text-2xl sm:text-4xl font-extrabold text-slate-800 dark:text-white tracking-tight">
+                <h1 className="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                   {t("login.title") || "Login"}
                 </h1>
-                <p className="mt-1.5 sm:mt-2 text-xs sm:text-sm text-slate-400 dark:text-slate-400 leading-relaxed font-normal">
+                <p className="mt-1.5 sm:mt-2 text-xs sm:text-sm text-slate-500 dark:text-slate-400 leading-relaxed font-normal">
                   {t("login.subtitle") || "Welcome to log in to your background management system."}
                 </p>
               </div>
@@ -95,6 +95,7 @@ export default function Login() {
                   <span className="leading-snug">{error}</span>
                 </div>
               )}
+
 
               {/* Form */}
               <form onSubmit={handleSubmit} className="space-y-5">
@@ -110,7 +111,7 @@ export default function Login() {
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="admin@example.com"
                       autoComplete="username"
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-800/60 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-slate-400"
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-pink-950/60 bg-slate-50/50 dark:bg-[#1e1526] text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/30 focus:border-pink-400 transition-all placeholder:text-slate-400"
                     />
                     <Mail className="absolute right-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
                   </div>
@@ -128,7 +129,7 @@ export default function Login() {
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="Please enter your password"
                       autoComplete="current-password"
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700/80 bg-slate-50/50 dark:bg-slate-800/60 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-slate-400 pr-11"
+                      className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-pink-950/60 bg-slate-50/50 dark:bg-[#1e1526] text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/30 focus:border-pink-400 transition-all placeholder:text-slate-400 pr-11"
                     />
                     <button
                       type="button"
@@ -150,7 +151,7 @@ export default function Login() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full sm:w-44 py-3.5 px-8 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm tracking-wide shadow-lg shadow-blue-500/30 hover:shadow-blue-500/40 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.99] transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-60 disabled:hover:translate-y-0"
+                    className="w-full sm:w-48 py-3.5 px-8 rounded-2xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 hover:from-pink-600 hover:to-rose-600 text-white font-bold text-sm tracking-wide shadow-lg shadow-pink-500/30 hover:shadow-pink-500/40 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.99] transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-60 disabled:hover:translate-y-0 cursor-pointer"
                   >
                     {loading ? (
                       <>
@@ -169,9 +170,9 @@ export default function Login() {
             </div>
 
             {/* Footer notice */}
-            <div className="mt-8 pt-4 border-t border-slate-100 dark:border-slate-800/60 flex items-center justify-between text-xs text-slate-400">
+            <div className="mt-8 pt-4 border-t border-slate-100 dark:border-pink-950/60 flex items-center justify-between text-xs text-slate-400">
               <span>{t("login.adminOnly") || "Admin accounts only"}</span>
-              <span className="inline-flex items-center gap-1 font-medium text-blue-600 dark:text-blue-400">
+              <span className="inline-flex items-center gap-1 font-semibold text-pink-600 dark:text-pink-400">
                 <Lock className="w-3.5 h-3.5" />
                 Secure Portal
               </span>
@@ -179,10 +180,10 @@ export default function Login() {
           </div>
 
           {/* Right Column: High Fidelity Modern Analytics Illustration */}
-          <div className="hidden lg:flex lg:col-span-7 bg-gradient-to-br from-blue-50/60 via-slate-50/40 to-blue-100/40 dark:from-slate-800/40 dark:via-slate-800/20 dark:to-slate-900/60 border-l border-blue-100 dark:border-slate-800/80 items-center justify-center p-8 relative overflow-hidden">
+          <div className="hidden lg:flex lg:col-span-7 bg-gradient-to-br from-pink-50/50 via-rose-50/20 to-pink-100/30 dark:from-[#1b1222] dark:via-[#150e1b] dark:to-[#100a15] border-l border-pink-100 dark:border-pink-950/60 items-center justify-center p-8 relative overflow-hidden">
             {/* Soft decorative background circles */}
-            <div className="absolute w-72 h-72 rounded-full bg-blue-400/10 blur-2xl top-10 right-10 pointer-events-none" />
-            <div className="absolute w-60 h-60 rounded-full bg-indigo-400/10 blur-2xl bottom-10 left-10 pointer-events-none" />
+            <div className="absolute w-72 h-72 rounded-full bg-pink-400/10 blur-2xl top-10 right-10 pointer-events-none" />
+            <div className="absolute w-60 h-60 rounded-full bg-rose-400/10 blur-2xl bottom-10 left-10 pointer-events-none" />
 
             <div className="relative w-full max-w-lg p-2 transition-transform duration-500 hover:scale-[1.02]">
               <img
