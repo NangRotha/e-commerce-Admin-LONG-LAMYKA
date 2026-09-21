@@ -24,13 +24,13 @@ import { useRealtime } from "../context/RealtimeContext";
 
 // ព័ត៌មាន Bakong Wallet ដែលរក្សាទុកក្នុង Site Settings (key => default)
 const PAYMENT_DEFAULTS = {
-  payment_company_name: "Udom Shop",
-  payment_bakong_id: "Udom",
-  payment_display_name: "Udom",
+  payment_company_name: "LONG LAMYKA Store",
+  payment_bakong_id: "yung in by L.LONG",
+  payment_display_name: "LONG LAMYKA",
   payment_currency: "USD",
   payment_khr_rate: "4100",
-  khqrcc_profile_id: "",
-  khqrcc_secret_key: "",
+  khqrcc_profile_id: "sRX1Zv0aWZwTZ9idvksdAmCJly6LAHh8",
+  khqrcc_secret_key: "CtOah7bQW44Cs9Bn1AVhDQrAbZWgzHbn",
 };
 
 const SOCIAL_DEFAULTS = {
@@ -779,7 +779,7 @@ export default function Settings() {
                   className={input}
                   value={pay.khqrcc_profile_id}
                   onChange={(e) => setPayField("khqrcc_profile_id", e.target.value)}
-                  placeholder="MOgrEmjgLkEmYzovmfTH0HQUPLgJ6DFq"
+                  placeholder="sRX1Zv0aWZwTZ9idvksdAmCJly6LAHh8"
                 />
                 <p className="mt-1.5 text-xs text-slate-400">
                   {t("settings.profileIdHint")}
@@ -794,7 +794,7 @@ export default function Settings() {
                     className={`${input} pr-10`}
                     value={pay.khqrcc_secret_key}
                     onChange={(e) => setPayField("khqrcc_secret_key", e.target.value)}
-                    placeholder="EIiW0sBH4vWjzeovF5bRC6WwDHJYzvfK"
+                    placeholder="CtOah7bQW44Cs9Bn1AVhDQrAbZWgzHbn"
                   />
                   <button
                     type="button"
