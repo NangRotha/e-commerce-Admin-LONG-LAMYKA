@@ -233,13 +233,13 @@ export function RealtimeProvider({ children }) {
  */
 export function useRealtime(type, handler) {
   const ctx = useContext(RealtimeContext);
-  if (!ctx) return false;
-  const { connected, subscribe } = ctx;
   const handlerRef = useRef(handler);
 
   useEffect(() => {
     handlerRef.current = handler;
   }, [handler]);
+
+  const subscribe = ctx?.subscribe;
 
   useEffect(() => {
     if (!type || !subscribe) return;
@@ -252,7 +252,7 @@ export function useRealtime(type, handler) {
     return () => unsubs.forEach((u) => u());
   }, [type, subscribe]);
 
-  return connected;
+  return ctx?.connected ?? false;
 }
 
 export function useEmitRealtime() {
