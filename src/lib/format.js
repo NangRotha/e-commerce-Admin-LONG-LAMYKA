@@ -14,5 +14,8 @@ export function formatDate(d) {
 /** ពិនិត្យថា URL ជាវីដេអូ ឬរូបភាព (សម្រាប់ Gallery ផលិតផល) */
 export function isVideoUrl(url) {
   if (!url) return false;
-  return /\.(mp4|webm|mov|ogg|m4v)(\?|#|$)/i.test(String(url));
+  const s = String(url);
+  if (/(youtu\.be|youtube\.com)/i.test(s)) return true;
+  if (/\/video\/upload\//i.test(s)) return true;
+  return /\.(mp4|webm|mov|ogg|m4v|mkv|quicktime)(\?|#|$)/i.test(s);
 }
