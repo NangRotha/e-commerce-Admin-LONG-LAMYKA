@@ -448,3 +448,30 @@ html.dark .luxury-card {
 .ripple-container:active::after {
   animation: ripple 0.5s ease-out both;
 }
+
+/* TikTok brand gradient pulse */
+@keyframes tiktok-glow {
+  0%, 100% {
+    box-shadow: 0 0 8px 0 rgba(254, 44, 85, 0.3), 0 0 8px 0 rgba(0, 242, 234, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px 4px rgba(254, 44, 85, 0.5), 0 0 20px 4px rgba(0, 242, 234, 0.5);
+  }
+}
+.animate-tiktok-glow {
+  animation: tiktok-glow 2.4s ease-in-out infinite;
+}
+
+/* Social link hover animation */
+.social-link {
+  position: relative;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+              opacity 0.2s ease;
+}
+.social-link:hover {
+  transform: translateY(-2px) scale(1.05);
+}
+.social-link:active {
+  transform: scale(0.95);
+}
+

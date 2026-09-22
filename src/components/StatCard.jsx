@@ -31,7 +31,7 @@ export default function StatCard({ icon, label, value, accent = "pink", trend })
 
   return (
     <div
-      className={`luxury-card rounded-[26px] p-5 sm:p-6 flex items-center justify-between gap-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${current.glow} relative overflow-hidden group`}
+      className={`luxury-card rounded-[26px] p-5 sm:p-6 flex items-center justify-between gap-4 card-hover ${current.glow} relative overflow-hidden group`}
     >
       {/* Ambient background blur */}
       <div className="absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-pink-500/5 dark:bg-pink-500/10 blur-xl group-hover:scale-150 transition-transform duration-500 pointer-events-none" />

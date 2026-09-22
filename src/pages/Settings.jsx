@@ -653,6 +653,22 @@ export default function Settings() {
                   <span className="w-1.5 h-1.5 rounded-full bg-[#229ED9] animate-pulse" />
                   @{telegram.telegram_bot_username || "Lamykabot"}
                 </span>
+                {telegramStatus && (
+                  <span
+                    className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold border ${
+                      telegramStatus.enabled
+                        ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/60"
+                        : "bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 border-amber-200 dark:border-amber-800/60"
+                    }`}
+                  >
+                    <span
+                      className={`w-1.5 h-1.5 rounded-full ${
+                        telegramStatus.enabled ? "bg-emerald-500" : "bg-amber-500"
+                      }`}
+                    />
+                    {telegramStatus.enabled ? "Bot Active" : "Config Required"}
+                  </span>
+                )}
               </div>
               <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
                 ទទួលដំណឹងភ្លាមៗលើ Telegram ពេលមាន Order ថ្មី ឬអតិថិជនបង់ប្រាក់តាម ABA Pay / KHQR

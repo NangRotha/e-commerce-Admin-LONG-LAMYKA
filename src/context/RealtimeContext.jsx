@@ -71,13 +71,16 @@ export function RealtimeProvider({ children }) {
       set.forEach((fn) => {
         try {
           fn({ type, message: "Sync update on reconnect", sync: true });
-        } catch {}
+        } catch {
+          /* ignore notification errors */
+        }
       });
     });
   }, []);
 
   useEffect(() => {
     closedRef.current = false;
+    const currentListeners = listenersRef.current;
 
     const clearTimers = () => {
       if (retryRef.current) clearTimeout(retryRef.current);
@@ -96,7 +99,9 @@ export function RealtimeProvider({ children }) {
           wsRef.current.onclose = null;
           wsRef.current.onerror = null;
           wsRef.current.close();
-        } catch {}
+        } catch {
+          /* ignore close errors */
+        }
         wsRef.current = null;
       }
 
@@ -104,7 +109,7 @@ export function RealtimeProvider({ children }) {
       try {
         const url = getWsUrl("/ws/products");
         ws = new WebSocket(url);
-      } catch (e) {
+      } catch {
         retryRef.current = setTimeout(connect, RECONNECT_MS);
         return;
       }
@@ -158,7 +163,9 @@ export function RealtimeProvider({ children }) {
       ws.onerror = () => {
         try {
           if (wsRef.current) wsRef.current.close();
-        } catch {}
+        } catch {
+          /* ignore error handler close error */
+        }
       };
     };
 
@@ -188,9 +195,11 @@ export function RealtimeProvider({ children }) {
       window.removeEventListener("focus", handleReactivate);
       try {
         if (wsRef.current) wsRef.current.close();
-      } catch {}
+      } catch {
+        /* ignore on unmount */
+      }
       wsRef.current = null;
-      listenersRef.current.clear();
+      currentListeners.clear();
     };
   }, [notify, syncAllListeners]);
 
