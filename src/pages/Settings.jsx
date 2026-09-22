@@ -17,10 +17,19 @@ import {
   Key,
   Eye,
   EyeOff,
+  RotateCcw,
+  Code2,
+  Info,
+  Clock,
 } from "lucide-react";
 import { api } from "../api/client";
 import { useI18n } from "../i18n/I18nContext";
 import { useRealtime } from "../context/RealtimeContext";
+import {
+  LOCATION_DEFAULTS,
+  DEFAULT_MAP_PREVIEW,
+  extractMapEmbedUrl,
+} from "../utils/location";
 
 // ព័ត៌មាន Bakong Wallet ដែលរក្សាទុកក្នុង Site Settings (key => default)
 const PAYMENT_DEFAULTS = {
@@ -46,12 +55,6 @@ const SOCIAL_DEFAULTS = {
   social_instagram: "",
   social_tiktok: "",
   contact_phone: "",
-};
-
-const LOCATION_DEFAULTS = {
-  store_maps_url: "",
-  store_address_km: "",
-  store_address_en: "",
 };
 
 const CURRENCIES = ["USD", "KHR"];
@@ -115,14 +118,29 @@ export default function Settings() {
         });
         setLoc({
           store_maps_url:
-            s.store_maps_url ||
-            "https://maps.app.goo.gl/EaQbHNijNE7EHgmFA?g_st=ic",
+            s.store_maps_url !== undefined
+              ? s.store_maps_url
+              : LOCATION_DEFAULTS.store_maps_url,
+          store_maps_embed_url:
+            s.store_maps_embed_url !== undefined
+              ? s.store_maps_embed_url
+              : "",
           store_address_km:
-            s.store_address_km ||
-            "ផ្លូវចាក់សំរាម ស្ទឹងមានជ័យ, ភូមិដំណាក់ធំ, សង្កាត់ស្ទឹងមានជ័យទី២, ខណ្ឌមានជ័យ, រាជធានីភ្នំពេញ",
+            s.store_address_km !== undefined
+              ? s.store_address_km
+              : LOCATION_DEFAULTS.store_address_km,
           store_address_en:
-            s.store_address_en ||
-            "Stoeung Meanchey, Damnak Thum, Sangkat Stung Meanchey 2, Khan Meanchey, Phnom Penh, Cambodia",
+            s.store_address_en !== undefined
+              ? s.store_address_en
+              : LOCATION_DEFAULTS.store_address_en,
+          store_hours_km:
+            s.store_hours_km !== undefined
+              ? s.store_hours_km
+              : LOCATION_DEFAULTS.store_hours_km,
+          store_hours_en:
+            s.store_hours_en !== undefined
+              ? s.store_hours_en
+              : LOCATION_DEFAULTS.store_hours_en,
         });
         setPay({
           payment_company_name: s.payment_company_name || "LONG LAMYKA Store",
@@ -282,19 +300,72 @@ export default function Settings() {
   // ===== Store Location & Google Maps =====
   const setLocField = (key, value) => setLoc((l) => ({ ...l, [key]: value }));
 
+  const handleEmbedChange = (val) => {
+    const extracted = extractMapEmbedUrl(val);
+    setLocField("store_maps_embed_url", extracted || val);
+  };
+
   const saveLocation = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     setError("");
     setSavingLoc(true);
     try {
+      const cleanEmbedUrl = extractMapEmbedUrl(loc.store_maps_embed_url);
+      const dataToSave = {
+        ...loc,
+        store_maps_embed_url: cleanEmbedUrl,
+      };
       for (const key of Object.keys(LOCATION_DEFAULTS)) {
-        await api.updateSetting(key, String(loc[key] ?? "").trim());
+        await api.updateSetting(key, String(dataToSave[key] ?? "").trim());
       }
-      flash(t("settings.saved"));
+      setLoc((prev) => ({ ...prev, store_maps_embed_url: cleanEmbedUrl }));
+      flash(t("settings.saved") || "Store location saved successfully!");
     } catch (err) {
       setError(err.message);
     } finally {
       setSavingLoc(false);
+    }
+  };
+
+  const handleResetLocation = () => {
+    if (
+      window.confirm(
+        "តើអ្នកពិតជាចង់កំណត់ព័ត៌មានទីតាំងហាងលំនាំដើមឡើងវិញមែនទេ? / Reset to default location?"
+      )
+    ) {
+      setLoc(LOCATION_DEFAULTS);
+      flash(
+        "បានកំណត់តម្លៃលំនាំដើមឡើងវិញ (សូមចុចរក្សាទុក) / Defaults loaded (click Save to apply)"
+      );
+    }
+  };
+
+  const handleClearLocation = async () => {
+    if (
+      window.confirm(
+        "តើអ្នកពិតជាចង់សម្អាត និងលុបព័ត៌មានទីតាំងទាំងអស់មែនទេ? / Clear all location fields?"
+      )
+    ) {
+      const empty = {
+        store_maps_url: "",
+        store_maps_embed_url: "",
+        store_address_km: "",
+        store_address_en: "",
+        store_hours_km: "",
+        store_hours_en: "",
+      };
+      setLoc(empty);
+      setSavingLoc(true);
+      try {
+        for (const key of Object.keys(LOCATION_DEFAULTS)) {
+          await api.updateSetting(key, "");
+        }
+        flash(t("settings.saved") || "Location cleared successfully!");
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setSavingLoc(false);
+      }
     }
   };
 
@@ -837,9 +908,9 @@ export default function Settings() {
         className={`${card}`}
         style={{ animationDelay: "80ms" }}
       >
-        <div className="flex items-start justify-between gap-3">
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
           <div className="flex items-start gap-3">
-            <span className="shrink-0 w-11 h-11 rounded-2xl bg-pink-100 dark:bg-pink-950/40 flex items-center justify-center text-pink-600 dark:text-pink-400">
+            <span className="shrink-0 w-11 h-11 rounded-2xl bg-pink-100 dark:bg-pink-950/40 flex items-center justify-center text-pink-600 dark:text-pink-400 shadow-2xs">
               <MapPin className="w-5 h-5" />
             </span>
             <div className="min-w-0">
@@ -852,21 +923,41 @@ export default function Settings() {
             </div>
           </div>
 
-          {loc.store_maps_url && (
-            <a
-              href={loc.store_maps_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-pink-50 dark:bg-pink-950/50 hover:bg-pink-100 dark:hover:bg-pink-900/50 text-pink-600 dark:text-pink-400 text-xs font-bold transition border border-pink-200/80 dark:border-pink-900 shrink-0"
+          <div className="flex items-center gap-2 self-start shrink-0">
+            {loc.store_maps_url && (
+              <a
+                href={loc.store_maps_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-pink-50 dark:bg-pink-950/50 hover:bg-pink-100 dark:hover:bg-pink-900/50 text-pink-600 dark:text-pink-400 text-xs font-bold transition border border-pink-200/80 dark:border-pink-900"
+              >
+                <span>{t("settings.testMap") || "Google Maps"}</span>
+                <ExternalLink className="w-3.5 h-3.5" />
+              </a>
+            )}
+            <button
+              type="button"
+              onClick={handleResetLocation}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold transition"
+              title={t("settings.resetLocation")}
             >
-              <span>Google Maps</span>
-              <ExternalLink className="w-3.5 h-3.5" />
-            </a>
-          )}
+              <RotateCcw className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">{t("settings.resetLocation")}</span>
+            </button>
+            <button
+              type="button"
+              onClick={handleClearLocation}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/50 text-rose-600 dark:text-rose-400 text-xs font-bold transition"
+              title={t("settings.clearLocation")}
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">{t("settings.clearLocation")}</span>
+            </button>
+          </div>
         </div>
 
         <div className="mt-5 space-y-4">
-          {/* Google Maps URL */}
+          {/* Google Maps URL (App / Share link) */}
           <div>
             <label className={`${label} flex items-center justify-between`}>
               <span>{t("settings.mapsUrl")}</span>
@@ -884,11 +975,76 @@ export default function Settings() {
             </label>
             <input
               className={input}
-              value={loc.store_maps_url}
+              value={loc.store_maps_url || ""}
               onChange={(e) => setLocField("store_maps_url", e.target.value)}
-              placeholder="https://maps.app.goo.gl/..."
+              placeholder="https://maps.app.goo.gl/... or https://maps.google.com/..."
             />
             <p className="mt-1 text-xs text-slate-400">{t("settings.mapsUrlHint")}</p>
+          </div>
+
+          {/* Google Maps Embed Code / Iframe / URL */}
+          <div>
+            <div className="flex items-center justify-between">
+              <label className={`${label} flex items-center gap-1.5`}>
+                <Code2 className="w-3.5 h-3.5 text-pink-500" />
+                <span>{t("settings.mapsEmbedUrl")}</span>
+              </label>
+              {loc.store_maps_embed_url && (
+                <button
+                  type="button"
+                  onClick={() => setLocField("store_maps_embed_url", "")}
+                  className="text-[11px] text-rose-500 hover:underline font-bold"
+                >
+                  {t("common.delete") || "Remove Embed"}
+                </button>
+              )}
+            </div>
+            <textarea
+              rows={2}
+              className={input}
+              value={loc.store_maps_embed_url || ""}
+              onChange={(e) => handleEmbedChange(e.target.value)}
+              placeholder="<iframe src=&quot;https://www.google.com/maps/embed?pb=...&quot; ...></iframe> ឬ https://www.google.com/maps/embed?pb=..."
+            />
+            <p className="mt-1 text-xs text-slate-400">{t("settings.mapsEmbedUrlHint")}</p>
+
+            {/* Instruction helper */}
+            <div className="mt-2.5 p-3 rounded-2xl bg-pink-50/70 dark:bg-pink-950/30 border border-pink-200/70 dark:border-pink-900/40 text-xs text-slate-600 dark:text-pink-200/80 flex items-start gap-2.5">
+              <Info className="w-4 h-4 text-pink-500 shrink-0 mt-0.5" />
+              <div className="space-y-1">
+                <p className="font-semibold text-slate-800 dark:text-pink-100 leading-relaxed">
+                  {t("settings.mapsEmbedGuide")}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Live Map Preview */}
+          <div className="space-y-2 pt-1">
+            <div className="flex items-center justify-between">
+              <label className={label}>{t("settings.mapsPreview")}</label>
+              {loc.store_maps_embed_url ? (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 text-[11px] font-bold border border-emerald-200 dark:border-emerald-800/60">
+                  <CheckCircle2 className="w-3 h-3" />
+                  <span>{t("settings.mapsPreviewActive")}</span>
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 text-[11px] font-bold border border-amber-200 dark:border-amber-800/60">
+                  <Info className="w-3 h-3" />
+                  <span>{t("settings.mapsPreviewDefault")}</span>
+                </span>
+              )}
+            </div>
+            <div className="rounded-2xl overflow-hidden border-2 border-pink-100 dark:border-pink-900/60 shadow-xs relative h-60 sm:h-72 bg-slate-100 dark:bg-slate-900">
+              <iframe
+                title="Admin Map Preview"
+                src={extractMapEmbedUrl(loc.store_maps_embed_url) || DEFAULT_MAP_PREVIEW}
+                className="w-full h-full border-0"
+                loading="lazy"
+                allowFullScreen
+                referrerPolicy="no-referrer-when-downgrade"
+              />
+            </div>
           </div>
 
           {/* Address Khmer */}
@@ -897,7 +1053,7 @@ export default function Settings() {
             <textarea
               rows={2}
               className={input}
-              value={loc.store_address_km}
+              value={loc.store_address_km || ""}
               onChange={(e) => setLocField("store_address_km", e.target.value)}
               placeholder="ផ្លូវ... ភូមិ... សង្កាត់... ខណ្ឌ... រាជធានីភ្នំពេញ"
             />
@@ -910,14 +1066,44 @@ export default function Settings() {
             <textarea
               rows={2}
               className={input}
-              value={loc.store_address_en}
+              value={loc.store_address_en || ""}
               onChange={(e) => setLocField("store_address_en", e.target.value)}
               placeholder="Street... Sangkat... Khan... Phnom Penh, Cambodia"
             />
             <p className="mt-1 text-xs text-slate-400">{t("settings.addressEnHint")}</p>
           </div>
 
-          <div className="pt-2">
+          {/* Opening Hours Khmer & English */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className={`${label} flex items-center gap-1.5`}>
+                <Clock className="w-3.5 h-3.5 text-pink-500" />
+                <span>{t("settings.hoursKm")}</span>
+              </label>
+              <input
+                className={input}
+                value={loc.store_hours_km || ""}
+                onChange={(e) => setLocField("store_hours_km", e.target.value)}
+                placeholder="៨:០០ ព្រឹក - ៨:៣០ យប់ (រៀងរាល់ថ្ងៃ)"
+              />
+              <p className="mt-1 text-xs text-slate-400">{t("settings.hoursKmHint")}</p>
+            </div>
+            <div>
+              <label className={`${label} flex items-center gap-1.5`}>
+                <Clock className="w-3.5 h-3.5 text-pink-500" />
+                <span>{t("settings.hoursEn")}</span>
+              </label>
+              <input
+                className={input}
+                value={loc.store_hours_en || ""}
+                onChange={(e) => setLocField("store_hours_en", e.target.value)}
+                placeholder="8:00 AM - 8:30 PM (Everyday)"
+              />
+              <p className="mt-1 text-xs text-slate-400">{t("settings.hoursEnHint")}</p>
+            </div>
+          </div>
+
+          <div className="pt-3 flex items-center justify-between gap-3 flex-wrap">
             <button
               type="submit"
               disabled={savingLoc}
@@ -935,6 +1121,25 @@ export default function Settings() {
                 </>
               )}
             </button>
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleResetLocation}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold transition active:scale-95"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>{t("settings.resetLocation")}</span>
+              </button>
+              <button
+                type="button"
+                onClick={handleClearLocation}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-rose-50 hover:bg-rose-100 dark:bg-rose-950/40 dark:hover:bg-rose-900/50 text-rose-600 dark:text-rose-400 text-xs font-bold transition active:scale-95"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>{t("settings.clearLocation")}</span>
+              </button>
+            </div>
           </div>
         </div>
       </form>
