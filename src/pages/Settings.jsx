@@ -44,6 +44,7 @@ const SOCIAL_DEFAULTS = {
   social_whatsapp: "",
   social_facebook: "",
   social_instagram: "",
+  social_tiktok: "",
   contact_phone: "",
 };
 
@@ -102,6 +103,7 @@ export default function Settings() {
           social_whatsapp: s.social_whatsapp || s.whatsapp_url || "",
           social_facebook: s.social_facebook || s.facebook_url || "",
           social_instagram: s.social_instagram || s.instagram_url || "",
+          social_tiktok: s.social_tiktok || "",
           contact_phone: s.contact_phone || "",
         });
         setTelegram({
@@ -575,6 +577,25 @@ export default function Settings() {
               placeholder="https://instagram.com/longlamyka"
             />
             <p className="mt-1 text-xs text-slate-400">{t("settings.instagramHint")}</p>
+          </div>
+
+          {/* TikTok */}
+          <div>
+            <label className={`${label} flex items-center gap-2`}>
+              <span className="w-6 h-6 rounded-lg bg-[#010101]/10 text-[#010101] dark:text-slate-300 flex items-center justify-center shrink-0">
+                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.32 6.32 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.27 8.27 0 004.84 1.55V6.79a4.85 4.85 0 01-1.07-.1z" />
+                </svg>
+              </span>
+              {t("settings.tiktok")}
+            </label>
+            <input
+              className={input}
+              value={social.social_tiktok}
+              onChange={(e) => setSocialField("social_tiktok", e.target.value)}
+              placeholder="https://tiktok.com/@longlamyka or @longlamyka"
+            />
+            <p className="mt-1 text-xs text-slate-400">{t("settings.tiktokHint")}</p>
           </div>
 
           {/* Phone */}
