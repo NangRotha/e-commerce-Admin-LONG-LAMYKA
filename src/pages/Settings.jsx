@@ -38,12 +38,12 @@ const PAYMENT_DEFAULTS = {
   payment_display_name: "LONG LAMYKA",
   payment_currency: "USD",
   payment_khr_rate: "4100",
-  khqrcc_profile_id: "sRX1Zv0aWZwTZ9idvksdAmCJly6LAHh8",
-  khqrcc_secret_key: "CtOah7bQW44Cs9Bn1AVhDQrAbZWgzHbn",
+  khqrcc_profile_id: "",
+  khqrcc_secret_key: "",
 };
 
 const TELEGRAM_DEFAULTS = {
-  telegram_bot_token: "8508582321:AAE1MAImR77qzlKIDfKC75oaTT_iyGqHm90",
+  telegram_bot_token: "",
   telegram_bot_username: "Lamykabot",
   telegram_chat_id: "",
 };
@@ -110,9 +110,7 @@ export default function Settings() {
           contact_phone: s.contact_phone || "",
         });
         setTelegram({
-          telegram_bot_token:
-            s.telegram_bot_token ||
-            "8508582321:AAE1MAImR77qzlKIDfKC75oaTT_iyGqHm90",
+          telegram_bot_token: s.telegram_bot_token || "",
           telegram_bot_username: s.telegram_bot_username || "Lamykabot",
           telegram_chat_id: s.telegram_chat_id || "",
         });
@@ -458,7 +456,7 @@ export default function Settings() {
           {logoUrl ? (
             <img
               src={logoUrl}
-              alt="Site logo preview"
+              alt={t("settings.logoPreviewAlt")}
               className="h-16 w-16 rounded-2xl border border-pink-200/80 dark:border-pink-900/50 bg-pink-50/50 dark:bg-slate-800 object-contain p-2 transition-transform duration-300 hover:scale-105"
               onError={(e) => (e.target.style.display = "none")}
             />
@@ -763,21 +761,13 @@ export default function Settings() {
         {/* Instructions Banner */}
         <div className="mt-4 p-4 rounded-2xl bg-[#229ED9]/5 border border-[#229ED9]/15 text-xs text-slate-600 dark:text-slate-300 space-y-1.5">
           <p className="font-bold text-[#229ED9] flex items-center gap-1.5">
-            💡 របៀបភ្ជាប់ Bot ដើម្បីទទួលដំណឹង Order Alerts លើ Telegram៖
+            {t("settings.tgGuideTitle")}
           </p>
           <ol className="list-decimal list-inside space-y-1 text-slate-500 dark:text-slate-400 pl-1">
-            <li>
-              ចុចប៊ូតុង <b>"Open @Lamykabot"</b> ខាងលើ ឬស្វែងរក <b>@Lamykabot</b> ក្នុង Telegram។
-            </li>
-            <li>
-              ចុចប៊ូតុង <b>Start</b> (ឬផ្ញើសារ <code>/start</code>) នោះ Bot នឹងឆ្លើយតបបង្ហាញ <b>Telegram Chat ID</b> របស់អ្នក។
-            </li>
-            <li>
-              ចម្លងលេខនោះ យកមកបិទភ្ជាប់ (Paste) ក្នុងប្រអប់ <b>Admin Chat ID</b> ខាងក្រោម រួចចុច <b>រក្សាទុក Telegram Settings</b>។
-            </li>
-            <li>
-              ចុច <b>"ផ្ញើសារតេស្ត (Test Alert)"</b> ដើម្បីសាកល្បងថាតើទទួលបានសារឬអត់!
-            </li>
+            <li>{t("settings.tgStep1")}</li>
+            <li>{t("settings.tgStep2")}</li>
+            <li>{t("settings.tgStep3")}</li>
+            <li>{t("settings.tgStep4")}</li>
           </ol>
         </div>
 
@@ -786,17 +776,17 @@ export default function Settings() {
           <div>
             <div className="flex items-center justify-between">
               <label className={label}>
-                Admin Telegram Chat ID (ទទួលដំណឹង Order)
+                {t("settings.tgChatIdLabel")}
               </label>
               {telegram.telegram_chat_id ? (
                 <span className="text-emerald-500 text-xs font-semibold flex items-center gap-1">
                   <CheckCircle2 className="w-3.5 h-3.5" />
-                  Chat ID បានកំណត់រួច
+                  {t("settings.tgChatIdSet")}
                 </span>
               ) : (
                 <span className="text-amber-500 text-xs font-semibold flex items-center gap-1">
                   <AlertTriangle className="w-3.5 h-3.5" />
-                  មិនទាន់កំណត់ (ផ្ញើ /start ទៅ Bot ដើម្បីដឹង)
+                  {t("settings.tgChatIdUnset")}
                 </span>
               )}
             </div>
@@ -804,17 +794,17 @@ export default function Settings() {
               className={input}
               value={telegram.telegram_chat_id}
               onChange={(e) => setTelegramField("telegram_chat_id", e.target.value)}
-              placeholder="ឧទាហរណ៍: 123456789 (លេខ Chat ID ផ្ទាល់ខ្លួន ឬ ID នៃ Group)"
+              placeholder={t("settings.tgChatIdPlaceholder")}
             />
             <p className="mt-1 text-xs text-slate-400">
-              រាល់ពេលអតិថិជនកុម្ម៉ង់ទំនិញ ឬបង់ប្រាក់ជោគជ័យ ប្រព័ន្ធនឹងផ្ញើសារលម្អិតទៅកាន់ Telegram នេះភ្លាមៗ។
+              {t("settings.tgChatIdHint")}
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Bot Username */}
             <div>
-              <label className={label}>Bot Username</label>
+              <label className={label}>{t("settings.tgBotUsername")}</label>
               <input
                 className={input}
                 value={telegram.telegram_bot_username}
@@ -826,7 +816,7 @@ export default function Settings() {
             {/* Bot Token */}
             <div>
               <div className="flex items-center justify-between">
-                <label className={label}>Bot Token (ពី @BotFather)</label>
+                <label className={label}>{t("settings.tgBotToken")}</label>
                 <button
                   type="button"
                   onClick={() => setShowTelegramToken(!showTelegramToken)}
@@ -848,7 +838,7 @@ export default function Settings() {
                 className={input}
                 value={telegram.telegram_bot_token}
                 onChange={(e) => setTelegramField("telegram_bot_token", e.target.value)}
-                placeholder="8508582321:AAE1MAImR77qzlKIDfKC75oaTT_iyGqHm90"
+                placeholder="123456789:AAExampleTokenFromBotFather"
               />
             </div>
           </div>
@@ -862,12 +852,12 @@ export default function Settings() {
               {savingTelegram ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>កំពុងរក្សាទុក...</span>
+                  <span>{t("common.saving")}</span>
                 </>
               ) : (
                 <>
                   <Save className="w-4 h-4" />
-                  <span>រក្សាទុក Telegram Settings</span>
+                  <span>{t("settings.saveTelegram")}</span>
                 </>
               )}
             </button>
@@ -881,12 +871,12 @@ export default function Settings() {
               {testingTelegram ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>កំពុងតេស្ត...</span>
+                  <span>{t("settings.testing")}</span>
                 </>
               ) : (
                 <>
                   <Send className="w-4 h-4" />
-                  <span>ផ្ញើសារតេស្ត (Test Alert)</span>
+                  <span>{t("settings.sendTest")}</span>
                 </>
               )}
             </button>
@@ -968,7 +958,7 @@ export default function Settings() {
                   rel="noopener noreferrer"
                   className="sm:hidden inline-flex items-center gap-1 text-xs font-bold text-pink-600"
                 >
-                  <span>Open Maps</span>
+                  <span>{t("settings.openMaps")}</span>
                   <ExternalLink className="w-3 h-3" />
                 </a>
               )}
@@ -1037,7 +1027,7 @@ export default function Settings() {
             </div>
             <div className="rounded-2xl overflow-hidden border-2 border-pink-100 dark:border-pink-900/60 shadow-xs relative h-60 sm:h-72 bg-slate-100 dark:bg-slate-900">
               <iframe
-                title="Admin Map Preview"
+                title={t("settings.mapPreviewAlt")}
                 src={extractMapEmbedUrl(loc.store_maps_embed_url) || DEFAULT_MAP_PREVIEW}
                 className="w-full h-full border-0"
                 loading="lazy"
@@ -1272,7 +1262,7 @@ export default function Settings() {
                   className={input}
                   value={pay.khqrcc_profile_id}
                   onChange={(e) => setPayField("khqrcc_profile_id", e.target.value)}
-                  placeholder="sRX1Zv0aWZwTZ9idvksdAmCJly6LAHh8"
+                  placeholder="your-khqrcc-profile-id"
                 />
                 <p className="mt-1.5 text-xs text-slate-400">
                   {t("settings.profileIdHint")}
@@ -1287,7 +1277,7 @@ export default function Settings() {
                     className={`${input} pr-10`}
                     value={pay.khqrcc_secret_key}
                     onChange={(e) => setPayField("khqrcc_secret_key", e.target.value)}
-                    placeholder="CtOah7bQW44Cs9Bn1AVhDQrAbZWgzHbn"
+                    placeholder="your-khqrcc-secret-key"
                   />
                   <button
                     type="button"
