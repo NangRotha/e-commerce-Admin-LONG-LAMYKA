@@ -236,7 +236,7 @@ export default function Users() {
                     </td>
 
                     <td className="px-4 py-4">
-                      {u.is_verified ? (
+                      {u.email_verified ? (
                         <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 text-xs font-semibold">
                           <CheckCircle2 className="w-4 h-4" />
                           <span>Verified</span>
