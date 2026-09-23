@@ -15,7 +15,17 @@ export default function Categories() {
   const [editing, setEditing] = useState(null);
   const [confirming, setConfirming] = useState(null);
 
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
+
+  /** ឈ្មោះ/ពិពណ៌នាតាមភាសាដែលកំពុងប្រើ (Fallback ទៅភាសាមួយទៀត) */
+  const pickName = (c) =>
+    (lang === "km" ? c.name_km || c.name : c.name || c.name_km) || "";
+  const pickDesc = (c) =>
+    (lang === "km"
+      ? c.description_km || c.description
+      : c.description || c.description_km) || "";
+  const otherName = (c) => (lang === "km" ? c.name || "" : c.name_km || "");
+  const otherDesc = (c) => (lang === "km" ? c.description || "" : c.description_km || "");
 
   const load = useCallback(
     () =>
@@ -38,8 +48,10 @@ export default function Categories() {
     return (categories || []).filter(
       (c) =>
         !q ||
-        c.name.toLowerCase().includes(q) ||
-        (c.description || "").toLowerCase().includes(q)
+        (c.name || "").toLowerCase().includes(q) ||
+        (c.name_km || "").toLowerCase().includes(q) ||
+        (c.description || "").toLowerCase().includes(q) ||
+        (c.description_km || "").toLowerCase().includes(q)
     );
   }, [categories, search]);
 
@@ -148,11 +160,21 @@ export default function Categories() {
                       <div className="w-9 h-9 rounded-xl bg-pink-50 dark:bg-pink-950/60 border border-pink-100 dark:border-pink-900/50 flex items-center justify-center text-pink-500 shrink-0 shadow-2xs">
                         <Tags className="w-4 h-4" />
                       </div>
-                      <span className="text-base">{c.name}</span>
+                      <span className="text-base">{pickName(c)}</span>
+                      {otherName(c) ? (
+                        <span className="text-xs font-semibold text-pink-600 dark:text-pink-400 truncate max-w-[160px]">
+                          {otherName(c)}
+                        </span>
+                      ) : null}
                     </div>
                   </td>
-                  <td className="px-4 py-4 text-slate-600 dark:text-slate-300 max-w-xs truncate text-xs sm:text-sm">
-                    {c.description || "—"}
+                  <td className="px-4 py-4 text-slate-600 dark:text-slate-300 max-w-xs text-xs sm:text-sm">
+                    <span className="block truncate">{pickDesc(c) || "—"}</span>
+                    {otherDesc(c) ? (
+                      <span className="block truncate text-[11px] text-slate-400">
+                        {otherDesc(c)}
+                      </span>
+                    ) : null}
                   </td>
                   <td className="px-4 py-4">
                     <span

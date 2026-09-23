@@ -42,16 +42,25 @@ export default function Products() {
   const [bulkSubmitting, setBulkSubmitting] = useState(false);
   const [bulkMessage, setBulkMessage] = useState({ text: "", type: "" });
 
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
 
-  const load = useCallback(
-    () =>
-      api
-        .getProducts()
-        .then(setProducts)
-        .catch((e) => setError(e.message)),
-    []
-  );
+  // name (EN) -> name_km  — សម្រាប់បង្ហាញឈ្មោះ Category តាមភាសាដែលកំពុងប្រើ
+  const [catMap, setCatMap] = useState({});
+
+  const load = useCallback(() => {
+    api
+      .getProducts()
+      .then(setProducts)
+      .catch((e) => setError(e.message));
+    api
+      .getCategories()
+      .then((list) =>
+        setCatMap(
+          Object.fromEntries((list || []).map((c) => [c.name, c.name_km || ""]))
+        )
+      )
+      .catch(() => setCatMap({}));
+  }, []);
 
   useEffect(() => {
     load();
@@ -65,12 +74,43 @@ export default function Products() {
     return ["All", ...list.sort()];
   }, [products]);
 
+  /** ឈ្មោះ/ពិពណ៌នាតាមភាសាដែលកំពុងប្រើ (មាន Fallback ទៅភាសាមួយទៀត) */
+  const pickName = useCallback(
+    (p) => (lang === "km" ? p.name_km || p.name : p.name || p.name_km) || "",
+    [lang]
+  );
+  const pickDesc = useCallback(
+    (p) =>
+      (lang === "km"
+        ? p.description_km || p.description
+        : p.description || p.description_km) || "",
+    [lang]
+  );
+  const otherName = useCallback(
+    (p) => (lang === "km" ? p.name || "" : p.name_km || ""),
+    [lang]
+  );
+  /** ឈ្មោះ Category តាមភាសា (value នៅតែជា name EN សម្រាប់ Filter API) */
+  const catLabel = useCallback(
+    (name) => {
+      if (name === "All")
+        return t("products.allCategories", { count: products?.length || 0 });
+      const km = catMap[name];
+      return lang === "km" ? km || name : name;
+    },
+    [catMap, lang, products, t]
+  );
+
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     let list = (products || []).filter((p) => {
       const matchSearch =
         !q ||
-        p.name.toLowerCase().includes(q) ||
+        pickName(p).toLowerCase().includes(q) ||
+        (p.name || "").toLowerCase().includes(q) ||
+        (p.name_km || "").toLowerCase().includes(q) ||
+        (p.description || "").toLowerCase().includes(q) ||
+        (p.description_km || "").toLowerCase().includes(q) ||
         (p.category || "").toLowerCase().includes(q) ||
         (p.variants || []).some((v) => v.toLowerCase().includes(q));
       const matchCategory =
@@ -89,7 +129,7 @@ export default function Products() {
       if (sortBy === "stock") return b.stock - a.stock;
       return (b.id || 0) - (a.id || 0); // newest
     });
-  }, [products, search, selectedCategory, sortBy]);
+  }, [products, search, selectedCategory, sortBy, pickName]);
 
   const handleSave = async (payload) => {
     if (editing) await api.updateProduct(editing.id, payload);
@@ -270,9 +310,7 @@ export default function Products() {
               >
                 {categories.map((cat) => (
                   <option key={cat} value={cat}>
-                    {cat === "All"
-                      ? t("products.allCategories", { count: products?.length || 0 })
-                      : cat}
+                    {catLabel(cat)}
                   </option>
                 ))}
               </select>
@@ -344,10 +382,16 @@ export default function Products() {
                       </div>
                       <div className="min-w-0">
                         <p className="font-bold text-slate-900 dark:text-white truncate max-w-[220px]">
-                          {p.name}
+                          {pickName(p)}
+                        </p>
+                        <p
+                          className="text-[11px] font-semibold text-pink-600 dark:text-pink-400 truncate max-w-[220px]"
+                          title={otherName(p) ? "" : t("products.noKhmerName")}
+                        >
+                          {otherName(p) || "—"}
                         </p>
                         <p className="text-xs text-slate-400 truncate max-w-[220px]">
-                          {p.description || "—"}
+                          {pickDesc(p) || "—"}
                         </p>
                         {p.video_url ? (
                           <span
@@ -573,7 +617,10 @@ export default function Products() {
                   <option key={cat} value={cat}>
                     {cat === "All"
                       ? t("products.allProductsCount", { count })
-                      : t("products.categoryCount", { name: cat, count })}
+                      : t("products.categoryCount", {
+                          name: catLabel(cat),
+                          count,
+                        })}
                   </option>
                 );
               })}

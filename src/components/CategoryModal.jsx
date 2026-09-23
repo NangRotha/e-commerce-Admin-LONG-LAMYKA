@@ -4,7 +4,12 @@ import Modal from "./Modal";
 import { useI18n } from "../i18n/I18nContext";
 
 export default function CategoryModal({ open, onClose, onSave, initial }) {
-  const [form, setForm] = useState({ name: "", description: "" });
+  const [form, setForm] = useState({
+    name: "",
+    name_km: "",
+    description: "",
+    description_km: "",
+  });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
@@ -14,7 +19,9 @@ export default function CategoryModal({ open, onClose, onSave, initial }) {
     if (open) {
       setForm({
         name: initial?.name || "",
+        name_km: initial?.name_km || "",
         description: initial?.description || "",
+        description_km: initial?.description_km || "",
       });
       setError("");
     }
@@ -31,7 +38,9 @@ export default function CategoryModal({ open, onClose, onSave, initial }) {
     try {
       await onSave({
         name: form.name.trim(),
+        name_km: form.name_km.trim(),
         description: form.description.trim(),
+        description_km: form.description_km.trim(),
       });
       onClose();
     } catch (err) {
@@ -61,27 +70,51 @@ export default function CategoryModal({ open, onClose, onSave, initial }) {
           </p>
         )}
 
-        <div>
-          <label className={label}>{t("categories.categoryName")} *</label>
-          <input
-            className={input}
-            value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
-            placeholder={t("categories.categoryNamePlaceholder")}
-            maxLength={60}
-            autoFocus
-          />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className={label}>{t("categories.nameEn")}</label>
+            <input
+              className={input}
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              placeholder={t("categories.nameEnPlaceholder")}
+              maxLength={60}
+              autoFocus
+            />
+          </div>
+          <div>
+            <label className={label}>{t("categories.nameKm")}</label>
+            <input
+              className={input}
+              value={form.name_km}
+              onChange={(e) => setForm({ ...form, name_km: e.target.value })}
+              placeholder={t("categories.nameKmPlaceholder")}
+              maxLength={60}
+            />
+          </div>
         </div>
 
-        <div>
-          <label className={label}>{t("categories.categoryDesc")}</label>
-          <textarea
-            className={input}
-            rows={2}
-            value={form.description}
-            onChange={(e) => setForm({ ...form, description: e.target.value })}
-            placeholder={t("categories.categoryDescPlaceholder")}
-          />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className={label}>{t("categories.descEn")}</label>
+            <textarea
+              className={input}
+              rows={2}
+              value={form.description}
+              onChange={(e) => setForm({ ...form, description: e.target.value })}
+              placeholder={t("categories.descEnPlaceholder")}
+            />
+          </div>
+          <div>
+            <label className={label}>{t("categories.descKm")}</label>
+            <textarea
+              className={input}
+              rows={2}
+              value={form.description_km}
+              onChange={(e) => setForm({ ...form, description_km: e.target.value })}
+              placeholder={t("categories.descKmPlaceholder")}
+            />
+          </div>
         </div>
 
         <div className="pt-3 flex gap-3 justify-end border-t border-pink-100 dark:border-pink-950/60">

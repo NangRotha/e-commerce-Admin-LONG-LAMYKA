@@ -6,7 +6,9 @@ import { useI18n } from "../i18n/I18nContext";
 
 const EMPTY = {
   name: "",
+  name_km: "",
   description: "",
+  description_km: "",
   price: "",
   original_price: "",
   stock: "",
@@ -41,7 +43,9 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
         initial
           ? {
               name: initial.name,
+              name_km: initial.name_km || "",
               description: initial.description || "",
+              description_km: initial.description_km || "",
               price: initial.price,
               original_price:
                 initial.original_price !== undefined && initial.original_price !== null
@@ -153,7 +157,9 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
     try {
       await onSave({
         name: form.name.trim(),
+        name_km: (form.name_km || "").trim(),
         description: form.description.trim(),
+        description_km: (form.description_km || "").trim(),
         price: parseFloat(form.price),
         original_price:
           form.original_price !== "" &&
@@ -322,25 +328,48 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
           </label>
         </div>
 
-        <div>
-          <label className={label}>{t("common.name")} *</label>
-          <input
-            className={input}
-            value={form.name}
-            onChange={(e) => set("name", e.target.value)}
-            placeholder={t("products.namePlaceholder")}
-          />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className={label}>{t("products.nameEn")}</label>
+            <input
+              className={input}
+              value={form.name}
+              onChange={(e) => set("name", e.target.value)}
+              placeholder={t("products.nameEnPlaceholder")}
+            />
+          </div>
+          <div>
+            <label className={label}>{t("products.nameKm")}</label>
+            <input
+              className={input}
+              value={form.name_km || ""}
+              onChange={(e) => set("name_km", e.target.value)}
+              placeholder={t("products.nameKmPlaceholder")}
+            />
+          </div>
         </div>
 
-        <div>
-          <label className={label}>{t("common.description")}</label>
-          <textarea
-            className={input}
-            rows={2}
-            value={form.description}
-            onChange={(e) => set("description", e.target.value)}
-            placeholder={t("products.descPlaceholder")}
-          />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className={label}>{t("products.descEn")}</label>
+            <textarea
+              className={input}
+              rows={2}
+              value={form.description}
+              onChange={(e) => set("description", e.target.value)}
+              placeholder={t("products.descEnPlaceholder")}
+            />
+          </div>
+          <div>
+            <label className={label}>{t("products.descKm")}</label>
+            <textarea
+              className={input}
+              rows={2}
+              value={form.description_km || ""}
+              onChange={(e) => set("description_km", e.target.value)}
+              placeholder={t("products.descKmPlaceholder")}
+            />
+          </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">

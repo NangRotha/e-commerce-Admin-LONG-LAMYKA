@@ -15,7 +15,7 @@ const STATUS_STYLE = {
 };
 
 export default function Orders() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const [orders, setOrders] = useState(null);
   const [error, setError] = useState("");
   const [updatingId, setUpdatingId] = useState(null);
@@ -256,7 +256,11 @@ export default function Orders() {
                           {o.items.map((i, idx) => (
                             <div key={idx} className="flex items-center flex-wrap gap-1 text-xs">
                               <span className="font-semibold text-slate-800 dark:text-slate-200">
-                                {i.quantity}× {i.product_name || `#${i.product_id}`}
+                                {i.quantity}×{" "}
+                                {(lang === "km"
+                                  ? i.product_name_km || i.product_name
+                                  : i.product_name || i.product_name_km) ||
+                                  `#${i.product_id}`}
                               </span>
                               {i.variant && (
                                 <span className="px-1.5 py-0.2 rounded-md text-[10px] font-bold bg-pink-50 text-pink-700 dark:bg-pink-950/70 dark:text-pink-300 border border-pink-200/60 dark:border-pink-800/60">
