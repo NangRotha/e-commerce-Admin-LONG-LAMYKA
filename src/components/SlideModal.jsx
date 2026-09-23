@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Upload, Loader2, Image as ImageIcon, Clapperboard, MonitorPlay, Link as LinkIcon, GalleryHorizontal } from "lucide-react";
 import Modal from "./Modal";
 import { api } from "../api/client";
+import { useI18n } from "../i18n/I18nContext";
 
 const EMPTY = {
   title: "",
@@ -23,9 +24,9 @@ export function getYouTubeId(url) {
 }
 
 const MEDIA_TYPES = [
-  { value: "image", label: "Image", icon: ImageIcon },
-  { value: "video", label: "Video", icon: Clapperboard },
-  { value: "youtube", label: "YouTube", icon: MonitorPlay },
+  { value: "image", labelKey: "slides.typeImage", icon: ImageIcon },
+  { value: "video", labelKey: "slides.typeVideo", icon: Clapperboard },
+  { value: "youtube", labelKey: "slides.typeYoutube", icon: MonitorPlay },
 ];
 
 export default function SlideModal({ open, onClose, onSave, initial }) {
@@ -34,6 +35,8 @@ export default function SlideModal({ open, onClose, onSave, initial }) {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
   const fileRef = useRef(null);
+
+  const { t } = useI18n();
 
   useEffect(() => {
     if (open) {
@@ -83,11 +86,11 @@ export default function SlideModal({ open, onClose, onSave, initial }) {
     setError("");
     if (form.media_type === "youtube") {
       if (!getYouTubeId(form.youtube_url.trim())) {
-        setError("Please enter a valid YouTube URL.");
+        setError(t("slides.invalidYoutube"));
         return;
       }
     } else if (!form.media_url.trim()) {
-      setError("Please upload a file or paste a media URL.");
+      setError(t("slides.mediaRequired"));
       return;
     }
     setSaving(true);
@@ -120,8 +123,8 @@ export default function SlideModal({ open, onClose, onSave, initial }) {
     <Modal
       open={open}
       onClose={onClose}
-      title={initial ? "Edit Slide" : "Add Slide"}
-      subtitle={initial ? "Update banner slider item" : "Create a new slide for the storefront hero"}
+      title={initial ? t("slides.editSlide") : t("slides.addSlide")}
+      subtitle={initial ? t("slides.editSubtitle") : t("slides.addSubtitle")}
       icon={GalleryHorizontal}
       maxWidth="xl"
     >
@@ -133,21 +136,21 @@ export default function SlideModal({ open, onClose, onSave, initial }) {
         )}
 
         <div>
-          <label className={label}>Media type *</label>
+          <label className={label}>{t("slides.mediaTypeLabel")}</label>
           <div className="mt-1.5 grid grid-cols-3 gap-2">
-            {MEDIA_TYPES.map((t) => (
+            {MEDIA_TYPES.map((mt) => (
               <button
-                key={t.value}
+                key={mt.value}
                 type="button"
-                onClick={() => set("media_type", t.value)}
+                onClick={() => set("media_type", mt.value)}
                 className={`flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl border text-sm font-medium transition ${
-                  form.media_type === t.value
+                  form.media_type === mt.value
                     ? "border-pink-500 bg-pink-50 dark:bg-pink-950/50 text-pink-700 dark:text-pink-300 ring-1 ring-pink-500 font-semibold"
                     : "border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-pink-400 dark:hover:border-pink-500"
                 }`}
               >
-                <t.icon className="w-4 h-4" />
-                {t.label}
+                <mt.icon className="w-4 h-4" />
+                {t(mt.labelKey)}
               </button>
             ))}
           </div>
@@ -155,29 +158,29 @@ export default function SlideModal({ open, onClose, onSave, initial }) {
 
         {form.media_type === "youtube" ? (
           <div>
-            <label className={label}>YouTube URL *</label>
+            <label className={label}>{t("slides.youtubeUrl")}</label>
             <input
               className={input}
               value={form.youtube_url}
               onChange={(e) => set("youtube_url", e.target.value)}
-              placeholder="https://www.youtube.com/watch?v=..."
+              placeholder={t("slides.youtubePlaceholder")}
             />
             {ytId ? (
               <img
                 src={`https://img.youtube.com/vi/${ytId}/hqdefault.jpg`}
-                alt="YouTube preview"
+                alt={t("slides.youtubePreviewAlt")}
                 className="mt-2 h-32 w-full object-cover rounded-xl border border-slate-200 dark:border-slate-800"
               />
             ) : (
               <p className="mt-1.5 text-xs text-slate-400">
-                Thumbnail preview will appear here.
+                {t("slides.thumbnailHint")}
               </p>
             )}
           </div>
         ) : (
           <div>
             <label className={label}>
-              {form.media_type === "image" ? "Image" : "Video"} (upload from computer)
+              {form.media_type === "image" ? t("slides.imageUploadLabel") : t("slides.videoUploadLabel")}
             </label>
             <div className="mt-1.5 flex items-center gap-3">
               <input
@@ -199,19 +202,19 @@ export default function SlideModal({ open, onClose, onSave, initial }) {
                 {uploading ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    Uploading...
+                    {t("common.uploading")}
                   </>
                 ) : (
                   <>
                     <Upload className="w-4 h-4" />
-                    {form.media_type === "image" ? "Upload image" : "Upload video"}
+                    {form.media_type === "image" ? t("slides.uploadImage") : t("slides.uploadVideo")}
                   </>
                 )}
               </label>
             </div>
 
             <label className={`${label} mt-3`}>
-              Or paste {form.media_type === "image" ? "image" : "video"} URL
+              {form.media_type === "image" ? t("slides.pasteImageUrl") : t("slides.pasteVideoUrl")}
             </label>
             <input
               className={input}
@@ -219,8 +222,8 @@ export default function SlideModal({ open, onClose, onSave, initial }) {
               onChange={(e) => set("media_url", e.target.value)}
               placeholder={
                 form.media_type === "image"
-                  ? "https://example.com/banner.jpg"
-                  : "https://example.com/video.mp4"
+                  ? t("slides.imageUrlPlaceholder")
+                  : t("slides.videoUrlPlaceholder")
               }
             />
 
@@ -229,7 +232,7 @@ export default function SlideModal({ open, onClose, onSave, initial }) {
                 {form.media_type === "image" ? (
                   <img
                     src={form.media_url}
-                    alt="Slide preview"
+                    alt={t("slides.slidePreviewAlt")}
                     className="h-32 w-full object-cover rounded-xl border border-slate-200"
                     onError={(e) => (e.target.style.display = "none")}
                   />
@@ -248,21 +251,21 @@ export default function SlideModal({ open, onClose, onSave, initial }) {
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className={label}>Title</label>
+            <label className={label}>{t("common.title")}</label>
             <input
               className={input}
               value={form.title}
               onChange={(e) => set("title", e.target.value)}
-              placeholder="e.g. Summer Sale"
+              placeholder={t("slides.titlePlaceholder")}
             />
           </div>
           <div>
-            <label className={label}>Subtitle</label>
+            <label className={label}>{t("slides.subtitleField")}</label>
             <input
               className={input}
               value={form.subtitle}
               onChange={(e) => set("subtitle", e.target.value)}
-              placeholder="e.g. Up to 50% off"
+              placeholder={t("slides.subtitlePlaceholder")}
             />
           </div>
         </div>
@@ -271,23 +274,23 @@ export default function SlideModal({ open, onClose, onSave, initial }) {
           <div>
             <label className={label}>
               <LinkIcon className="w-3.5 h-3.5 inline -mt-0.5 mr-1" />
-              Link when clicked
+              {t("slides.linkWhenClicked")}
             </label>
             <input
               className={input}
               value={form.link_url}
               onChange={(e) => set("link_url", e.target.value)}
-              placeholder="e.g. /products or https://..."
+              placeholder={t("slides.linkPlaceholder")}
             />
           </div>
           <div>
-            <label className={label}>Sort order</label>
+            <label className={label}>{t("slides.sortOrder")}</label>
             <input
               type="number"
               className={input}
               value={form.sort_order}
               onChange={(e) => set("sort_order", e.target.value)}
-              placeholder="0 = first"
+              placeholder={t("slides.sortOrderPlaceholder")}
             />
           </div>
         </div>
@@ -299,7 +302,7 @@ export default function SlideModal({ open, onClose, onSave, initial }) {
             onChange={(e) => set("is_active", e.target.checked)}
             className="w-4 h-4 rounded accent-pink-600"
           />
-          Active (show on storefront)
+          {t("slides.activeStorefront")}
         </label>
 
         <div className="pt-2 flex gap-3 justify-end">
@@ -308,14 +311,18 @@ export default function SlideModal({ open, onClose, onSave, initial }) {
             onClick={onClose}
             className="px-5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition text-sm"
           >
-            Cancel
+            {t("common.cancel")}
           </button>
           <button
             type="submit"
             disabled={saving || uploading}
             className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 hover:from-pink-600 hover:to-rose-600 text-white font-semibold transition text-sm shadow-md shadow-pink-500/25 disabled:opacity-60 cursor-pointer"
           >
-            {saving ? "Saving..." : initial ? "Save changes" : "Add slide"}
+            {saving
+              ? t("common.saving")
+              : initial
+              ? t("slides.saveChanges")
+              : t("slides.addSlideShort")}
           </button>
         </div>
       </form>

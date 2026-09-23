@@ -29,16 +29,16 @@ import { useRealtime } from "../context/RealtimeContext";
 import { useI18n } from "../i18n/I18nContext";
 
 // Helper: format relative time (e.g. "2h ago")
-function timeAgo(dateStr) {
+function timeAgo(dateStr, t) {
   if (!dateStr) return "";
   const diff = Date.now() - new Date(dateStr).getTime();
   const mins = Math.floor(diff / 60000);
-  if (mins < 1) return "just now";
-  if (mins < 60) return `${mins}m ago`;
+  if (mins < 1) return t("dashboard.justNow");
+  if (mins < 60) return t("dashboard.minsAgo", { n: mins });
   const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `${hrs}h ago`;
+  if (hrs < 24) return t("dashboard.hoursAgo", { n: hrs });
   const days = Math.floor(hrs / 24);
-  return `${days}d ago`;
+  return t("dashboard.daysAgo", { n: days });
 }
 
 // Status badge color map
@@ -51,7 +51,7 @@ const STATUS_COLORS = {
 };
 
 export default function Dashboard() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const [stats, setStats] = useState(null);
   const [orders, setOrders] = useState([]);
   const [error, setError] = useState("");
@@ -64,10 +64,10 @@ export default function Dashboard() {
       if (saved) return JSON.parse(saved);
     } catch {}
     return [
-      { id: 1, text: "Design landing page 🎨", done: true },
-      { id: 2, text: "Write project proposal 📝", done: false },
-      { id: 3, text: "Team meeting 👥", done: false },
-      { id: 4, text: "Review analytics 📊", done: false },
+      { id: 1, text: t("dashboard.taskDesign"), done: true },
+      { id: 2, text: t("dashboard.taskProposal"), done: false },
+      { id: 3, text: t("dashboard.taskMeeting"), done: false },
+      { id: 4, text: t("dashboard.taskAnalytics"), done: false },
     ];
   });
 
@@ -122,7 +122,9 @@ export default function Dashboard() {
   useRealtime("users_changed", load);
 
   // Calendar calculations
-  const monthName = calendarDate.toLocaleString("default", { month: "long" });
+  const monthName = calendarDate.toLocaleString(lang === "km" ? "km-KH" : "en-US", {
+    month: "long",
+  });
   const year = calendarDate.getFullYear();
   const activeDay = calendarDate.getDate();
 
@@ -174,9 +176,9 @@ export default function Dashboard() {
   const activityItems = orders.slice(0, 4).map((order, i) => ({
     id: order.id || i,
     icon: ACTIVITY_ICONS[i % ACTIVITY_ICONS.length],
-    title: `Order #${order.id} — ${order.customer_name || order.customer_email || "Customer"}`,
+    title: `#${order.id} — ${order.customer_name || order.customer_email || t("dashboard.customer")}`,
     status: order.status,
-    time: timeAgo(order.created_at),
+    time: timeAgo(order.created_at, t),
   }));
 
   return (
@@ -185,31 +187,43 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5">
         <StatCard
           icon={<CheckmarkBox3D className="w-12 h-12" />}
-          label="Total Orders"
+          label={t("dashboard.totalOrders")}
           value={totalOrders}
           accent="purple"
-          trend={stats ? `${stats.total_orders ?? 0} orders placed` : "Loading..."}
+          trend={
+            stats
+              ? t("dashboard.ordersPlaced", { count: stats.total_orders ?? 0 })
+              : t("common.loading")
+          }
         />
         <StatCard
           icon={<Calendar3D className="w-12 h-12" />}
-          label="Registered Users"
+          label={t("dashboard.registeredUsers")}
           value={totalUsers}
           accent="pink"
-          trend={stats ? `${stats.total_users ?? 0} accounts` : "Loading..."}
+          trend={
+            stats
+              ? t("dashboard.accountsCount", { count: stats.total_users ?? 0 })
+              : t("common.loading")
+          }
         />
         <StatCard
           icon={<Flag3D className="w-12 h-12" />}
-          label="Total Products"
+          label={t("dashboard.totalProducts")}
           value={totalProducts}
           accent="mint"
-          trend={stats ? `${stats.total_products ?? 0} in catalog` : "Loading..."}
+          trend={
+            stats
+              ? t("dashboard.inCatalog", { count: stats.total_products ?? 0 })
+              : t("common.loading")
+          }
         />
         <StatCard
           icon={<Star3D className="w-12 h-12" />}
-          label="Total Revenue"
+          label={t("dashboard.totalRevenue")}
           value={totalRevenue}
           accent="yellow"
-          trend={stats ? "All time sales" : "Loading..."}
+          trend={stats ? t("dashboard.allTimeSales") : t("common.loading")}
         />
       </div>
 
@@ -222,7 +236,7 @@ export default function Dashboard() {
             {/* Header with Timeframe Dropdown */}
             <div className="flex items-center justify-between gap-4 mb-4">
               <h2 className="text-base sm:text-lg font-black text-slate-800 dark:text-white tracking-tight">
-                Productivity Overview
+                {t("dashboard.productivityOverview")}
               </h2>
               <div className="relative">
                 <select
@@ -230,9 +244,9 @@ export default function Dashboard() {
                   onChange={(e) => setChartTimeframe(e.target.value)}
                   className="appearance-none bg-slate-100/80 dark:bg-purple-950/40 hover:bg-slate-200/80 text-slate-700 dark:text-purple-200 text-xs font-bold py-1.5 pl-3.5 pr-7 rounded-full border border-purple-100 dark:border-purple-900/40 shadow-2xs cursor-pointer outline-none transition"
                 >
-                  <option value="This Week">This Week ▾</option>
-                  <option value="Last Week">Last Week ▾</option>
-                  <option value="This Month">This Month ▾</option>
+                  <option value="This Week">{t("dashboard.timeframeWeek")}</option>
+                  <option value="Last Week">{t("dashboard.timeframeLastWeek")}</option>
+                  <option value="This Month">{t("dashboard.timeframeMonth")}</option>
                 </select>
               </div>
             </div>
@@ -320,7 +334,7 @@ export default function Dashboard() {
                   style={{ left: "70%", top: "8%", transform: "translate(-50%, -100%)" }}
                 >
                   <div className="relative bg-[#a78bfa] text-white text-[11px] font-bold px-3 py-1 rounded-xl shadow-md flex items-center gap-1">
-                    <span>Great job!</span>
+                    <span>{t("dashboard.greatJob")}</span>
                     <span>🎉</span>
                     {/* Tooltip triangle tail */}
                     <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-x-4 border-x-transparent border-t-5 border-t-[#a78bfa]" />
@@ -329,13 +343,13 @@ export default function Dashboard() {
 
                 {/* X-axis Day Labels */}
                 <div className="absolute bottom-0 inset-x-0 flex justify-between text-[11px] font-bold text-slate-400 dark:text-slate-500 px-4">
-                  <span>Mon</span>
-                  <span>Tue</span>
-                  <span>Wed</span>
-                  <span>Thu</span>
-                  <span>Fri</span>
-                  <span>Sat</span>
-                  <span>Sun</span>
+                  <span>{t("dashboard.dayMon")}</span>
+                  <span>{t("dashboard.dayTue")}</span>
+                  <span>{t("dashboard.dayWed")}</span>
+                  <span>{t("dashboard.dayThu")}</span>
+                  <span>{t("dashboard.dayFri")}</span>
+                  <span>{t("dashboard.daySat")}</span>
+                  <span>{t("dashboard.daySun")}</span>
                 </div>
               </div>
             </div>
@@ -345,13 +359,13 @@ export default function Dashboard() {
           <div className="clay-card p-5 sm:p-7">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-base sm:text-lg font-black text-slate-800 dark:text-white tracking-tight">
-                Recent Activity
+                {t("dashboard.recentActivity")}
               </h2>
               <Link
                 to="/orders"
                 className="text-xs font-bold text-purple-600 dark:text-purple-400 hover:underline flex items-center gap-1"
               >
-                <span>Store Orders</span>
+                <span>{t("dashboard.storeOrders")}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
@@ -375,7 +389,9 @@ export default function Dashboard() {
                     <div className="flex items-center gap-2 shrink-0">
                       {act.status && (
                         <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full capitalize ${STATUS_COLORS[act.status] || "bg-slate-100 text-slate-600"}`}>
-                          {act.status}
+                          {STATUS_COLORS[act.status]
+                            ? t(`orderStatus.${act.status}`)
+                            : act.status}
                         </span>
                       )}
                       <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-500">
@@ -387,8 +403,8 @@ export default function Dashboard() {
               }) : (
                 <div className="py-10 text-center text-slate-400 text-sm">
                   <ShoppingCart className="w-8 h-8 mx-auto mb-2 opacity-30" />
-                  <p className="font-bold">No orders yet</p>
-                  <p className="text-xs mt-1">Orders will appear here once customers place them.</p>
+                  <p className="font-bold">{t("dashboard.noActivity")}</p>
+                  <p className="text-xs mt-1">{t("dashboard.noActivityDesc")}</p>
                 </div>
               )}
             </div>
@@ -401,13 +417,13 @@ export default function Dashboard() {
           <div className="clay-card-pink p-5">
             <div className="flex items-center justify-between mb-3.5">
               <h3 className="font-black text-slate-800 dark:text-white text-base">
-                To-Do List
+                {t("dashboard.todoList")}
               </h3>
               <button
                 type="button"
                 onClick={() => setShowAddTodo(!showAddTodo)}
                 className="w-6 h-6 rounded-full bg-[#ff7b8f] text-white flex items-center justify-center font-bold text-sm shadow-2xs hover:scale-110 active:scale-95 transition"
-                title="Add task"
+                title={t("dashboard.addTaskTooltip")}
               >
                 <Plus className="w-4 h-4" />
               </button>
@@ -420,7 +436,7 @@ export default function Dashboard() {
                   type="text"
                   value={newTodoInput}
                   onChange={(e) => setNewTodoInput(e.target.value)}
-                  placeholder="New task..."
+                  placeholder={t("dashboard.newTaskPlaceholder")}
                   className="flex-1 text-xs px-3 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-pink-200 dark:border-pink-900 outline-none"
                   autoFocus
                 />
@@ -428,7 +444,7 @@ export default function Dashboard() {
                   type="submit"
                   className="px-3 py-1 text-xs font-bold text-white bg-[#ff7b8f] rounded-xl shadow-xs"
                 >
-                  Add
+                  {t("common.add")}
                 </button>
               </form>
             )}
@@ -468,13 +484,13 @@ export default function Dashboard() {
           <div className="clay-card-blue p-5">
             <div className="flex items-center justify-between mb-3">
               <h3 className="font-black text-slate-800 dark:text-white text-base">
-                Calendar
+                {t("dashboard.calendar")}
               </h3>
               <button
                 type="button"
                 className="text-[11px] font-bold text-blue-600 dark:text-blue-300 bg-white/80 dark:bg-blue-950/60 hover:bg-white px-2.5 py-0.5 rounded-full shadow-2xs transition"
               >
-                View all
+                {t("dashboard.viewAll")}
               </button>
             </div>
 
@@ -499,13 +515,13 @@ export default function Dashboard() {
 
             {/* Weekdays */}
             <div className="grid grid-cols-7 text-center text-[10px] font-black text-slate-400 dark:text-blue-300/70 mb-1.5">
-              <span>M</span>
-              <span>T</span>
-              <span>W</span>
-              <span>T</span>
-              <span>F</span>
-              <span>S</span>
-              <span>S</span>
+              <span>{t("dashboard.calMon")}</span>
+              <span>{t("dashboard.calTue")}</span>
+              <span>{t("dashboard.calWed")}</span>
+              <span>{t("dashboard.calThu")}</span>
+              <span>{t("dashboard.calFri")}</span>
+              <span>{t("dashboard.calSat")}</span>
+              <span>{t("dashboard.calSun")}</span>
             </div>
 
             {/* Day grid */}
@@ -532,17 +548,17 @@ export default function Dashboard() {
           <div className="clay-card-purple p-5 flex items-center justify-between gap-3 relative overflow-hidden group">
             <div className="min-w-0 flex-1">
               <h4 className="text-sm font-black text-purple-900 dark:text-purple-100 leading-tight">
-                You're doing amazing!
+                {t("dashboard.motivationTitle")}
               </h4>
               <p className="text-xs font-bold text-purple-600 dark:text-purple-300 mt-1 flex items-center gap-1">
-                <span>Keep up the good work</span>
+                <span>{t("dashboard.keepUpGoodWork")}</span>
                 <span>✨</span>
               </p>
             </div>
             <div className="w-18 h-18 shrink-0 rounded-2xl overflow-hidden shadow-xs border border-white/80 bg-white/40">
               <img
                 src="/bunny_clay.jpg"
-                alt="Clay Bunny Mascot"
+                alt={t("dashboard.bunnyAlt")}
                 className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
               />
             </div>

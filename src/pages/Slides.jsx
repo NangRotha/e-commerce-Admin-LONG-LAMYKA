@@ -15,11 +15,12 @@ import { api } from "../api/client";
 import SlideModal, { getYouTubeId } from "../components/SlideModal";
 import Modal from "../components/Modal";
 import { useRealtime } from "../context/RealtimeContext";
+import { useI18n } from "../i18n/I18nContext";
 
 const TYPE_META = {
-  image: { label: "Image", icon: ImageIcon, cls: "bg-blue-50 text-blue-700 dark:bg-blue-950/70 dark:text-blue-300 border border-blue-200/70 dark:border-blue-800/60" },
-  video: { label: "Video", icon: Clapperboard, cls: "bg-purple-50 text-purple-700 dark:bg-purple-950/70 dark:text-purple-300 border border-purple-200/70 dark:border-purple-800/60" },
-  youtube: { label: "YouTube", icon: MonitorPlay, cls: "bg-rose-50 text-rose-700 dark:bg-rose-950/70 dark:text-rose-300 border border-rose-200/70 dark:border-rose-900/60" },
+  image: { labelKey: "slides.typeImage", icon: ImageIcon, cls: "bg-blue-50 text-blue-700 dark:bg-blue-950/70 dark:text-blue-300 border border-blue-200/70 dark:border-blue-800/60" },
+  video: { labelKey: "slides.typeVideo", icon: Clapperboard, cls: "bg-purple-50 text-purple-700 dark:bg-purple-950/70 dark:text-purple-300 border border-purple-200/70 dark:border-purple-800/60" },
+  youtube: { labelKey: "slides.typeYoutube", icon: MonitorPlay, cls: "bg-rose-50 text-rose-700 dark:bg-rose-950/70 dark:text-rose-300 border border-rose-200/70 dark:border-rose-900/60" },
 };
 
 function SlidePreview({ slide }) {
@@ -66,6 +67,8 @@ export default function Slides() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState(null);
   const [confirming, setConfirming] = useState(null);
+
+  const { t } = useI18n();
 
   const load = useCallback(
     () =>
@@ -138,10 +141,11 @@ export default function Slides() {
           </div>
           <div>
             <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
-              Hero Slides &amp; Banners
+              {t("slides.title")}
             </h1>
             <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-              {slides ? `${slides.length} slides configured` : "Loading slides..."} — featured banners on storefront homepage
+              {slides ? t("slides.subtitle", { count: slides.length }) : t("slides.subtitleLoading")}{" "}
+              {t("slides.subtitleSuffix")}
             </p>
           </div>
         </div>
@@ -154,7 +158,7 @@ export default function Slides() {
           className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 hover:from-pink-600 hover:to-rose-600 text-white font-bold shadow-md shadow-pink-500/25 hover:shadow-lg hover:shadow-pink-500/35 hover:scale-[1.02] active:scale-95 transition-all text-sm shrink-0"
         >
           <Plus className="w-4 h-4 stroke-[3]" />
-          <span>Add Slide</span>
+          <span>{t("slides.addSlide")}</span>
         </button>
       </div>
 
@@ -175,7 +179,7 @@ export default function Slides() {
         <div className="luxury-card rounded-[28px] py-16 text-center text-slate-500 dark:text-slate-400 space-y-3">
           <Clapperboard className="w-12 h-12 mx-auto mb-2 text-pink-300 dark:text-pink-900/60" />
           <p className="font-bold">
-            No slides yet. Add images, videos or YouTube links to promote your store on the homepage.
+            {t("slides.noSlides")}
           </p>
         </div>
       ) : (
@@ -183,12 +187,12 @@ export default function Slides() {
           <table className="w-full text-sm min-w-[720px]">
             <thead>
               <tr className="text-left text-xs uppercase tracking-wider text-slate-400 dark:text-pink-300/60 border-b border-pink-100/70 dark:border-pink-950/70 bg-pink-50/30 dark:bg-white/[0.02]">
-                <th className="px-5 py-4 font-bold">Preview</th>
-                <th className="px-4 py-4 font-bold">Slide Details</th>
-                <th className="px-4 py-4 font-bold">Media Type</th>
-                <th className="px-4 py-4 font-bold">Display Order</th>
-                <th className="px-4 py-4 font-bold">Live Status</th>
-                <th className="px-5 py-4 font-bold text-right">Actions</th>
+                <th className="px-5 py-4 font-bold">{t("slides.thPreview")}</th>
+                <th className="px-4 py-4 font-bold">{t("slides.thDetails")}</th>
+                <th className="px-4 py-4 font-bold">{t("slides.thMediaType")}</th>
+                <th className="px-4 py-4 font-bold">{t("slides.thOrder")}</th>
+                <th className="px-4 py-4 font-bold">{t("slides.thStatus")}</th>
+                <th className="px-5 py-4 font-bold text-right">{t("common.actions")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-pink-100/60 dark:divide-pink-950/60">
@@ -205,7 +209,7 @@ export default function Slides() {
 
                     <td className="px-4 py-4">
                       <div className="font-bold text-slate-900 dark:text-white text-base">
-                        {s.title || "(Untitled)"}
+                        {s.title || t("slides.untitled")}
                       </div>
                       {s.subtitle && (
                         <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate max-w-[220px]">
@@ -219,7 +223,7 @@ export default function Slides() {
                         className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold shadow-2xs ${meta.cls}`}
                       >
                         <meta.icon className="w-3.5 h-3.5" />
-                        <span>{meta.label}</span>
+                        <span>{t(meta.labelKey)}</span>
                       </span>
                     </td>
 
@@ -233,7 +237,7 @@ export default function Slides() {
                             onClick={() => move(s.id, -1)}
                             disabled={idx === 0}
                             className="p-1 text-slate-400 hover:text-pink-600 dark:hover:text-pink-400 disabled:opacity-30 transition rounded-md hover:bg-pink-50 dark:hover:bg-pink-950/50"
-                            title="Move up"
+                            title={t("slides.moveUp")}
                           >
                             <MoveUp className="w-3.5 h-3.5" />
                           </button>
@@ -241,7 +245,7 @@ export default function Slides() {
                             onClick={() => move(s.id, 1)}
                             disabled={idx === slides.length - 1}
                             className="p-1 text-slate-400 hover:text-pink-600 dark:hover:text-pink-400 disabled:opacity-30 transition rounded-md hover:bg-pink-50 dark:hover:bg-pink-950/50"
-                            title="Move down"
+                            title={t("slides.moveDown")}
                           >
                             <MoveDown className="w-3.5 h-3.5" />
                           </button>
@@ -255,7 +259,7 @@ export default function Slides() {
                         className={`relative w-11 h-6 rounded-full transition-colors ${
                           s.is_active ? "bg-gradient-to-r from-pink-500 to-rose-500" : "bg-slate-200 dark:bg-slate-700"
                         }`}
-                        aria-label={s.is_active ? "Deactivate" : "Activate"}
+                        aria-label={s.is_active ? t("common.disable") : t("common.enable")}
                       >
                         <span
                           className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow-xs transition-transform ${
@@ -273,14 +277,14 @@ export default function Slides() {
                             setModalOpen(true);
                           }}
                           className="p-2 rounded-xl text-slate-400 hover:bg-pink-50 dark:hover:bg-pink-950/50 hover:text-pink-600 dark:hover:text-pink-400 transition"
-                          title="Edit Slide"
+                          title={t("slides.editSlide")}
                         >
                           <Pencil className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => setConfirming(s)}
                           className="p-2 rounded-xl text-slate-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 hover:text-rose-600 dark:hover:text-rose-400 transition"
-                          title="Delete Slide"
+                          title={t("slides.deleteSlide")}
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -301,23 +305,27 @@ export default function Slides() {
         initial={editing}
       />
 
-      <Modal open={!!confirming} onClose={() => setConfirming(null)} title="Delete slide">
+      <Modal
+        open={!!confirming}
+        onClose={() => setConfirming(null)}
+        title={t("slides.confirmDelete")}
+      >
         <div className="space-y-4">
           <p className="text-sm text-slate-600 dark:text-slate-300">
-            Are you sure you want to delete this slide? This action cannot be undone.
+            {t("slides.confirmDeleteFull")}
           </p>
           <div className="flex gap-2 justify-end pt-2">
             <button
               onClick={() => setConfirming(null)}
               className="px-4 py-2 text-sm font-semibold rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
             >
-              Cancel
+              {t("common.cancel")}
             </button>
             <button
               onClick={handleDelete}
               className="px-4 py-2 text-sm font-semibold rounded-xl bg-rose-600 hover:bg-rose-700 text-white shadow-sm transition"
             >
-              Delete
+              {t("common.delete")}
             </button>
           </div>
         </div>

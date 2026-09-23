@@ -17,11 +17,13 @@ import { useAuth } from "../context/AuthContext";
 import { formatDate } from "../lib/format";
 import Modal from "../components/Modal";
 import { useRealtime } from "../context/RealtimeContext";
+import { useI18n } from "../i18n/I18nContext";
 
 const EMPTY_FORM = { name: "", email: "", password: "", role: "user" };
 
 export default function Users() {
   const { user: currentUser } = useAuth();
+  const { t } = useI18n();
   const [users, setUsers] = useState(null);
   const [search, setSearch] = useState("");
   const [error, setError] = useState("");
@@ -91,11 +93,11 @@ export default function Users() {
     e.preventDefault();
     setCreateError("");
     if (!createForm.email || !createForm.password) {
-      setCreateError("Email and password are required.");
+      setCreateError(t("users.emailRequired"));
       return;
     }
     if (createForm.password.length < 6) {
-      setCreateError("Password must be at least 6 characters.");
+      setCreateError(t("users.passwordMin6"));
       return;
     }
     setCreating(true);
@@ -123,10 +125,10 @@ export default function Users() {
           </div>
           <div>
             <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
-              Registered Users
+              {t("users.title")}
             </h1>
             <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-              {users ? `${users.length} accounts registered on store` : "Loading users..."}
+              {users ? t("users.subtitle", { count: users.length }) : t("users.subtitleLoading")}
             </p>
           </div>
         </div>
@@ -139,7 +141,7 @@ export default function Users() {
           style={{ background: "linear-gradient(135deg, #ff7b8f 0%, #ff5a75 100%)", boxShadow: "0 4px 14px rgba(255,90,117,0.35)" }}
         >
           <Plus className="w-4 h-4" />
-          Add User
+          {t("users.addUser")}
         </button>
       </div>
 
@@ -157,7 +159,7 @@ export default function Users() {
           type="search"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search users by name or email..."
+          placeholder={t("users.searchPlaceholder")}
           className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-pink-100/80 dark:border-pink-950/70 bg-white dark:bg-[#150e1b] text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-pink-500/30 focus:border-pink-500 text-sm transition shadow-2xs"
         />
       </div>
@@ -170,19 +172,19 @@ export default function Users() {
         </div>
       ) : filtered.length === 0 ? (
         <div className="luxury-card rounded-[28px] py-16 text-center text-slate-500 dark:text-slate-400">
-          {users.length === 0 ? "No users registered yet." : "No users match your search."}
+          {users.length === 0 ? t("users.noUsers") : t("users.noMatch")}
         </div>
       ) : (
         <div className="luxury-card rounded-[28px] overflow-hidden shadow-xs">
           <table className="w-full text-sm min-w-[720px]">
             <thead>
               <tr className="text-left text-xs uppercase tracking-wider text-slate-400 dark:text-pink-300/60 border-b border-pink-100/70 dark:border-pink-950/70 bg-pink-50/30 dark:bg-white/[0.02]">
-                <th className="px-5 py-4 font-bold">User</th>
-                <th className="px-4 py-4 font-bold">Email</th>
-                <th className="px-4 py-4 font-bold">Role</th>
-                <th className="px-4 py-4 font-bold">Verified</th>
-                <th className="px-4 py-4 font-bold">Joined Date</th>
-                <th className="px-5 py-4 font-bold text-right">Actions</th>
+                <th className="px-5 py-4 font-bold">{t("users.userName")}</th>
+                <th className="px-4 py-4 font-bold">{t("users.userEmail")}</th>
+                <th className="px-4 py-4 font-bold">{t("users.userRole")}</th>
+                <th className="px-4 py-4 font-bold">{t("users.userVerified")}</th>
+                <th className="px-4 py-4 font-bold">{t("users.userJoined")}</th>
+                <th className="px-5 py-4 font-bold text-right">{t("common.actions")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-pink-100/60 dark:divide-pink-950/60">
@@ -205,7 +207,7 @@ export default function Users() {
                           </p>
                           {isSelf && (
                             <span className="text-[10px] font-bold text-pink-500 uppercase tracking-wide">
-                              (You)
+                              {t("users.you")}
                             </span>
                           )}
                         </div>
@@ -220,7 +222,7 @@ export default function Users() {
                       {isSelf ? (
                         <span className="inline-flex items-center gap-1 px-3 py-1 rounded-xl text-xs font-bold bg-pink-50 text-pink-700 dark:bg-pink-950/70 dark:text-pink-300 border border-pink-200/70 dark:border-pink-800/60 shadow-2xs">
                           <ShieldCheck className="w-3.5 h-3.5" />
-                          <span>Admin (Owner)</span>
+                          <span>{t("users.ownerBadge")}</span>
                         </span>
                       ) : (
                         <select
@@ -229,8 +231,8 @@ export default function Users() {
                           onChange={(e) => changeRole(u.id, e.target.value)}
                           className="px-3 py-1 rounded-xl text-xs font-bold border border-pink-100 dark:border-pink-950/70 bg-white dark:bg-[#181120] text-slate-700 dark:text-slate-200 cursor-pointer shadow-2xs focus:ring-2 focus:ring-pink-500/30"
                         >
-                          <option value="user">Customer (User)</option>
-                          <option value="admin">Administrator</option>
+                          <option value="user">{t("users.roleUser")}</option>
+                          <option value="admin">{t("users.roleAdmin")}</option>
                         </select>
                       )}
                     </td>
@@ -239,10 +241,10 @@ export default function Users() {
                       {u.email_verified ? (
                         <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 text-xs font-semibold">
                           <CheckCircle2 className="w-4 h-4" />
-                          <span>Verified</span>
+                          <span>{t("users.verified")}</span>
                         </span>
                       ) : (
-                        <span className="text-xs text-slate-400">Unverified</span>
+                        <span className="text-xs text-slate-400">{t("users.unverified")}</span>
                       )}
                     </td>
 
@@ -255,7 +257,7 @@ export default function Users() {
                         <button
                           onClick={() => setConfirming(u)}
                           className="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition"
-                          title="Delete User"
+                          title={t("users.deleteUser")}
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -270,7 +272,11 @@ export default function Users() {
       )}
 
       {/* Create User Modal */}
-      <Modal open={createOpen} onClose={() => setCreateOpen(false)} title="Add New User">
+      <Modal
+        open={createOpen}
+        onClose={() => setCreateOpen(false)}
+        title={t("users.addUser")}
+      >
         <form onSubmit={handleCreate} className="space-y-4">
           {createError && (
             <div className="flex items-center gap-2 text-sm text-rose-600 bg-rose-50 dark:bg-rose-950/40 rounded-xl p-3 border border-rose-200 dark:border-rose-900/60">
@@ -282,7 +288,8 @@ export default function Users() {
           {/* Name */}
           <div>
             <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
-              Full Name <span className="font-normal text-slate-400">(optional)</span>
+              {t("users.fullName")}{" "}
+              <span className="font-normal text-slate-400">{t("common.optional")}</span>
             </label>
             <div className="relative">
               <UserIcon className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
@@ -290,7 +297,7 @@ export default function Users() {
                 type="text"
                 value={createForm.name}
                 onChange={(e) => setField("name", e.target.value)}
-                placeholder="e.g. John Doe"
+                placeholder={t("users.namePlaceholder")}
                 className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-pink-100 dark:border-pink-900/60 bg-white dark:bg-[#150e1b] text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-pink-500/30 text-sm transition"
               />
             </div>
@@ -299,7 +306,7 @@ export default function Users() {
           {/* Email */}
           <div>
             <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
-              Email <span className="text-rose-500">*</span>
+              {t("users.userEmail")} <span className="text-rose-500">*</span>
             </label>
             <div className="relative">
               <Mail className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
@@ -308,7 +315,7 @@ export default function Users() {
                 required
                 value={createForm.email}
                 onChange={(e) => setField("email", e.target.value)}
-                placeholder="user@example.com"
+                placeholder={t("users.emailPlaceholder")}
                 className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-pink-100 dark:border-pink-900/60 bg-white dark:bg-[#150e1b] text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-pink-500/30 text-sm transition"
               />
             </div>
@@ -317,7 +324,7 @@ export default function Users() {
           {/* Password */}
           <div>
             <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
-              Password <span className="text-rose-500">*</span>
+              {t("users.password")} <span className="text-rose-500">*</span>
             </label>
             <div className="relative">
               <Lock className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
@@ -327,7 +334,7 @@ export default function Users() {
                 minLength={6}
                 value={createForm.password}
                 onChange={(e) => setField("password", e.target.value)}
-                placeholder="Min 6 characters"
+                placeholder={t("users.passwordMin")}
                 className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-pink-100 dark:border-pink-900/60 bg-white dark:bg-[#150e1b] text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-pink-500/30 text-sm transition"
               />
             </div>
@@ -336,15 +343,15 @@ export default function Users() {
           {/* Role */}
           <div>
             <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
-              Role
+              {t("users.userRole")}
             </label>
             <select
               value={createForm.role}
               onChange={(e) => setField("role", e.target.value)}
               className="w-full px-4 py-2.5 rounded-xl border border-pink-100 dark:border-pink-900/60 bg-white dark:bg-[#150e1b] text-slate-700 dark:text-slate-200 font-bold text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/30"
             >
-              <option value="user">Customer (User)</option>
-              <option value="admin">Administrator</option>
+              <option value="user">{t("users.roleUser")}</option>
+              <option value="admin">{t("users.roleAdmin")}</option>
             </select>
           </div>
 
@@ -354,7 +361,7 @@ export default function Users() {
               onClick={() => setCreateOpen(false)}
               className="px-4 py-2 text-sm font-semibold rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
             >
-              Cancel
+              {t("common.cancel")}
             </button>
             <button
               type="submit"
@@ -363,33 +370,35 @@ export default function Users() {
               style={{ background: "linear-gradient(135deg, #ff7b8f 0%, #ff5a75 100%)" }}
             >
               {creating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
-              {creating ? "Creating..." : "Create User"}
+              {creating ? t("common.creating") : t("users.addUser")}
             </button>
           </div>
         </form>
       </Modal>
 
       {/* Delete User Modal */}
-      <Modal open={!!confirming} onClose={() => setConfirming(null)} title="Delete User">
+      <Modal
+        open={!!confirming}
+        onClose={() => setConfirming(null)}
+        title={t("users.deleteUser")}
+      >
         <div className="space-y-4">
           <p className="text-sm text-slate-600 dark:text-slate-300">
-            Are you sure you want to delete user{" "}
-            <strong className="text-slate-900 dark:text-white">"{confirming?.email}"</strong>?
-            This will permanently remove the user and their related account records.
+            {t("users.confirmDelete", { email: confirming?.email })}
           </p>
           <div className="flex gap-2 justify-end pt-2">
             <button
               onClick={() => setConfirming(null)}
               className="px-4 py-2 text-sm font-semibold rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
             >
-              Cancel
+              {t("common.cancel")}
             </button>
             <button
               onClick={handleDelete}
               disabled={deleting}
               className="px-4 py-2 text-sm font-semibold rounded-xl bg-rose-600 hover:bg-rose-700 text-white shadow-sm transition disabled:opacity-50"
             >
-              {deleting ? "Deleting..." : "Delete User"}
+              {deleting ? t("common.deleting") : t("users.deleteUser")}
             </button>
           </div>
         </div>

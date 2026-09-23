@@ -105,10 +105,10 @@ export default function Layout() {
   // Time-of-day greeting
   const greeting = useMemo(() => {
     const hour = new Date().getHours();
-    if (hour < 12) return { text: `Good morning, ${displayName}!`, icon: "☁️" };
-    if (hour < 18) return { text: `Good afternoon, ${displayName}!`, icon: "☀️" };
-    return { text: `Good evening, ${displayName}!`, icon: "🌙" };
-  }, [displayName]);
+    if (hour < 12) return { text: t("layout.goodMorning", { name: displayName }), icon: "☁️" };
+    if (hour < 18) return { text: t("layout.goodAfternoon", { name: displayName }), icon: "☀️" };
+    return { text: t("layout.goodEvening", { name: displayName }), icon: "🌙" };
+  }, [displayName, t]);
 
   return (
     <div className="min-h-screen admin-mesh-bg text-slate-800 dark:text-slate-100 transition-colors duration-300 font-sans">
@@ -122,7 +122,7 @@ export default function Layout() {
                 <div className="w-20 h-20 rounded-full overflow-hidden shadow-md shadow-purple-300/40 dark:shadow-none bg-[#f6f0fc]" style={{border:'3px solid white'}}>
                   <img
                     src={avatarSrc}
-                    alt="Profile Avatar"
+                    alt={t("layout.profileAvatarAlt")}
                     className="w-full h-full object-cover object-top transition-transform duration-300"
                     style={{ transform: 'scale(1.1)' }}
                     onError={(e) => {
@@ -132,16 +132,16 @@ export default function Layout() {
                 </div>
                 {/* Camera icon overlay on hover */}
                 <div className="absolute inset-0 rounded-full bg-black/0 group-hover:bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200">
-                  <span className="text-white text-xs font-bold">Edit</span>
+                  <span className="text-white text-xs font-bold">{t("common.edit")}</span>
                 </div>
               </Link>
             </div>
             <h2 className="text-base font-black text-slate-800 dark:text-white tracking-tight flex items-center justify-center gap-1.5">
-              <span>Hi, {displayName}!</span>
+              <span>{t("layout.hi", { name: displayName })}</span>
               <span className="inline-block animate-bounce" style={{ animationDuration: "2s" }}>👋</span>
             </h2>
             <p className="text-xs text-slate-500 dark:text-purple-200/70 font-medium mt-0.5">
-              Good to see you again
+              {t("layout.goodToSeeYou")}
             </p>
           </div>
 
@@ -186,12 +186,14 @@ export default function Layout() {
               <div className="w-12 h-12 rounded-xl overflow-hidden shadow-2xs border border-white bg-pink-50">
                 <img
                   src="/plant_clay.jpg"
-                  alt="Clay plant"
+                  alt={t("layout.plantAlt")}
                   className="w-full h-full object-cover"
                 />
               </div>
               <p className="text-[11px] font-bold text-slate-700 dark:text-purple-200 leading-tight">
-                Take breaks,<br />stay positive 🌸
+                {t("layout.takeBreaks")}
+                <br />
+                {t("layout.stayPositive")}
               </p>
             </div>
 
@@ -224,14 +226,14 @@ export default function Layout() {
             <div className="flex items-center justify-between pb-3 border-b border-purple-200/50">
               <div className="flex items-center gap-2.5 min-w-0">
                 <div className="w-9 h-9 rounded-full overflow-hidden border-2 border-white">
-                  <img src="/avatar_clay.jpg" alt="Avatar" className="w-full h-full object-cover scale-125" />
+                  <img src="/avatar_clay.jpg" alt={t("layout.avatarAlt")} className="w-full h-full object-cover scale-125" />
                 </div>
                 <div>
                   <span className="font-black text-slate-800 dark:text-white text-sm">
-                    Hi, {displayName}! 👋
+                    {t("layout.hi", { name: displayName })} 👋
                   </span>
                   <div className="text-[10px] text-purple-600 dark:text-purple-300 font-semibold">
-                    Admin Console
+                    {t("layout.adminConsole")}
                   </div>
                 </div>
               </div>
@@ -239,7 +241,7 @@ export default function Layout() {
                 type="button"
                 onClick={() => setMobileMenuOpen(false)}
                 className="clay-circle-btn w-8 h-8 flex items-center justify-center text-slate-500"
-                aria-label="Close menu"
+                aria-label={t("layout.closeMenu")}
               >
                 <X className="w-4 h-4" />
               </button>
@@ -287,7 +289,7 @@ export default function Layout() {
               type="button"
               onClick={() => setMobileMenuOpen(true)}
               className="clay-circle-btn w-10 h-10 flex items-center justify-center text-slate-700 dark:text-slate-200"
-              aria-label="Open menu"
+              aria-label={t("layout.openMenu")}
             >
               <Menu className="w-5 h-5" />
             </button>
@@ -308,7 +310,7 @@ export default function Layout() {
               <span className="text-lg">{greeting.icon}</span>
             </h1>
             <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
-              Here's what's happening today.
+              {t("layout.happeningToday")}
             </p>
           </div>
 
@@ -319,8 +321,8 @@ export default function Layout() {
               type="button"
               onClick={() => setSearchModalOpen(!searchModalOpen)}
               className="clay-circle-btn w-10 h-10 flex items-center justify-center text-slate-600 dark:text-slate-300"
-              title="Search"
-              aria-label="Search"
+              title={t("common.search")}
+              aria-label={t("common.search")}
             >
               <Search className="w-4 h-4" />
             </button>
@@ -329,8 +331,8 @@ export default function Layout() {
             <Link
               to="/alerts"
               className="clay-circle-btn w-10 h-10 relative flex items-center justify-center text-slate-600 dark:text-slate-300"
-              title="Notifications"
-              aria-label="Notifications"
+              title={t("layout.notifications")}
+              aria-label={t("layout.notifications")}
             >
               <Bell className="w-4 h-4" />
               <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[#ff6b8b] text-white text-[10px] font-black flex items-center justify-center shadow-xs border-2 border-white dark:border-slate-900">
@@ -342,12 +344,12 @@ export default function Layout() {
             <Link
               to="/profile"
               className="clay-circle-btn w-10 h-10 p-0.5 overflow-hidden flex items-center justify-center"
-              title="My Profile"
-              aria-label="Profile"
+              title={t("nav.profile")}
+              aria-label={t("nav.profile")}
             >
               <img
                 src={avatarSrc}
-                alt="Profile"
+                alt={t("nav.profile")}
                 className="w-full h-full object-cover rounded-full"
                 onError={(e) => {
                   e.target.style.display = "none";
@@ -363,11 +365,11 @@ export default function Layout() {
               href={storefrontUrl}
               target="_blank"
               rel="noreferrer"
-              title="Open storefront"
+              title={t("layout.openStorefront")}
               className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold text-slate-700 dark:text-slate-200 clay-circle-btn"
             >
               <Store className="w-3.5 h-3.5 text-purple-500" />
-              <span>Store</span>
+              <span>{t("layout.store")}</span>
               <ExternalLink className="w-3 h-3 text-slate-400" />
             </a>
           </div>

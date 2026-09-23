@@ -108,11 +108,11 @@ export default function Orders() {
           {/* Status Tabs */}
           <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
             {[
-              { id: "all", label: "All Orders", count: counts.all },
-              { id: "pending", label: "Pending", count: counts.pending },
-              { id: "paid", label: "Paid", count: counts.paid },
-              { id: "shipped", label: "Shipped", count: counts.shipped },
-              { id: "cancelled", label: "Cancelled", count: counts.cancelled },
+              { id: "all", label: t("orderStatus.all"), count: counts.all },
+              { id: "pending", label: t("orderStatus.pending"), count: counts.pending },
+              { id: "paid", label: t("orderStatus.paid"), count: counts.paid },
+              { id: "shipped", label: t("orderStatus.shipped"), count: counts.shipped },
+              { id: "cancelled", label: t("orderStatus.cancelled"), count: counts.cancelled },
             ].map((tab) => {
               const active = statusFilter === tab.id;
               return (
@@ -148,7 +148,7 @@ export default function Orders() {
               type="search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search by order #, phone, name..."
+              placeholder={t("orders.searchPlaceholder")}
               className="w-full pl-10 pr-4 py-2 rounded-2xl border border-pink-100/80 dark:border-pink-950/70 bg-pink-50/20 dark:bg-[#140d1a] text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-pink-500/30 focus:border-pink-500 text-xs sm:text-sm transition"
             />
           </div>
@@ -281,8 +281,12 @@ export default function Orders() {
                         className={`text-xs font-bold px-3 py-1.5 rounded-xl border cursor-pointer focus:outline-none focus:ring-2 focus:ring-pink-500/30 disabled:opacity-50 transition-all shadow-2xs ${STATUS_STYLE[o.status] || STATUS_STYLE.pending}`}
                       >
                         {STATUSES.map((s) => (
-                          <option key={s} value={s} className="text-slate-900 dark:bg-[#181120] dark:text-white capitalize">
-                            {s}
+                          <option
+                            key={s}
+                            value={s}
+                            className="text-slate-900 dark:bg-[#181120] dark:text-white"
+                          >
+                            {t(`orderStatus.${s}`)}
                           </option>
                         ))}
                       </select>

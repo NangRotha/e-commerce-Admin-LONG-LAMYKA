@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import Modal from "./Modal";
 import { api } from "../api/client";
+import { useI18n } from "../i18n/I18nContext";
 
 const EMPTY = {
   title: "",
@@ -27,16 +28,26 @@ const EMPTY = {
 };
 
 const TYPES = [
-  { value: "info", label: "Info", icon: Info, cls: "bg-blue-100 text-blue-700" },
-  { value: "success", label: "Success", icon: CheckCircle2, cls: "bg-emerald-100 text-emerald-700" },
-  { value: "warning", label: "Warning", icon: AlertTriangle, cls: "bg-amber-100 text-amber-700" },
-  { value: "danger", label: "Danger", icon: XCircle, cls: "bg-rose-100 text-rose-700" },
+  { value: "info", labelKey: "alerts.typeInfo", icon: Info, cls: "bg-blue-100 text-blue-700" },
+  {
+    value: "success",
+    labelKey: "alerts.typeSuccess",
+    icon: CheckCircle2,
+    cls: "bg-emerald-100 text-emerald-700",
+  },
+  {
+    value: "warning",
+    labelKey: "alerts.typeWarning",
+    icon: AlertTriangle,
+    cls: "bg-amber-100 text-amber-700",
+  },
+  { value: "danger", labelKey: "alerts.typeDanger", icon: XCircle, cls: "bg-rose-100 text-rose-700" },
 ];
 
 const STYLES = [
-  { value: "banner", label: "Banner (top strip)" },
-  { value: "popup", label: "Popup (modal)" },
-  { value: "both", label: "Banner + Popup" },
+  { value: "banner", labelKey: "alerts.styleBannerLong" },
+  { value: "popup", labelKey: "alerts.stylePopupLong" },
+  { value: "both", labelKey: "alerts.styleBoth" },
 ];
 
 // ISO -> value សម្រាប់ <input type="datetime-local"> (បង្ហាញជាម៉ោងក្នុងស្រុក)
@@ -61,6 +72,8 @@ export default function AlertModal({ open, onClose, onSave, initial }) {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
   const fileRef = useRef(null);
+
+  const { t } = useI18n();
 
   useEffect(() => {
     if (open) {
@@ -106,11 +119,11 @@ export default function AlertModal({ open, onClose, onSave, initial }) {
     e.preventDefault();
     setError("");
     if (!form.title.trim() && !form.message.trim()) {
-      setError("Please enter a title or message.");
+      setError(t("alerts.titleOrMessageRequired"));
       return;
     }
     if (form.starts_at && form.expires_at && form.starts_at > form.expires_at) {
-      setError("Start date must be earlier than end date.");
+      setError(t("alerts.startBeforeEnd"));
       return;
     }
     setSaving(true);
@@ -142,56 +155,56 @@ export default function AlertModal({ open, onClose, onSave, initial }) {
     <Modal
       open={open}
       onClose={onClose}
-      title={initial ? "Edit Alert" : "New Alert"}
-      subtitle={initial ? "Configure popup or banner announcement" : "Create a storefront announcement"}
+      title={initial ? t("alerts.editAlert") : t("alerts.newAlert")}
+      subtitle={initial ? t("alerts.editSubtitle") : t("alerts.addSubtitle")}
       icon={BellRing}
       maxWidth="xl"
     >
       <form onSubmit={submit} className="space-y-4">
         <div>
-          <label className={label}>Title</label>
+          <label className={label}>{t("alerts.alertTitle")}</label>
           <input
             className={input}
             value={form.title}
             onChange={(e) => set("title", e.target.value)}
-            placeholder="e.g. Holiday Sale"
+            placeholder={t("alerts.titlePlaceholder")}
           />
         </div>
 
         <div>
-          <label className={label}>Message</label>
+          <label className={label}>{t("alerts.alertMessage")}</label>
           <textarea
             className={`${input} resize-none`}
             rows={3}
             value={form.message}
             onChange={(e) => set("message", e.target.value)}
-            placeholder="e.g. Get 20% off everything this weekend with code SALE20"
+            placeholder={t("alerts.messagePlaceholder")}
           />
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className={label}>Type</label>
+            <label className={label}>{t("alerts.alertType")}</label>
             <div className="mt-1.5 grid grid-cols-2 gap-2">
-              {TYPES.map((t) => (
+              {TYPES.map((tp) => (
                 <button
-                  key={t.value}
+                  key={tp.value}
                   type="button"
-                  onClick={() => set("alert_type", t.value)}
+                  onClick={() => set("alert_type", tp.value)}
                   className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium transition border ${
-                    form.alert_type === t.value
-                      ? "border-pink-500 ring-2 ring-pink-200 dark:ring-pink-900 " + t.cls
+                    form.alert_type === tp.value
+                      ? "border-pink-500 ring-2 ring-pink-200 dark:ring-pink-900 " + tp.cls
                       : "border-slate-200 text-slate-500 hover:border-slate-300 bg-white"
                   }`}
                 >
-                  <t.icon className="w-3.5 h-3.5" />
-                  {t.label}
+                  <tp.icon className="w-3.5 h-3.5" />
+                  {t(tp.labelKey)}
                 </button>
               ))}
             </div>
           </div>
           <div>
-            <label className={label}>Display</label>
+            <label className={label}>{t("alerts.alertStyle")}</label>
             <select
               className={input}
               value={form.style}
@@ -199,7 +212,7 @@ export default function AlertModal({ open, onClose, onSave, initial }) {
             >
               {STYLES.map((s) => (
                 <option key={s.value} value={s.value}>
-                  {s.label}
+                  {t(s.labelKey)}
                 </option>
               ))}
             </select>
@@ -207,7 +220,7 @@ export default function AlertModal({ open, onClose, onSave, initial }) {
         </div>
 
         <div>
-          <label className={label}>Image (upload from your computer, or paste a URL)</label>
+          <label className={label}>{t("alerts.alertImageLabel")}</label>
           <div className="mt-1.5 flex flex-col sm:flex-row gap-2">
             <input
               ref={fileRef}
@@ -227,20 +240,20 @@ export default function AlertModal({ open, onClose, onSave, initial }) {
               ) : (
                 <Upload className="w-4 h-4" />
               )}
-              {uploading ? "Uploading..." : "Upload image"}
+              {uploading ? t("common.uploading") : t("alerts.uploadImage")}
             </button>
             <input
               className={input}
               value={form.image_url}
               onChange={(e) => set("image_url", e.target.value)}
-              placeholder="...or paste an image URL"
+              placeholder={t("alerts.pasteImageUrl")}
             />
           </div>
           {form.image_url && (
             <div className="relative mt-2">
               <img
                 src={form.image_url}
-                alt="Alert preview"
+                alt={t("alerts.imagePreviewAlt")}
                 className="h-36 w-full object-cover rounded-xl border border-slate-200 bg-slate-100"
                 onError={(e) => (e.target.style.display = "none")}
               />
@@ -248,13 +261,13 @@ export default function AlertModal({ open, onClose, onSave, initial }) {
                 type="button"
                 onClick={() => set("image_url", "")}
                 className="absolute top-2 right-2 p-1.5 rounded-full bg-slate-900/60 text-white hover:bg-slate-900 transition"
-                aria-label="Remove image"
+                aria-label={t("alerts.removeImage")}
               >
                 <Trash2 className="w-4 h-4" />
               </button>
               <span className="absolute bottom-2 left-2 px-2 py-1 rounded-md bg-slate-900/60 text-white text-xs font-medium">
                 <ImagePlus className="w-3.5 h-3.5 inline -mt-0.5 mr-1" />
-                Preview
+                {t("common.preview")}
               </span>
             </div>
           )}
@@ -263,19 +276,19 @@ export default function AlertModal({ open, onClose, onSave, initial }) {
         <div>
           <label className={label}>
             <LinkIcon className="w-3.5 h-3.5 inline -mt-0.5 mr-1" />
-            Link when clicked (optional)
+            {t("alerts.alertLinkFull")}
           </label>
           <input
             className={input}
             value={form.link_url}
             onChange={(e) => set("link_url", e.target.value)}
-            placeholder="e.g. /products or https://..."
+            placeholder={t("alerts.linkPlaceholder")}
           />
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className={label}>Starts at (optional)</label>
+            <label className={label}>{t("alerts.startsAtOptional")}</label>
             <input
               type="datetime-local"
               className={input}
@@ -284,7 +297,7 @@ export default function AlertModal({ open, onClose, onSave, initial }) {
             />
           </div>
           <div>
-            <label className={label}>Expires at (optional)</label>
+            <label className={label}>{t("alerts.expiresAtOptional")}</label>
             <input
               type="datetime-local"
               className={input}
@@ -301,7 +314,7 @@ export default function AlertModal({ open, onClose, onSave, initial }) {
             onChange={(e) => set("is_active", e.target.checked)}
             className="w-4 h-4 rounded accent-pink-600"
           />
-          Active (show on storefront)
+          {t("alerts.activeOnStorefront")}
         </label>
 
         {error && (
@@ -316,14 +329,18 @@ export default function AlertModal({ open, onClose, onSave, initial }) {
             onClick={onClose}
             className="px-5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition text-sm"
           >
-            Cancel
+            {t("common.cancel")}
           </button>
           <button
             type="submit"
             disabled={saving}
             className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 hover:from-pink-600 hover:to-rose-600 text-white font-semibold transition text-sm shadow-md shadow-pink-500/25 disabled:opacity-60 cursor-pointer"
           >
-            {saving ? "Saving..." : initial ? "Save changes" : "Add alert"}
+            {saving
+              ? t("common.saving")
+              : initial
+              ? t("alerts.saveChanges")
+              : t("alerts.addAlertShort")}
           </button>
         </div>
       </form>

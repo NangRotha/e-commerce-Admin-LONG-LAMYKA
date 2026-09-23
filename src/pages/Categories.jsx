@@ -5,6 +5,7 @@ import CategoryModal from "../components/CategoryModal";
 import Modal from "../components/Modal";
 import { formatDate } from "../lib/format";
 import { useRealtime } from "../context/RealtimeContext";
+import { useI18n } from "../i18n/I18nContext";
 
 export default function Categories() {
   const [categories, setCategories] = useState(null);
@@ -13,6 +14,8 @@ export default function Categories() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState(null);
   const [confirming, setConfirming] = useState(null);
+
+  const { t } = useI18n();
 
   const load = useCallback(
     () =>
@@ -68,10 +71,12 @@ export default function Categories() {
           </div>
           <div>
             <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
-              Categories
+              {t("categories.title")}
             </h1>
             <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-              {categories ? `${categories.length} product collections` : "Loading categories..."}
+              {categories
+                ? t("categories.subtitle", { count: categories.length })
+                : t("categories.subtitleLoading")}
             </p>
           </div>
         </div>
@@ -84,7 +89,7 @@ export default function Categories() {
           className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 hover:from-pink-600 hover:to-rose-600 text-white font-bold shadow-md shadow-pink-500/25 hover:shadow-lg hover:shadow-pink-500/35 hover:scale-[1.02] active:scale-95 transition-all text-sm shrink-0"
         >
           <Plus className="w-4 h-4 stroke-[3]" />
-          <span>Add Category</span>
+          <span>{t("categories.addCategory")}</span>
         </button>
       </div>
 
@@ -102,7 +107,7 @@ export default function Categories() {
           type="search"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search categories by name..."
+          placeholder={t("categories.searchPlaceholder")}
           className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-pink-100/80 dark:border-pink-950/70 bg-white dark:bg-[#150e1b] text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-pink-500/30 focus:border-pink-500 text-sm transition shadow-2xs"
         />
       </div>
@@ -117,9 +122,7 @@ export default function Categories() {
         <div className="luxury-card rounded-[28px] py-16 text-center text-slate-500 dark:text-slate-400">
           <Tags className="w-12 h-12 mx-auto mb-3 text-pink-300 dark:text-pink-900/60" />
           <p className="font-bold">
-            {categories.length === 0
-              ? "No categories yet. Add one to organize your products."
-              : "No categories match your search."}
+            {categories.length === 0 ? t("categories.noCategories") : t("categories.noMatch")}
           </p>
         </div>
       ) : (
@@ -127,11 +130,11 @@ export default function Categories() {
           <table className="w-full text-sm min-w-[640px]">
             <thead>
               <tr className="text-left text-xs uppercase tracking-wider text-slate-400 dark:text-pink-300/60 border-b border-pink-100/70 dark:border-pink-950/70 bg-pink-50/30 dark:bg-white/[0.02]">
-                <th className="px-5 py-4 font-bold">Category Name</th>
-                <th className="px-4 py-4 font-bold">Description</th>
-                <th className="px-4 py-4 font-bold">Products</th>
-                <th className="px-4 py-4 font-bold">Created Date</th>
-                <th className="px-5 py-4 font-bold text-right">Actions</th>
+                <th className="px-5 py-4 font-bold">{t("categories.categoryName")}</th>
+                <th className="px-4 py-4 font-bold">{t("categories.categoryDesc")}</th>
+                <th className="px-4 py-4 font-bold">{t("categories.products")}</th>
+                <th className="px-4 py-4 font-bold">{t("categories.createdDate")}</th>
+                <th className="px-5 py-4 font-bold text-right">{t("common.actions")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-pink-100/60 dark:divide-pink-950/60">
@@ -159,7 +162,7 @@ export default function Categories() {
                           : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400"
                       }`}
                     >
-                      {c.product_count} items
+                      {t("categories.itemsCount", { count: c.product_count })}
                     </span>
                   </td>
                   <td className="px-4 py-4 text-slate-500 dark:text-slate-400 text-xs">
@@ -173,14 +176,14 @@ export default function Categories() {
                           setModalOpen(true);
                         }}
                         className="p-2 rounded-xl text-slate-400 hover:bg-pink-50 dark:hover:bg-pink-950/50 hover:text-pink-600 dark:hover:text-pink-400 transition"
-                        title="Edit Category"
+                        title={t("categories.editCategory")}
                       >
                         <Pencil className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => setConfirming(c)}
                         className="p-2 rounded-xl text-slate-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 hover:text-rose-600 dark:hover:text-rose-400 transition"
-                        title="Delete Category"
+                        title={t("categories.deleteCategory")}
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -200,17 +203,18 @@ export default function Categories() {
         initial={editing}
       />
 
-      <Modal open={!!confirming} onClose={() => setConfirming(null)} title="Delete category">
+      <Modal
+        open={!!confirming}
+        onClose={() => setConfirming(null)}
+        title={t("categories.deleteCategory")}
+      >
         <div className="space-y-4">
           <p className="text-sm text-slate-600 dark:text-slate-300">
-            Are you sure you want to delete category{" "}
-            <strong className="text-slate-900 dark:text-white">"{confirming?.name}"</strong>? This
-            action cannot be undone.
+            {t("categories.confirmDeleteFull", { name: confirming?.name })}
           </p>
           {confirming?.product_count > 0 && (
             <p className="text-xs text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900 rounded-2xl p-3">
-              This category has {confirming.product_count} product(s). You must
-              reassign or delete them before you can remove this category.
+              {t("categories.hasProducts", { count: confirming.product_count })}
             </p>
           )}
           <div className="flex gap-2 justify-end pt-2">
@@ -218,14 +222,14 @@ export default function Categories() {
               onClick={() => setConfirming(null)}
               className="px-4 py-2 text-sm font-semibold rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
             >
-              Cancel
+              {t("common.cancel")}
             </button>
             <button
               onClick={handleDelete}
               disabled={confirming?.product_count > 0}
               className="px-4 py-2 text-sm font-semibold rounded-xl bg-rose-600 hover:bg-rose-700 text-white shadow-sm transition disabled:opacity-50"
             >
-              Delete
+              {t("common.delete")}
             </button>
           </div>
         </div>

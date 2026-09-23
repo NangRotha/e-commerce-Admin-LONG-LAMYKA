@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
 import { Tags } from "lucide-react";
 import Modal from "./Modal";
+import { useI18n } from "../i18n/I18nContext";
 
 export default function CategoryModal({ open, onClose, onSave, initial }) {
   const [form, setForm] = useState({ name: "", description: "" });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+
+  const { t } = useI18n();
 
   useEffect(() => {
     if (open) {
@@ -21,7 +24,7 @@ export default function CategoryModal({ open, onClose, onSave, initial }) {
     e.preventDefault();
     setError("");
     if (!form.name.trim()) {
-      setError("Category name is required.");
+      setError(t("categories.nameRequired"));
       return;
     }
     setSaving(true);
@@ -46,8 +49,8 @@ export default function CategoryModal({ open, onClose, onSave, initial }) {
     <Modal
       open={open}
       onClose={onClose}
-      title={initial ? "Edit Category" : "Add Category"}
-      subtitle={initial ? "Update category information" : "Create a new category for products"}
+      title={initial ? t("categories.editCategory") : t("categories.createCategory")}
+      subtitle={initial ? t("categories.editSubtitle") : t("categories.addSubtitle")}
       icon={Tags}
       maxWidth="md"
     >
@@ -59,25 +62,25 @@ export default function CategoryModal({ open, onClose, onSave, initial }) {
         )}
 
         <div>
-          <label className={label}>Name *</label>
+          <label className={label}>{t("categories.categoryName")} *</label>
           <input
             className={input}
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
-            placeholder="e.g. Electronics"
+            placeholder={t("categories.categoryNamePlaceholder")}
             maxLength={60}
             autoFocus
           />
         </div>
 
         <div>
-          <label className={label}>Description</label>
+          <label className={label}>{t("categories.categoryDesc")}</label>
           <textarea
             className={input}
             rows={2}
             value={form.description}
             onChange={(e) => setForm({ ...form, description: e.target.value })}
-            placeholder="Short description (optional)"
+            placeholder={t("categories.categoryDescPlaceholder")}
           />
         </div>
 
@@ -87,14 +90,18 @@ export default function CategoryModal({ open, onClose, onSave, initial }) {
             onClick={onClose}
             className="px-5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition text-sm"
           >
-            Cancel
+            {t("common.cancel")}
           </button>
           <button
             type="submit"
             disabled={saving}
             className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 hover:from-pink-600 hover:to-rose-600 text-white font-semibold shadow-md shadow-pink-500/25 transition text-sm disabled:opacity-60 cursor-pointer"
           >
-            {saving ? "Saving..." : initial ? "Save changes" : "Add category"}
+            {saving
+              ? t("common.saving")
+              : initial
+              ? t("common.save")
+              : t("categories.createCategory")}
           </button>
         </div>
       </form>

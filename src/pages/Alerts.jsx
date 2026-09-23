@@ -4,15 +4,20 @@ import { api } from "../api/client";
 import AlertModal from "../components/AlertModal";
 import Modal from "../components/Modal";
 import { useRealtime } from "../context/RealtimeContext";
+import { useI18n } from "../i18n/I18nContext";
 
 const TYPE_META = {
-  info: { label: "Info", cls: "bg-blue-50 text-blue-700 dark:bg-blue-950/70 dark:text-blue-300 border border-blue-200/70 dark:border-blue-800/60" },
-  success: { label: "Success", cls: "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/70 dark:text-emerald-300 border border-emerald-200/70 dark:border-emerald-800/60" },
-  warning: { label: "Warning", cls: "bg-amber-50 text-amber-700 dark:bg-amber-950/70 dark:text-amber-300 border border-amber-200/70 dark:border-amber-800/60" },
-  danger: { label: "Danger", cls: "bg-rose-50 text-rose-700 dark:bg-rose-950/70 dark:text-rose-300 border border-rose-200/70 dark:border-rose-900/60" },
+  info: { labelKey: "alerts.typeInfo", cls: "bg-blue-50 text-blue-700 dark:bg-blue-950/70 dark:text-blue-300 border border-blue-200/70 dark:border-blue-800/60" },
+  success: { labelKey: "alerts.typeSuccess", cls: "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/70 dark:text-emerald-300 border border-emerald-200/70 dark:border-emerald-800/60" },
+  warning: { labelKey: "alerts.typeWarning", cls: "bg-amber-50 text-amber-700 dark:bg-amber-950/70 dark:text-amber-300 border border-amber-200/70 dark:border-amber-800/60" },
+  danger: { labelKey: "alerts.typeDanger", cls: "bg-rose-50 text-rose-700 dark:bg-rose-950/70 dark:text-rose-300 border border-rose-200/70 dark:border-rose-900/60" },
 };
 
-const STYLE_LABEL = { banner: "Banner", popup: "Popup", both: "Banner + Popup" };
+const STYLE_LABEL = {
+  banner: "alerts.styleBanner",
+  popup: "alerts.stylePopup",
+  both: "alerts.styleBoth",
+};
 
 function fmtDate(iso) {
   if (!iso) return "—";
@@ -29,6 +34,8 @@ export default function Alerts() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState(null);
   const [confirming, setConfirming] = useState(null);
+
+  const { t } = useI18n();
 
   const load = useCallback(
     () =>
@@ -82,10 +89,10 @@ export default function Alerts() {
           </div>
           <div>
             <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
-              Alerts &amp; Popups
+              {t("alerts.title")}
             </h1>
             <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-              Broadcast announcements, top banners, and modal popups to customers in real time.
+              {t("alerts.subtitle")}
             </p>
           </div>
         </div>
@@ -98,7 +105,7 @@ export default function Alerts() {
           className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 hover:from-pink-600 hover:to-rose-600 text-white font-bold shadow-md shadow-pink-500/25 hover:shadow-lg hover:shadow-pink-500/35 hover:scale-[1.02] active:scale-95 transition-all text-sm shrink-0"
         >
           <Plus className="w-4 h-4 stroke-[3]" />
-          <span>New Alert</span>
+          <span>{t("alerts.newAlert")}</span>
         </button>
       </div>
 
@@ -118,9 +125,11 @@ export default function Alerts() {
       ) : alerts.length === 0 ? (
         <div className="luxury-card rounded-[28px] p-12 sm:p-16 text-center space-y-3">
           <BellRing className="w-14 h-14 mx-auto text-pink-300 dark:text-pink-900/60" />
-          <h2 className="text-lg font-bold text-slate-800 dark:text-white">No alerts yet</h2>
+          <h2 className="text-lg font-bold text-slate-800 dark:text-white">
+            {t("alerts.noAlertsTitle")}
+          </h2>
           <p className="text-sm text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
-            Create your first announcement — it will appear on the storefront immediately.
+            {t("alerts.noAlertsDesc")}
           </p>
         </div>
       ) : (
@@ -128,14 +137,14 @@ export default function Alerts() {
           <table className="w-full text-sm min-w-[700px]">
             <thead>
               <tr className="text-left text-xs uppercase tracking-wider text-slate-400 dark:text-pink-300/60 border-b border-pink-100/70 dark:border-pink-950/70 bg-pink-50/30 dark:bg-white/[0.02]">
-                <th className="px-5 py-4 font-bold">Alert Message</th>
-                <th className="px-4 py-4 font-bold">Display Style</th>
+                <th className="px-5 py-4 font-bold">{t("alerts.thMessage")}</th>
+                <th className="px-4 py-4 font-bold">{t("alerts.alertStyle")}</th>
                 <th className="px-4 py-4 font-bold">
                   <CalendarClock className="w-3.5 h-3.5 inline -mt-0.5 mr-1 text-pink-500" />
-                  Schedule
+                  {t("alerts.thSchedule")}
                 </th>
-                <th className="px-4 py-4 font-bold">Live Status</th>
-                <th className="px-5 py-4 font-bold text-right">Actions</th>
+                <th className="px-4 py-4 font-bold">{t("alerts.thStatus")}</th>
+                <th className="px-5 py-4 font-bold text-right">{t("common.actions")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-pink-100/60 dark:divide-pink-950/60">
@@ -144,7 +153,7 @@ export default function Alerts() {
                 const scheduled =
                   a.starts_at || a.expires_at
                     ? `${fmtDate(a.starts_at)} → ${fmtDate(a.expires_at)}`
-                    : "Always Active";
+                    : t("alerts.alwaysActive");
                 return (
                   <tr
                     key={a.id}
@@ -155,14 +164,14 @@ export default function Alerts() {
                         <span
                           className={`mt-0.5 shrink-0 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide shadow-2xs ${meta.cls}`}
                         >
-                          {meta.label}
+                          {t(meta.labelKey)}
                         </span>
                         <div className="min-w-0">
                           <p className="font-bold text-slate-900 dark:text-white truncate">
-                            {a.title || "(untitled)"}
+                            {a.title || t("common.untitled")}
                           </p>
                           <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-1 mt-0.5">
-                            {a.message || "No message"}
+                            {a.message || t("alerts.noMessage")}
                           </p>
                         </div>
                       </div>
@@ -170,7 +179,7 @@ export default function Alerts() {
 
                     <td className="px-4 py-4">
                       <span className="px-3 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold border border-slate-200/60 dark:border-slate-700">
-                        {STYLE_LABEL[a.style] || a.style}
+                        {STYLE_LABEL[a.style] ? t(STYLE_LABEL[a.style]) : a.style}
                       </span>
                     </td>
 
@@ -184,7 +193,7 @@ export default function Alerts() {
                         className={`relative w-11 h-6 rounded-full transition-colors ${
                           a.is_active ? "bg-gradient-to-r from-pink-500 to-rose-500" : "bg-slate-200 dark:bg-slate-700"
                         }`}
-                        aria-label={a.is_active ? "Deactivate" : "Activate"}
+                        aria-label={a.is_active ? t("common.disable") : t("common.enable")}
                       >
                         <span
                           className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow-xs transition-transform ${
@@ -202,14 +211,14 @@ export default function Alerts() {
                             setModalOpen(true);
                           }}
                           className="p-2 rounded-xl text-slate-400 hover:bg-pink-50 dark:hover:bg-pink-950/50 hover:text-pink-600 dark:hover:text-pink-400 transition"
-                          title="Edit Alert"
+                          title={t("alerts.editAlert")}
                         >
                           <Pencil className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => setConfirming(a)}
                           className="p-2 rounded-xl text-slate-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 hover:text-rose-600 dark:hover:text-rose-400 transition"
-                          title="Delete Alert"
+                          title={t("alerts.deleteAlert")}
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -230,27 +239,31 @@ export default function Alerts() {
         initial={editing}
       />
 
-      <Modal open={!!confirming} onClose={() => setConfirming(null)} title="Delete alert">
+      <Modal
+        open={!!confirming}
+        onClose={() => setConfirming(null)}
+        title={t("alerts.deleteAlert")}
+      >
         <div className="space-y-4">
           <p className="text-sm text-slate-600 dark:text-slate-300">
-            Are you sure you want to delete{" "}
+            {t("alerts.confirmDelete")}{" "}
             <strong className="text-slate-900 dark:text-white">
-              {confirming?.title || `alert #${confirming?.id}`}
-            </strong>
-            ? It will disappear from the storefront immediately.
+              {confirming?.title || `#${confirming?.id}`}
+            </strong>{" "}
+            {t("alerts.confirmDeleteDesc")}
           </p>
           <div className="flex gap-2 justify-end pt-2">
             <button
               onClick={() => setConfirming(null)}
               className="px-4 py-2 text-sm font-semibold rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
             >
-              Cancel
+              {t("common.cancel")}
             </button>
             <button
               onClick={handleDelete}
               className="px-4 py-2 text-sm font-semibold rounded-xl bg-rose-600 hover:bg-rose-700 text-white shadow-sm transition"
             >
-              Delete
+              {t("common.delete")}
             </button>
           </div>
         </div>

@@ -19,6 +19,7 @@ import ProductModal from "../components/ProductModal";
 import Modal from "../components/Modal";
 import { formatPrice } from "../lib/format";
 import { useRealtime } from "../context/RealtimeContext";
+import { useI18n } from "../i18n/I18nContext";
 
 export default function Products() {
   const [products, setProducts] = useState(null);
@@ -40,6 +41,8 @@ export default function Products() {
   const [bulkSetOriginalPrice, setBulkSetOriginalPrice] = useState(true);
   const [bulkSubmitting, setBulkSubmitting] = useState(false);
   const [bulkMessage, setBulkMessage] = useState({ text: "", type: "" });
+
+  const { t } = useI18n();
 
   const load = useCallback(
     () =>
@@ -113,7 +116,7 @@ export default function Products() {
     if (!editingPrice) return;
     const price = parseFloat(editingPrice.value);
     if (Number.isNaN(price) || price < 0) {
-      setError("Please enter a valid price (0 or more).");
+      setError(t("products.invalidPrice"));
       setEditingPrice(null);
       return;
     }
@@ -160,7 +163,7 @@ export default function Products() {
     e?.preventDefault?.();
     const val = parseFloat(bulkValue);
     if (Number.isNaN(val) || val <= 0) {
-      setBulkMessage({ text: "សូមបញ្ចូលចំនួនលេខវិជ្ជមានត្រឹមត្រូវ (ឧ. 2 ឬ 10)", type: "error" });
+      setBulkMessage({ text: t("products.bulkInvalidValue"), type: "error" });
       return;
     }
     setBulkSubmitting(true);
@@ -173,7 +176,7 @@ export default function Products() {
         set_original_price: bulkSetOriginalPrice,
       });
       setBulkMessage({
-        text: `✓ បានកែសម្រួលតម្លៃលើ ${res.updated_count} ផលិតផលដោយជោគជ័យ!`,
+        text: t("products.bulkSuccess", { count: res.updated_count }),
         type: "success",
       });
       await load();
@@ -198,10 +201,12 @@ export default function Products() {
           </div>
           <div>
             <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
-              Products Management
+              {t("products.title")}
             </h1>
             <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-              {products ? `${products.length} products total in catalog` : "Loading products..."}
+              {products
+                ? t("products.subtitle", { count: products.length })
+                : t("products.subtitleLoading")}
             </p>
           </div>
         </div>
@@ -215,10 +220,10 @@ export default function Products() {
               setBulkModalOpen(true);
             }}
             className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl border border-pink-200/70 dark:border-pink-900/60 bg-white dark:bg-[#181120] text-slate-700 dark:text-slate-200 font-bold hover:bg-pink-50 dark:hover:bg-pink-950/40 hover:text-pink-600 dark:hover:text-pink-300 transition-all text-xs sm:text-sm shadow-2xs active:scale-95"
-            title="បន្ថែម ឬកែប្រែតម្លៃលើតម្លៃចាស់សម្រាប់ផលិតផលទាំងអស់"
+            title={t("products.bulkAdjustHint")}
           >
             <TrendingUp className="w-4 h-4 text-pink-500" />
-            <span>Bulk Price Adjust</span>
+            <span>{t("products.bulkAdjust")}</span>
           </button>
           <button
             onClick={() => {
@@ -228,7 +233,7 @@ export default function Products() {
             className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 hover:from-pink-600 hover:to-rose-600 text-white font-bold transition-all text-xs sm:text-sm shadow-md shadow-pink-500/25 hover:shadow-lg hover:shadow-pink-500/35 hover:scale-[1.02] active:scale-95 cursor-pointer"
           >
             <Plus className="w-4 h-4 stroke-[3]" />
-            <span>Add Product</span>
+            <span>{t("products.addProduct")}</span>
           </button>
         </div>
       </div>
@@ -249,7 +254,7 @@ export default function Products() {
               type="search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search products by title, type, or variant..."
+              placeholder={t("products.searchPlaceholderFull")}
               className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-pink-100/80 dark:border-pink-950/70 bg-pink-50/20 dark:bg-[#140d1a] text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-pink-500/30 focus:border-pink-500 text-sm transition"
             />
           </div>
@@ -265,7 +270,9 @@ export default function Products() {
               >
                 {categories.map((cat) => (
                   <option key={cat} value={cat}>
-                    {cat === "All" ? `All Categories (${products?.length || 0})` : cat}
+                    {cat === "All"
+                      ? t("products.allCategories", { count: products?.length || 0 })
+                      : cat}
                   </option>
                 ))}
               </select>
@@ -279,13 +286,13 @@ export default function Products() {
                 onChange={(e) => setSortBy(e.target.value)}
                 className="px-3.5 py-2.5 rounded-2xl border border-pink-100/80 dark:border-pink-950/70 bg-white dark:bg-[#181120] text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-pink-500/30 focus:border-pink-500 shadow-2xs"
               >
-                <option value="newest">Order: Newest first</option>
-                <option value="category">Order: By Category</option>
-                <option value="name">Order: Name (A-Z)</option>
-                <option value="rating_desc">Order: Rating (⭐ High → Low)</option>
-                <option value="price_asc">Order: Price (Low → High)</option>
-                <option value="price_desc">Order: Price (High → Low)</option>
-                <option value="stock">Order: Stock</option>
+                <option value="newest">{t("products.sortNewestFirst")}</option>
+                <option value="category">{t("products.sortByCategory")}</option>
+                <option value="name">{t("products.sortNameFull")}</option>
+                <option value="rating_desc">{t("products.sortRatingDesc")}</option>
+                <option value="price_asc">{t("products.sortPriceAscFull")}</option>
+                <option value="price_desc">{t("products.sortPriceDescFull")}</option>
+                <option value="stock">{t("products.sortStockFull")}</option>
               </select>
             </div>
           </div>
@@ -300,21 +307,21 @@ export default function Products() {
         </div>
       ) : filtered.length === 0 ? (
         <div className="luxury-card rounded-[28px] py-16 text-center text-slate-500 dark:text-slate-400">
-          No products found matching your search.
+          {t("products.noMatch")}
         </div>
       ) : (
         <div className="luxury-card rounded-[28px] overflow-hidden shadow-xs">
           <table className="w-full text-sm min-w-[780px]">
             <thead>
               <tr className="text-left text-xs uppercase tracking-wider text-slate-400 dark:text-pink-300/60 border-b border-pink-100/70 dark:border-pink-950/70 bg-pink-50/30 dark:bg-white/[0.02]">
-                <th className="px-5 py-4 font-bold">Product</th>
-                <th className="px-4 py-4 font-bold">Category</th>
-                <th className="px-4 py-4 font-bold">Variants / Types</th>
-                <th className="px-4 py-4 font-bold">Rating</th>
-                <th className="px-4 py-4 font-bold">Price</th>
-                <th className="px-4 py-4 font-bold">Sale</th>
-                <th className="px-4 py-4 font-bold">Stock</th>
-                <th className="px-5 py-4 font-bold text-right">Actions</th>
+                <th className="px-5 py-4 font-bold">{t("products.thProduct")}</th>
+                <th className="px-4 py-4 font-bold">{t("common.category")}</th>
+                <th className="px-4 py-4 font-bold">{t("products.variants")}</th>
+                <th className="px-4 py-4 font-bold">{t("products.rating")}</th>
+                <th className="px-4 py-4 font-bold">{t("products.thPrice")}</th>
+                <th className="px-4 py-4 font-bold">{t("products.thSale")}</th>
+                <th className="px-4 py-4 font-bold">{t("common.stock")}</th>
+                <th className="px-5 py-4 font-bold text-right">{t("common.actions")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-pink-100/60 dark:divide-pink-950/60">
@@ -345,7 +352,7 @@ export default function Products() {
                         {p.video_url ? (
                           <span
                             className="mt-1 inline-flex items-center gap-1 text-[10px] font-bold text-purple-700 dark:text-purple-300 bg-purple-50 dark:bg-purple-950/60 border border-purple-200 dark:border-purple-800/60 px-1.5 py-0.5 rounded-md"
-                            title="Shows FIRST on storefront"
+                            title={t("products.videoFirstHint")}
                           >
                             <Clapperboard className="w-2.5 h-2.5" />
                             VIDEO (1st)
@@ -419,7 +426,7 @@ export default function Products() {
                         <button
                           type="button"
                           onClick={() => startPriceEdit(p)}
-                          title="Click to edit price"
+                          title={t("products.clickToEditPrice")}
                           className="font-bold text-pink-600 dark:text-pink-400 hover:underline underline-offset-2"
                         >
                           {formatPrice(p.price)}
@@ -427,7 +434,7 @@ export default function Products() {
                         {p.original_price && p.original_price > p.price && (
                           <span
                             className="text-[11px] text-slate-400 dark:text-slate-500 line-through"
-                            title={`Original Price: ${formatPrice(p.original_price)}`}
+                            title={`${t("products.originalPrice")}: ${formatPrice(p.original_price)}`}
                           >
                             {formatPrice(p.original_price)}
                           </span>
@@ -468,16 +475,16 @@ export default function Products() {
                           setModalOpen(true);
                         }}
                         className="p-2 rounded-lg text-slate-500 hover:bg-blue-50 dark:hover:bg-blue-950/50 hover:text-blue-600 dark:hover:text-blue-400 transition"
-                        aria-label="Edit"
-                        title="Edit product"
+                        aria-label={t("common.edit")}
+                        title={t("products.editProduct")}
                       >
                         <Pencil className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => setConfirming(p)}
                         className="p-2 rounded-lg text-slate-500 hover:bg-rose-50 dark:hover:bg-rose-950/50 hover:text-rose-600 dark:hover:text-rose-400 transition"
-                        aria-label="Delete"
-                        title="Delete product"
+                        aria-label={t("common.delete")}
+                        title={t("products.deleteProduct")}
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -500,25 +507,25 @@ export default function Products() {
       <Modal
         open={!!confirming}
         onClose={() => setConfirming(null)}
-        title="Delete product"
+        title={t("products.deleteProduct")}
       >
         <p className="text-sm text-slate-600 dark:text-slate-300">
-          Are you sure you want to delete{" "}
-          <strong className="text-slate-900 dark:text-white">{confirming?.name}</strong>? This
-          action cannot be undone.
+          {t("products.confirmDelete")}{" "}
+          <strong className="text-slate-900 dark:text-white">{confirming?.name}</strong>?{" "}
+          {t("products.confirmDeleteDesc")}
         </p>
         <div className="mt-6 flex gap-3 justify-end">
           <button
             onClick={() => setConfirming(null)}
             className="px-5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition text-sm"
           >
-            Cancel
+            {t("common.cancel")}
           </button>
           <button
             onClick={handleDelete}
             className="px-5 py-2.5 rounded-xl bg-rose-600 text-white font-semibold hover:bg-rose-700 transition text-sm shadow-xs"
           >
-            Delete
+            {t("common.delete")}
           </button>
         </div>
       </Modal>
@@ -529,8 +536,8 @@ export default function Products() {
         onClose={() => {
           if (!bulkSubmitting) setBulkModalOpen(false);
         }}
-        title="កែសម្រួលតម្លៃផលិតផល (Bulk Price Adjust)"
-        subtitle="បន្ថែម ឬកែប្រែតម្លៃផលិតផលទាំងអស់ ឬតាមប្រភេទ (អាចរក្សាទុកតម្លៃចាស់ជា Original Price)"
+        title={t("products.bulkAdjustTitle")}
+        subtitle={t("products.bulkAdjustSubtitle")}
         icon={TrendingUp}
         maxWidth="xl"
       >
@@ -550,7 +557,7 @@ export default function Products() {
           {/* 1. Target Category */}
           <div>
             <label className="block text-sm font-semibold text-slate-700 dark:text-slate-200">
-              ប្រភេទផលិតផលគោលដៅ (Target Category)
+              {t("products.bulkCategory")}
             </label>
             <select
               value={bulkCategory}
@@ -564,27 +571,29 @@ export default function Products() {
                     : (products || []).filter((p) => p.category === cat).length;
                 return (
                   <option key={cat} value={cat}>
-                    {cat === "All" ? `ផលិតផលទាំងអស់ (${count} មុខ)` : `${cat} (${count} មុខ)`}
+                    {cat === "All"
+                      ? t("products.allProductsCount", { count })
+                      : t("products.categoryCount", { name: cat, count })}
                   </option>
                 );
               })}
             </select>
             <p className="mt-1 text-xs text-slate-400">
-              នឹងអនុវត្តលើ <strong>{targetBulkProducts.length} ផលិតផល</strong> ក្នុងបញ្ជី។
+              {t("products.bulkWillApply", { count: targetBulkProducts.length })}
             </p>
           </div>
 
           {/* 2. Adjustment Type / Operation */}
           <div>
             <label className="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1.5">
-              រូបមន្តកែប្រែតម្លៃ (Adjustment Operation)
+              {t("products.bulkOperationLabel")}
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {[
-                { id: "add_fixed", label: "+ $ បន្ថែមទឹកប្រាក់", desc: "ឧ. +$2 លើតម្លៃចាស់" },
-                { id: "add_percent", label: "+ % បន្ថែមភាគរយ", desc: "ឧ. +10% លើតម្លៃចាស់" },
-                { id: "sub_fixed", label: "- $ បញ្ចុះទឹកប្រាក់", desc: "ឧ. -$2 ពីតម្លៃចាស់" },
-                { id: "sub_percent", label: "- % បញ្ចុះភាគរយ", desc: "ឧ. -10% ពីតម្លៃចាស់" },
+                { id: "add_fixed", label: t("products.addFixed"), desc: t("products.addFixedDesc") },
+                { id: "add_percent", label: t("products.addPercent"), desc: t("products.addPercentDesc") },
+                { id: "sub_fixed", label: t("products.subFixed"), desc: t("products.subFixedDesc") },
+                { id: "sub_percent", label: t("products.subPercent"), desc: t("products.subPercentDesc") },
               ].map((op) => (
                 <button
                   key={op.id}
@@ -607,8 +616,8 @@ export default function Products() {
           <div>
             <label className="block text-sm font-semibold text-slate-700 dark:text-slate-200">
               {bulkOperation.includes("percent")
-                ? "ចំនួនភាគរយ (%) ដែលត្រូវបន្ថែម/កែប្រែ *"
-                : "ចំនួនទឹកប្រាក់ ($) ដែលត្រូវបន្ថែម/កែប្រែ *"}
+                ? t("products.bulkValuePercent")
+                : t("products.bulkValueFixed")}
             </label>
             <div className="relative mt-1.5">
               <input
@@ -618,7 +627,11 @@ export default function Products() {
                 required
                 value={bulkValue}
                 onChange={(e) => setBulkValue(e.target.value)}
-                placeholder={bulkOperation.includes("percent") ? "e.g. 10 (សម្រាប់ 10%)" : "e.g. 2.50 (សម្រាប់ +$2.50)"}
+                placeholder={
+                  bulkOperation.includes("percent")
+                    ? t("products.bulkValuePlaceholderPercent")
+                    : t("products.bulkValuePlaceholderFixed")
+                }
                 className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white text-sm font-semibold focus:ring-2 focus:ring-pink-500/30 focus:border-pink-400 focus:outline-none"
               />
               <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400 font-bold text-sm">
@@ -637,10 +650,8 @@ export default function Products() {
               className="mt-0.5 w-4 h-4 rounded text-pink-600 focus:ring-pink-500 cursor-pointer accent-pink-600"
             />
             <label htmlFor="set_original_price_check" className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 cursor-pointer select-none">
-              <strong className="text-slate-900 dark:text-white">រក្សាទុកតម្លៃបច្ចុប្បន្នជា “តម្លៃចាស់ / Original Price”</strong>
-              <p className="text-xs text-slate-400 mt-0.5">
-                បើធីក៖ តម្លៃមុននឹងក្លាយជាតម្លៃចាស់ (Original Price) ហើយតម្លៃថ្មីត្រូវបានបង្ហាញជាមួយឆ្នូតកាត់លើ Storefront។
-              </p>
+              <strong className="text-slate-900 dark:text-white">{t("products.setOriginalPrice")}</strong>
+              <p className="text-xs text-slate-400 mt-0.5">{t("products.setOriginalPriceHint")}</p>
             </label>
           </div>
 
@@ -648,16 +659,18 @@ export default function Products() {
           {sampleCalculatedPrice && (
             <div className="rounded-xl p-3.5 bg-pink-50/80 dark:bg-pink-950/40 border border-pink-200 dark:border-pink-800 text-xs sm:text-sm space-y-1">
               <p className="font-bold text-pink-900 dark:text-pink-300 flex items-center gap-1.5">
-                <span>🔍 ឧទាហរណ៍ជាក់ស្តែងលើផលិតផលគំរូ៖</span>
+                <span>{t("products.bulkPreviewTitle")}</span>
               </p>
               <p className="text-slate-700 dark:text-slate-300">
                 <strong>{sampleCalculatedPrice.name}</strong>
               </p>
               <div className="flex items-center gap-2 pt-1 font-semibold flex-wrap">
-                <span className="text-slate-500">តម្លៃចាស់៖ {formatPrice(sampleCalculatedPrice.oldPrice)}</span>
+                <span className="text-slate-500">
+                  {t("products.oldPrice")} {formatPrice(sampleCalculatedPrice.oldPrice)}
+                </span>
                 <span>➔</span>
                 <span className="text-pink-600 dark:text-pink-400 font-bold text-sm sm:text-base">
-                  តម្លៃថ្មី៖ {formatPrice(sampleCalculatedPrice.newPrice)}
+                  {t("products.newPrice")} {formatPrice(sampleCalculatedPrice.newPrice)}
                 </span>
                 {sampleCalculatedPrice.savedOriginal !== null && (
                   <span className="text-[11px] text-slate-400 line-through">
@@ -676,7 +689,7 @@ export default function Products() {
               onClick={() => setBulkModalOpen(false)}
               className="px-5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition text-sm"
             >
-              បោះបង់ (Cancel)
+              {t("common.cancel")}
             </button>
             <button
               type="submit"
@@ -686,12 +699,12 @@ export default function Products() {
               {bulkSubmitting ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>កំពុងអនុវត្ត...</span>
+                  <span>{t("products.applying")}</span>
                 </>
               ) : (
                 <>
                   <Check className="w-4 h-4 stroke-[2.5]" />
-                  <span>អនុវត្តលើ {targetBulkProducts.length} ផលិតផល</span>
+                  <span>{t("products.applyToCount", { count: targetBulkProducts.length })}</span>
                 </>
               )}
             </button>

@@ -4,6 +4,7 @@ import { api } from "../api/client";
 import Modal from "../components/Modal";
 import { formatDate } from "../lib/format";
 import { useRealtime } from "../context/RealtimeContext";
+import { useI18n } from "../i18n/I18nContext";
 
 export default function Discounts() {
   const [discounts, setDiscounts] = useState(null);
@@ -13,6 +14,8 @@ export default function Discounts() {
   const [confirmingDelete, setConfirmingDelete] = useState(null);
   const [saving, setSaving] = useState(false);
   const [copiedId, setCopiedId] = useState(null);
+
+  const { t } = useI18n();
 
   const [form, setForm] = useState({
     code: "",
@@ -63,7 +66,7 @@ export default function Discounts() {
     e.preventDefault();
     setError("");
     if (!form.code.trim() || !form.percent) {
-      setError("Code and percent are required.");
+      setError(t("discounts.codePercentRequired"));
       return;
     }
     setSaving(true);
@@ -128,10 +131,12 @@ export default function Discounts() {
           </div>
           <div>
             <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
-              Discounts &amp; Promo Codes
+              {t("discounts.title")}
             </h1>
             <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-              {discounts ? `${discounts.length} promo codes active in store` : "Loading discounts..."}
+              {discounts
+                ? t("discounts.subtitle", { count: discounts.length })
+                : t("discounts.subtitleLoading")}
             </p>
           </div>
         </div>
@@ -141,7 +146,7 @@ export default function Discounts() {
           className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 hover:from-pink-600 hover:to-rose-600 text-white font-bold shadow-md shadow-pink-500/25 hover:shadow-lg hover:shadow-pink-500/35 hover:scale-[1.02] active:scale-95 transition-all text-sm shrink-0"
         >
           <Plus className="w-4 h-4 stroke-[3]" />
-          <span>Create Promo</span>
+          <span>{t("discounts.createPromo")}</span>
         </button>
       </div>
 
@@ -161,19 +166,19 @@ export default function Discounts() {
       ) : discounts.length === 0 ? (
         <div className="luxury-card rounded-[28px] py-16 text-center text-slate-500 dark:text-slate-400 space-y-3">
           <div className="text-4xl">🏷️</div>
-          <p className="font-bold">No promo codes yet. Create one to start offering discounts.</p>
+          <p className="font-bold">{t("discounts.noDiscounts")}</p>
         </div>
       ) : (
         <div className="luxury-card rounded-[28px] overflow-hidden shadow-xs">
           <table className="w-full text-sm min-w-[700px]">
             <thead>
               <tr className="text-left text-xs uppercase tracking-wider text-slate-400 dark:text-pink-300/60 border-b border-pink-100/70 dark:border-pink-950/70 bg-pink-50/30 dark:bg-white/[0.02]">
-                <th className="px-5 py-4 font-bold">Code</th>
-                <th className="px-4 py-4 font-bold">Discount</th>
-                <th className="px-4 py-4 font-bold">Usage Progress</th>
-                <th className="px-4 py-4 font-bold">Expiry Date</th>
-                <th className="px-4 py-4 font-bold">Status</th>
-                <th className="px-5 py-4 font-bold text-right">Actions</th>
+                <th className="px-5 py-4 font-bold">{t("discounts.thCode")}</th>
+                <th className="px-4 py-4 font-bold">{t("discounts.thDiscount")}</th>
+                <th className="px-4 py-4 font-bold">{t("discounts.thUsage")}</th>
+                <th className="px-4 py-4 font-bold">{t("discounts.expiryDate")}</th>
+                <th className="px-4 py-4 font-bold">{t("common.status")}</th>
+                <th className="px-5 py-4 font-bold text-right">{t("common.actions")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-pink-100/60 dark:divide-pink-950/60">
@@ -191,7 +196,7 @@ export default function Discounts() {
                         <button
                           type="button"
                           onClick={() => copyCode(d)}
-                          title="Copy promo code"
+                          title={t("discounts.copyCode")}
                           className="p-1 rounded-md text-slate-400 hover:text-pink-600 dark:hover:text-white transition"
                         >
                           {copiedId === d.id ? (
@@ -205,15 +210,17 @@ export default function Discounts() {
 
                     <td className="px-4 py-4">
                       <span className="inline-flex items-center px-2.5 py-1 rounded-xl text-xs font-black bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/70 dark:border-rose-900/60">
-                        {d.percent}% OFF
+                        {t("discounts.percentOff", { percent: d.percent })}
                       </span>
                     </td>
 
                     <td className="px-4 py-4 min-w-[150px]">
                       <div className="space-y-1">
                         <div className="flex justify-between text-xs font-semibold text-slate-600 dark:text-slate-300">
-                          <span>{d.used_count} used</span>
-                          <span className="text-slate-400">of {d.max_uses}</span>
+                          <span>{t("discounts.usedOf", { used: d.used_count })}</span>
+                          <span className="text-slate-400">
+                            {t("discounts.ofMax", { max: d.max_uses })}
+                          </span>
                         </div>
                         <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
                           <div
@@ -231,12 +238,12 @@ export default function Discounts() {
                           <span>{formatDate(d.expiry_date)}</span>
                           {isExpired && (
                             <span className="px-1.5 py-0.2 rounded text-[10px] font-bold bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300">
-                              Expired
+                              {t("discounts.expired")}
                             </span>
                           )}
                         </div>
                       ) : (
-                        <span className="text-slate-400">Never expires</span>
+                        <span className="text-slate-400">{t("discounts.neverExpires")}</span>
                       )}
                     </td>
 
@@ -246,7 +253,7 @@ export default function Discounts() {
                         className={`relative w-11 h-6 rounded-full transition-colors ${
                           d.is_active ? "bg-gradient-to-r from-pink-500 to-rose-500" : "bg-slate-200 dark:bg-slate-700"
                         }`}
-                        aria-label={d.is_active ? "Deactivate" : "Activate"}
+                        aria-label={d.is_active ? t("common.disable") : t("common.enable")}
                       >
                         <span
                           className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow-xs transition-transform ${
@@ -261,14 +268,14 @@ export default function Discounts() {
                         <button
                           onClick={() => openEdit(d)}
                           className="p-2 rounded-xl text-slate-400 hover:text-pink-600 hover:bg-pink-50 dark:hover:bg-pink-950/40 transition"
-                          title="Edit Promo"
+                          title={t("discounts.editPromo")}
                         >
                           <Pencil className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => setConfirmingDelete(d)}
                           className="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition"
-                          title="Delete Promo"
+                          title={t("discounts.deletePromo")}
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -286,12 +293,12 @@ export default function Discounts() {
       <Modal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
-        title={editing ? "Edit promo code" : "Create promo code"}
+        title={editing ? t("discounts.editDiscount") : t("discounts.createPromoTitle")}
       >
         <form onSubmit={handleSave} className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className={label}>Promo Code *</label>
+              <label className={label}>{t("discounts.code")} *</label>
               <input
                 className={input}
                 value={form.code}
@@ -302,7 +309,7 @@ export default function Discounts() {
               />
             </div>
             <div>
-              <label className={label}>Discount (%) *</label>
+              <label className={label}>{t("discounts.percent")} *</label>
               <input
                 type="number"
                 min="1"
@@ -318,7 +325,7 @@ export default function Discounts() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className={label}>Max Uses</label>
+              <label className={label}>{t("discounts.maxUses")}</label>
               <input
                 type="number"
                 min="1"
@@ -328,7 +335,7 @@ export default function Discounts() {
               />
             </div>
             <div>
-              <label className={label}>Expiry Date (optional)</label>
+              <label className={label}>{t("discounts.expiryDateOptional")}</label>
               <input
                 type="datetime-local"
                 className={input}
@@ -347,7 +354,7 @@ export default function Discounts() {
               className="w-4 h-4 rounded text-pink-600 focus:ring-pink-500 accent-pink-600"
             />
             <label htmlFor="is_active_check" className="text-sm font-semibold text-slate-700 dark:text-slate-300">
-              Active immediately
+              {t("discounts.activeImmediately")}
             </label>
           </div>
 
@@ -357,14 +364,18 @@ export default function Discounts() {
               onClick={() => setModalOpen(false)}
               className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
             >
-              Cancel
+              {t("common.cancel")}
             </button>
             <button
               type="submit"
               disabled={saving}
               className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 hover:from-pink-600 hover:to-rose-600 text-white text-sm font-bold shadow-md shadow-pink-500/25 disabled:opacity-50"
             >
-              {saving ? "Saving..." : editing ? "Update Promo" : "Create Promo"}
+              {saving
+                ? t("common.saving")
+                : editing
+                ? t("discounts.updatePromo")
+                : t("discounts.createPromo")}
             </button>
           </div>
         </form>
@@ -374,28 +385,24 @@ export default function Discounts() {
       <Modal
         open={!!confirmingDelete}
         onClose={() => setConfirmingDelete(null)}
-        title="Delete Promo Code"
+        title={t("discounts.deleteDiscount")}
       >
         <div className="space-y-4">
           <p className="text-sm text-slate-600 dark:text-slate-300">
-            Are you sure you want to delete promo code{" "}
-            <strong className="text-slate-900 dark:text-white font-mono">
-              "{confirmingDelete?.code}"
-            </strong>
-            ? This action cannot be undone.
+            {t("discounts.confirmDeleteFull", { code: confirmingDelete?.code })}
           </p>
           <div className="flex justify-end gap-2 pt-2">
             <button
               onClick={() => setConfirmingDelete(null)}
               className="px-4 py-2 text-sm font-semibold rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
             >
-              Cancel
+              {t("common.cancel")}
             </button>
             <button
               onClick={handleDelete}
               className="px-4 py-2 text-sm font-semibold rounded-xl bg-rose-600 hover:bg-rose-700 text-white shadow-sm transition"
             >
-              Delete
+              {t("common.delete")}
             </button>
           </div>
         </div>

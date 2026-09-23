@@ -2,9 +2,11 @@ import { useRef, useState } from "react";
 import { Camera, Trash2, Save, Eye, EyeOff, User, Mail, Shield, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 import { api } from "../api/client";
 import { useAuth } from "../context/AuthContext";
+import { useI18n } from "../i18n/I18nContext";
 
 export default function Profile() {
   const { user, profileAvatar, profileName, refreshProfile } = useAuth();
+  const { t } = useI18n();
 
   // Display name
   const [name, setName] = useState(profileName || "");
@@ -40,7 +42,7 @@ export default function Profile() {
       await api.updateSetting("profile_avatar", res.url);
       setAvatarUrl(res.url);
       refreshProfile();
-      flash("Profile photo updated! ✨");
+      flash(t("profile.savedPhoto"));
     } catch (err) {
       flash(err.message, "error");
     } finally {
@@ -54,7 +56,7 @@ export default function Profile() {
       await api.updateSetting("profile_avatar", "");
       setAvatarUrl("");
       refreshProfile();
-      flash("Profile photo removed.");
+      flash(t("profile.removedPhoto"));
     } catch (err) {
       flash(err.message, "error");
     }
@@ -68,7 +70,7 @@ export default function Profile() {
     try {
       await api.updateSetting("admin_name", name.trim());
       refreshProfile();
-      flash("Display name saved!");
+      flash(t("profile.savedName"));
     } catch (err) {
       flash(err.message, "error");
     } finally {
@@ -80,11 +82,11 @@ export default function Profile() {
   const savePassword = async (e) => {
     e.preventDefault();
     if (!newPw || newPw !== confirmPw) {
-      flash("New passwords do not match.", "error");
+      flash(t("profile.errorMismatch"), "error");
       return;
     }
     if (newPw.length < 6) {
-      flash("Password must be at least 6 characters.", "error");
+      flash(t("profile.errorShort"), "error");
       return;
     }
     setSavingPw(true);
@@ -92,9 +94,9 @@ export default function Profile() {
       // Try the backend change-password endpoint if available
       await api.updateSetting("__change_password__", JSON.stringify({ current: currentPw, new: newPw }));
       setCurrentPw(""); setNewPw(""); setConfirmPw("");
-      flash("Password updated successfully!");
+      flash(t("profile.savedPassword"));
     } catch (err) {
-      flash(err.message || "Could not update password.", "error");
+      flash(err.message || t("profile.errorUpdate"), "error");
     } finally {
       setSavingPw(false);
     }
@@ -112,10 +114,10 @@ export default function Profile() {
         </div>
         <div>
           <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
-            My Profile
+            {t("profile.title")}
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-            Manage your account info and security
+            {t("profile.subtitle")}
           </p>
         </div>
       </div>
@@ -137,7 +139,7 @@ export default function Profile() {
       {/* ─── Avatar Card ─── */}
       <div className="clay-card-purple p-6 sm:p-8">
         <h2 className="text-base font-black text-slate-800 dark:text-white mb-5">
-          Profile Photo
+          {t("profile.photoTitle")}
         </h2>
 
         <div className="flex flex-col sm:flex-row items-center gap-6">
@@ -150,7 +152,7 @@ export default function Profile() {
               {avatarUrl ? (
                 <img
                   src={avatarUrl}
-                  alt="Profile"
+                  alt={t("profile.photoTitle")}
                   className="w-full h-full object-cover"
                 />
               ) : (
@@ -171,7 +173,7 @@ export default function Profile() {
           {/* Upload / Remove controls */}
           <div className="flex flex-col items-center sm:items-start gap-3">
             <p className="text-sm text-slate-500 dark:text-purple-200/70 font-medium">
-              Recommended: square image, at least 200×200px
+              {t("profile.photoHint")}
             </p>
 
             <div className="flex flex-wrap gap-2">
@@ -182,7 +184,7 @@ export default function Profile() {
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold bg-violet-600 hover:bg-violet-700 text-white shadow-sm transition disabled:opacity-50"
               >
                 <Camera className="w-4 h-4" />
-                {uploadingAvatar ? "Uploading…" : "Upload Photo"}
+                {uploadingAvatar ? t("profile.uploading") : t("profile.uploadPhoto")}
               </button>
 
               {avatarUrl && (
@@ -192,7 +194,7 @@ export default function Profile() {
                   className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 transition"
                 >
                   <Trash2 className="w-4 h-4" />
-                  Remove
+                  {t("profile.removePhoto")}
                 </button>
               )}
             </div>
@@ -211,14 +213,14 @@ export default function Profile() {
       {/* ─── Account Info Card ─── */}
       <div className="clay-card p-6 sm:p-8">
         <h2 className="text-base font-black text-slate-800 dark:text-white mb-5">
-          Account Info
+          {t("profile.accountTitle")}
         </h2>
 
         <form onSubmit={saveName} className="space-y-4">
           {/* Display Name */}
           <div>
             <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
-              Display Name
+              {t("profile.displayName")}
             </label>
             <div className="flex gap-2">
               <div className="relative flex-1">
@@ -227,7 +229,7 @@ export default function Profile() {
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Your display name"
+                  placeholder={t("profile.displayNamePlaceholder")}
                   className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-purple-100 dark:border-purple-900/60 bg-white dark:bg-[#150e1b] text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-purple-500/30 text-sm transition"
                 />
               </div>
@@ -237,7 +239,7 @@ export default function Profile() {
                 className="px-4 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-sm font-bold flex items-center gap-2 transition disabled:opacity-50 shrink-0"
               >
                 {savingName ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-                Save
+                {t("common.save")}
               </button>
             </div>
           </div>
@@ -245,7 +247,7 @@ export default function Profile() {
           {/* Email (read-only from JWT) */}
           <div>
             <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
-              Email
+              {t("profile.email")}
             </label>
             <div className="relative">
               <Mail className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
@@ -256,19 +258,19 @@ export default function Profile() {
                 className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 text-sm cursor-not-allowed"
               />
             </div>
-            <p className="text-[11px] text-slate-400 mt-1">Email is tied to your JWT token and cannot be changed here.</p>
+            <p className="text-[11px] text-slate-400 mt-1">{t("profile.emailReadOnly")}</p>
           </div>
 
           {/* Role (read-only) */}
           <div>
             <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
-              Role
+              {t("profile.role")}
             </label>
             <div className="relative">
               <Shield className="absolute left-3 top-2.5 w-4 h-4 text-violet-500" />
               <input
                 type="text"
-                value="Administrator"
+                value={t("profile.roleValue")}
                 readOnly
                 className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 text-violet-600 dark:text-violet-400 font-bold text-sm cursor-not-allowed"
               />
@@ -280,21 +282,21 @@ export default function Profile() {
       {/* ─── Change Password Card ─── */}
       <div className="clay-card-pink p-6 sm:p-8">
         <h2 className="text-base font-black text-slate-800 dark:text-white mb-5">
-          Change Password
+          {t("profile.passwordTitle")}
         </h2>
 
         <form onSubmit={savePassword} className="space-y-4">
           {/* Current Password */}
           <div>
             <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
-              Current Password
+              {t("profile.currentPassword")}
             </label>
             <div className="relative">
               <input
                 type={showPw ? "text" : "password"}
                 value={currentPw}
                 onChange={(e) => setCurrentPw(e.target.value)}
-                placeholder="Enter current password"
+                placeholder={t("profile.currentPasswordPlaceholder")}
                 className="w-full px-4 py-2.5 rounded-xl border border-pink-100 dark:border-pink-900/60 bg-white dark:bg-[#150e1b] text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-pink-500/30 text-sm pr-10 transition"
               />
               <button type="button" onClick={() => setShowPw(!showPw)} className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 transition">
@@ -306,13 +308,13 @@ export default function Profile() {
           {/* New Password */}
           <div>
             <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
-              New Password
+              {t("profile.newPassword")}
             </label>
             <input
               type={showPw ? "text" : "password"}
               value={newPw}
               onChange={(e) => setNewPw(e.target.value)}
-              placeholder="Min 6 characters"
+              placeholder={t("profile.newPasswordHint")}
               className="w-full px-4 py-2.5 rounded-xl border border-pink-100 dark:border-pink-900/60 bg-white dark:bg-[#150e1b] text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-pink-500/30 text-sm transition"
             />
           </div>
@@ -320,13 +322,13 @@ export default function Profile() {
           {/* Confirm Password */}
           <div>
             <label className="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">
-              Confirm New Password
+              {t("profile.confirmPassword")}
             </label>
             <input
               type={showPw ? "text" : "password"}
               value={confirmPw}
               onChange={(e) => setConfirmPw(e.target.value)}
-              placeholder="Re-enter new password"
+              placeholder={t("profile.confirmPasswordPlaceholder")}
               className={`w-full px-4 py-2.5 rounded-xl border bg-white dark:bg-[#150e1b] text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 text-sm transition ${
                 confirmPw && confirmPw !== newPw
                   ? "border-rose-400 focus:ring-rose-500/30"
@@ -334,7 +336,9 @@ export default function Profile() {
               }`}
             />
             {confirmPw && confirmPw !== newPw && (
-              <p className="text-[11px] text-rose-500 mt-1 font-semibold">Passwords don't match</p>
+              <p className="text-[11px] text-rose-500 mt-1 font-semibold">
+                {t("profile.passwordMismatch")}
+              </p>
             )}
           </div>
 
@@ -344,7 +348,7 @@ export default function Profile() {
             className="w-full py-2.5 rounded-xl bg-[#ff7b8f] hover:bg-[#ff5a75] text-white text-sm font-bold flex items-center justify-center gap-2 transition disabled:opacity-50 shadow-sm"
           >
             {savingPw ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-            {savingPw ? "Updating..." : "Update Password"}
+            {savingPw ? t("profile.updating") : t("profile.updatePassword")}
           </button>
         </form>
       </div>

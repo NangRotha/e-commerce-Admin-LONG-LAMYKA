@@ -17,6 +17,7 @@ import { api } from "../api/client";
 import MilestoneModal from "../components/MilestoneModal";
 import Modal from "../components/Modal";
 import { useRealtime } from "../context/RealtimeContext";
+import { useI18n } from "../i18n/I18nContext";
 
 export default function DeliveryGoals() {
   const [milestones, setMilestones] = useState(null);
@@ -28,6 +29,8 @@ export default function DeliveryGoals() {
 
   // Interactive slider for testing the live preview
   const [simulatedSubtotal, setSimulatedSubtotal] = useState(18);
+
+  const { t } = useI18n();
 
   const load = useCallback(() => {
     api
@@ -105,10 +108,10 @@ export default function DeliveryGoals() {
             </div>
             <div>
               <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
-                Delivery Goals &amp; Milestone Banners
+                {t("deliveryGoals.title")}
               </h1>
               <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-                Set order thresholds for Free Delivery and Gifts. Toggle Show/Hide and update progress banner in real time.
+                {t("deliveryGoals.subtitle")}
               </p>
             </div>
           </div>
@@ -122,7 +125,7 @@ export default function DeliveryGoals() {
           className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 hover:from-pink-600 hover:to-rose-600 text-white font-bold shadow-md shadow-pink-500/25 hover:shadow-lg hover:shadow-pink-500/35 hover:scale-[1.02] active:scale-95 transition-all text-sm shrink-0"
         >
           <Plus className="w-4 h-4 stroke-[3]" />
-          <span>New Goal</span>
+          <span>{t("deliveryGoals.newMilestone")}</span>
         </button>
       </div>
 
@@ -144,16 +147,16 @@ export default function DeliveryGoals() {
             <div>
               <div className="flex items-center gap-2 flex-wrap">
                 <h2 className="text-sm sm:text-base font-black text-slate-900 dark:text-pink-50">
-                  Live Storefront Preview (Cart Milestone Banner)
+                  {t("deliveryGoals.livePreviewTitle")}
                 </h2>
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-pink-100 dark:bg-pink-950/80 text-pink-600 dark:text-pink-300 border border-pink-200/60 dark:border-pink-900/60">
-                  Interactive
+                  {t("deliveryGoals.interactive")}
                 </span>
               </div>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                 {activeMilestones.length === 0
-                  ? "⚠️ All milestones are currently HIDDEN. Customers will NOT see the banner."
-                  : "Drag the slider to test how customers experience progress in real time."}
+                  ? t("deliveryGoals.allHidden")
+                  : t("deliveryGoals.dragHint")}
               </p>
             </div>
           </div>
@@ -163,7 +166,7 @@ export default function DeliveryGoals() {
             <div className="flex items-center gap-2">
               <Sliders className="w-4 h-4 text-pink-500 shrink-0" />
               <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-                Cart:
+                {t("deliveryGoals.cartLabel")}
               </span>
               <span className="font-mono font-black text-pink-600 dark:text-pink-400 text-sm px-2 py-0.5 rounded-lg bg-white dark:bg-black/30 border border-pink-200/50 dark:border-pink-900/50 shadow-2xs">
                 ${simulatedSubtotal.toFixed(2)}
@@ -204,7 +207,7 @@ export default function DeliveryGoals() {
         {/* The Simulated Storefront Banner */}
         {activeMilestones.length === 0 ? (
           <div className="p-8 text-center rounded-2xl border border-dashed border-pink-200 dark:border-pink-950/80 text-slate-400 dark:text-slate-500 text-sm">
-            🙈 Banner is completely hidden from storefront because all milestones are switched OFF.
+            {t("deliveryGoals.bannerHidden")}
           </div>
         ) : (
           <div className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-gradient-to-r from-pink-50/50 via-white to-rose-50/50 dark:from-[#1b1122] dark:via-[#160d1d] dark:to-[#1a1021] border border-pink-200/80 dark:border-pink-800/40 shadow-sm relative overflow-hidden">
@@ -217,18 +220,22 @@ export default function DeliveryGoals() {
                   <>
                     <span className="text-xl animate-bounce">{primaryMilestone?.icon || "🎁"}</span>
                     <span>
-                      Add{" "}
+                      {t("deliveryGoals.addPrefix")}{" "}
                       <span className="text-pink-600 dark:text-pink-400 font-extrabold text-sm sm:text-base">
                         ${previewRemaining.toFixed(2)}
                       </span>{" "}
-                      more for {primaryMilestone?.title || "Free Sweet Delivery & Gift!"}
+                      {t("deliveryGoals.addSuffix", {
+                        title: primaryMilestone?.title || t("deliveryGoals.defaultTitle"),
+                      })}
                     </span>
                   </>
                 ) : (
                   <>
-                    <span className="text-xl animate-bounce">{primaryMilestone?.unlocked_icon || "🎉"}</span>
+                    <span className="text-xl animate-bounce">
+                      {primaryMilestone?.unlocked_icon || "🎉"}
+                    </span>
                     <span className="text-pink-600 dark:text-pink-300 font-black">
-                      {primaryMilestone?.reward_text || "Yay! You unlocked Free Sweet Delivery & Gift! 🎁✨"}
+                      {primaryMilestone?.reward_text || t("deliveryGoals.defaultReward")}
                     </span>
                   </>
                 )}
@@ -263,10 +270,10 @@ export default function DeliveryGoals() {
           </div>
           <div>
             <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-              No delivery milestones created yet
+              {t("deliveryGoals.noMilestonesTitle")}
             </h3>
             <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-              Create your first order threshold to motivate customers to spend more!
+              {t("deliveryGoals.noMilestonesDesc")}
             </p>
           </div>
           <button
@@ -276,7 +283,7 @@ export default function DeliveryGoals() {
             }}
             className="px-6 py-2.5 rounded-2xl bg-gradient-to-r from-pink-500 to-rose-500 text-white text-xs font-bold shadow-md shadow-pink-500/25 hover:shadow-lg transition-all"
           >
-            Create First Milestone
+            {t("deliveryGoals.createFirst")}
           </button>
         </div>
       ) : (
@@ -285,13 +292,13 @@ export default function DeliveryGoals() {
           <div className="px-6 py-4 border-b border-pink-100/70 dark:border-pink-950/70 flex items-center justify-between bg-pink-50/30 dark:bg-white/[0.02]">
             <div className="flex items-center gap-2">
               <span className="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-pink-200/70">
-                Configured Milestones ({milestones.length})
+                {t("deliveryGoals.configured", { count: milestones.length })}
               </span>
             </div>
             <div className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               <span className="text-xs font-semibold text-slate-600 dark:text-slate-300">
-                {activeMilestones.length} active (showing)
+                {t("deliveryGoals.activeShowing", { count: activeMilestones.length })}
               </span>
             </div>
           </div>
@@ -318,17 +325,19 @@ export default function DeliveryGoals() {
                       </span>
                       {m.show_on_cart && (
                         <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200/60 dark:border-slate-700">
-                          Cart Page
+                          {t("deliveryGoals.cartPage")}
                         </span>
                       )}
                       {m.show_on_top && (
                         <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 dark:bg-purple-950 text-purple-600 dark:text-purple-300 border border-purple-200/60 dark:border-purple-900/60">
-                          Top Bar
+                          {t("deliveryGoals.topBar")}
                         </span>
                       )}
                     </div>
                     <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 flex items-center gap-2 flex-wrap">
-                      <span className="font-semibold text-slate-400 dark:text-slate-500">Reward text:</span>
+                      <span className="font-semibold text-slate-400 dark:text-slate-500">
+                        {t("deliveryGoals.rewardTextLabel")}
+                      </span>
                       <span className="font-medium text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/40 px-2 py-0.5 rounded-lg border border-slate-200/50 dark:border-slate-800">
                         {m.unlocked_icon} {m.reward_text}
                       </span>
@@ -342,7 +351,9 @@ export default function DeliveryGoals() {
                   <button
                     onClick={() => handleToggle(m)}
                     disabled={togglingId === m.id}
-                    title={m.is_active ? "Click to Hide banner" : "Click to Show banner"}
+                    title={
+                      m.is_active ? t("deliveryGoals.clickToHide") : t("deliveryGoals.clickToShow")
+                    }
                     className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all border shadow-2xs ${
                       m.is_active
                         ? "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800 hover:bg-emerald-100"
@@ -352,12 +363,12 @@ export default function DeliveryGoals() {
                     {m.is_active ? (
                       <>
                         <Eye className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                        <span>Showing</span>
+                        <span>{t("deliveryGoals.showing")}</span>
                       </>
                     ) : (
                       <>
                         <EyeOff className="w-3.5 h-3.5" />
-                        <span>Hidden</span>
+                        <span>{t("deliveryGoals.hidden")}</span>
                       </>
                     )}
                   </button>
@@ -369,7 +380,7 @@ export default function DeliveryGoals() {
                       setModalOpen(true);
                     }}
                     className="p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:text-pink-600 dark:hover:text-pink-400 hover:bg-pink-50 dark:hover:bg-pink-950/50 border border-transparent hover:border-pink-200 dark:hover:border-pink-900/60 transition"
-                    title="Edit milestone"
+                    title={t("deliveryGoals.editMilestone")}
                   >
                     <Pencil className="w-4 h-4" />
                   </button>
@@ -378,7 +389,7 @@ export default function DeliveryGoals() {
                   <button
                     onClick={() => setConfirmingDelete(m)}
                     className="p-2 rounded-xl text-slate-500 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 border border-transparent hover:border-rose-200 dark:hover:border-rose-900/60 transition"
-                    title="Delete milestone"
+                    title={t("deliveryGoals.deleteMilestone")}
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -401,28 +412,27 @@ export default function DeliveryGoals() {
       <Modal
         open={!!confirmingDelete}
         onClose={() => setConfirmingDelete(null)}
-        title="Delete Milestone"
+        title={t("deliveryGoals.deleteMilestone")}
       >
         <div className="space-y-4">
           <p className="text-sm text-slate-600 dark:text-slate-300">
-            Are you sure you want to delete{" "}
-            <span className="font-bold text-slate-900 dark:text-white">
-              "{confirmingDelete?.title}" (${confirmingDelete?.threshold})
-            </span>
-            ? This action cannot be undone.
+            {t("deliveryGoals.confirmDeleteFull", {
+              title: confirmingDelete?.title,
+              threshold: confirmingDelete?.threshold,
+            })}
           </p>
           <div className="flex justify-end gap-2 pt-2">
             <button
               onClick={() => setConfirmingDelete(null)}
               className="px-4 py-2 text-sm font-semibold rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
             >
-              Cancel
+              {t("common.cancel")}
             </button>
             <button
               onClick={handleDelete}
               className="px-4 py-2 text-sm font-semibold rounded-xl bg-rose-600 hover:bg-rose-700 text-white shadow-sm transition"
             >
-              Delete
+              {t("common.delete")}
             </button>
           </div>
         </div>

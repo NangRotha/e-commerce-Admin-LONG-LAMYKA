@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import Modal from "./Modal";
 import { Eye, EyeOff, Sparkles } from "lucide-react";
+import { useI18n } from "../i18n/I18nContext";
 
 const EMOJI_SUGGESTIONS = ["🎁", "🌸", "🎀", "🚚", "✨", "💖", "🛍️", "🏷️"];
 const UNLOCKED_SUGGESTIONS = ["🎉", "👑", "🥳", "💫", "💖", "✨", "🎁", "🛍️"];
 
 export default function MilestoneModal({ open, onClose, onSave, milestone }) {
+  const { t } = useI18n();
   const [title, setTitle] = useState("Free Sweet Delivery & Gift!");
   const [threshold, setThreshold] = useState("30");
   const [rewardText, setRewardText] = useState("Yay! You unlocked Free Sweet Delivery & Gift! 🎁✨");
@@ -33,9 +35,9 @@ export default function MilestoneModal({ open, onClose, onSave, milestone }) {
       setIsActive(milestone.is_active !== false);
       setSortOrder(milestone.sort_order ?? 0);
     } else {
-      setTitle("Free Sweet Delivery & Gift!");
+      setTitle(t("deliveryGoals.defaultTitle"));
       setThreshold("30");
-      setRewardText("Yay! You unlocked Free Sweet Delivery & Gift! 🎁✨");
+      setRewardText(t("deliveryGoals.defaultReward"));
       setIcon("🎁");
       setUnlockedIcon("🎉");
       setShowOnCart(true);
@@ -45,7 +47,7 @@ export default function MilestoneModal({ open, onClose, onSave, milestone }) {
     }
     setError("");
     setPreviewUnlocked(false);
-  }, [milestone, open]);
+  }, [milestone, open, t]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -53,11 +55,11 @@ export default function MilestoneModal({ open, onClose, onSave, milestone }) {
 
     const numThreshold = parseFloat(threshold);
     if (isNaN(numThreshold) || numThreshold <= 0) {
-      setError("Please enter a valid positive threshold amount.");
+      setError(t("deliveryGoals.invalidThreshold"));
       return;
     }
     if (!title.trim()) {
-      setError("Please provide a milestone title.");
+      setError(t("deliveryGoals.titleRequired"));
       return;
     }
 
@@ -76,7 +78,7 @@ export default function MilestoneModal({ open, onClose, onSave, milestone }) {
       });
       onClose();
     } catch (err) {
-      setError(err.message || "Failed to save milestone");
+      setError(err.message || t("deliveryGoals.saveFailed"));
     } finally {
       setSaving(false);
     }
@@ -94,7 +96,7 @@ export default function MilestoneModal({ open, onClose, onSave, milestone }) {
     <Modal
       open={open}
       onClose={onClose}
-      title={milestone ? "Edit Delivery Milestone" : "New Delivery Milestone"}
+      title={milestone ? t("deliveryGoals.editMilestoneTitle") : t("deliveryGoals.newMilestoneTitle")}
       maxWidth="max-w-xl"
     >
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -109,14 +111,17 @@ export default function MilestoneModal({ open, onClose, onSave, milestone }) {
           <div className="flex items-center justify-between text-xs font-bold text-slate-600 dark:text-slate-300">
             <span className="flex items-center gap-1 text-pink-600 dark:text-pink-400">
               <Sparkles className="w-3.5 h-3.5" />
-              Live Storefront Preview
+              {t("deliveryGoals.livePreview")}
             </span>
             <button
               type="button"
               onClick={() => setPreviewUnlocked(!previewUnlocked)}
               className="text-[11px] px-2 py-0.5 rounded-full bg-white dark:bg-slate-800 border border-pink-200 dark:border-pink-900 hover:bg-pink-100 dark:hover:bg-pink-950 transition text-slate-700 dark:text-pink-200"
             >
-              Simulate: {previewUnlocked ? "Unlocked state ✨" : "In-progress (60%) ⏳"}
+              {t("deliveryGoals.simulate")}{" "}
+              {previewUnlocked
+                ? t("deliveryGoals.simulateUnlocked")
+                : t("deliveryGoals.simulateInProgress")}
             </button>
           </div>
 
@@ -127,18 +132,20 @@ export default function MilestoneModal({ open, onClose, onSave, milestone }) {
                   <>
                     <span>{icon || "🎁"}</span>
                     <span>
-                      Add{" "}
+                      {t("deliveryGoals.addPrefix")}{" "}
                       <span className="text-pink-600 dark:text-pink-400 font-extrabold">
                         ${simulatedRemaining.toFixed(2)}
                       </span>{" "}
-                      more for {title || "Free Sweet Delivery & Gift!"}
+                      {t("deliveryGoals.addSuffix", {
+                        title: title || t("deliveryGoals.defaultTitle"),
+                      })}
                     </span>
                   </>
                 ) : (
                   <>
                     <span>{unlockedIcon || "🎉"}</span>
                     <span className="text-pink-600 dark:text-pink-300">
-                      {rewardText || "Yay! You unlocked Free Sweet Delivery & Gift! 🎁✨"}
+                      {rewardText || t("deliveryGoals.defaultReward")}
                     </span>
                   </>
                 )}
@@ -157,26 +164,24 @@ export default function MilestoneModal({ open, onClose, onSave, milestone }) {
         {/* Title */}
         <div>
           <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-            Milestone Title / Goal Name *
+            {t("deliveryGoals.milestoneTitleFull")}
           </label>
           <input
             type="text"
             required
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="Free Sweet Delivery & Gift!"
+            placeholder={t("deliveryGoals.defaultTitle")}
             className={inputClass}
           />
-          <p className="mt-1 text-[11px] text-slate-400">
-            Displayed to customer: "Add $X more for [Title]"
-          </p>
+          <p className="mt-1 text-[11px] text-slate-400">{t("deliveryGoals.titleHint")}</p>
         </div>
 
         {/* Threshold & Order */}
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-              Threshold Amount ($ USD) *
+              {t("deliveryGoals.thresholdFull")}
             </label>
             <div className="relative">
               <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400 text-sm font-bold">
@@ -197,7 +202,7 @@ export default function MilestoneModal({ open, onClose, onSave, milestone }) {
 
           <div>
             <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-              Display Sort Order
+              {t("deliveryGoals.sortOrder")}
             </label>
             <input
               type="number"
@@ -212,13 +217,13 @@ export default function MilestoneModal({ open, onClose, onSave, milestone }) {
         {/* Reward Text when Unlocked */}
         <div>
           <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-            Reward Text (when unlocked / subtotal reaches threshold)
+            {t("deliveryGoals.rewardTextFull")}
           </label>
           <input
             type="text"
             value={rewardText}
             onChange={(e) => setRewardText(e.target.value)}
-            placeholder="Yay! You unlocked Free Sweet Delivery & Gift! 🎁✨"
+            placeholder={t("deliveryGoals.defaultReward")}
             className={inputClass}
           />
         </div>
@@ -227,7 +232,7 @@ export default function MilestoneModal({ open, onClose, onSave, milestone }) {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-              Active Icon (In-progress)
+              {t("deliveryGoals.activeIcon")}
             </label>
             <div className="flex gap-2 items-center">
               <input
@@ -253,7 +258,7 @@ export default function MilestoneModal({ open, onClose, onSave, milestone }) {
 
           <div>
             <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-              Unlocked Icon (Success)
+              {t("deliveryGoals.unlockedIconFull")}
             </label>
             <div className="flex gap-2 items-center">
               <input
@@ -289,10 +294,11 @@ export default function MilestoneModal({ open, onClose, onSave, milestone }) {
                 ) : (
                   <EyeOff className="w-3.5 h-3.5 text-slate-400" />
                 )}
-                Status: {isActive ? "Showing (Active)" : "Hidden (Inactive)"}
+                {t("deliveryGoals.statusLabel")}{" "}
+                {isActive ? t("deliveryGoals.showingActive") : t("deliveryGoals.hiddenInactive")}
               </div>
               <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                Hide or show this milestone on customer storefront in real time
+                {t("deliveryGoals.toggleStatusHint")}
               </p>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
@@ -311,7 +317,7 @@ export default function MilestoneModal({ open, onClose, onSave, milestone }) {
           {/* Show on Cart */}
           <div className="flex items-center justify-between">
             <span className="text-xs font-medium text-slate-700 dark:text-slate-300">
-              Display progress bar on Cart page
+              {t("deliveryGoals.showOnCartFull")}
             </span>
             <input
               type="checkbox"
@@ -324,7 +330,7 @@ export default function MilestoneModal({ open, onClose, onSave, milestone }) {
           {/* Show on Top Bar */}
           <div className="flex items-center justify-between">
             <span className="text-xs font-medium text-slate-700 dark:text-slate-300">
-              Display as Top Storefront Header Bar
+              {t("deliveryGoals.showOnTopFull")}
             </span>
             <input
               type="checkbox"
@@ -343,14 +349,18 @@ export default function MilestoneModal({ open, onClose, onSave, milestone }) {
             disabled={saving}
             className="px-4 py-2 text-sm font-semibold rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
           >
-            Cancel
+            {t("common.cancel")}
           </button>
           <button
             type="submit"
             disabled={saving}
             className="px-5 py-2 text-sm font-semibold rounded-xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 hover:from-pink-600 hover:to-rose-600 text-white shadow-md shadow-pink-500/25 active:scale-95 transition disabled:opacity-50"
           >
-            {saving ? "Saving..." : milestone ? "Save Changes" : "Create Milestone"}
+            {saving
+              ? t("common.saving")
+              : milestone
+              ? t("deliveryGoals.saveChanges")
+              : t("deliveryGoals.createMilestone")}
           </button>
         </div>
       </form>

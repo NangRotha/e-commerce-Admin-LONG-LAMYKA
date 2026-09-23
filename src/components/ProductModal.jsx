@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Upload, Star, Loader2, Clapperboard, Package } from "lucide-react";
 import Modal from "./Modal";
 import { api } from "../api/client";
+import { useI18n } from "../i18n/I18nContext";
 
 const EMPTY = {
   name: "",
@@ -26,6 +27,8 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
   const [uploadingVideo, setUploadingVideo] = useState(false);
   const [error, setError] = useState("");
   const [categories, setCategories] = useState([]);
+
+  const { t } = useI18n();
 
   useEffect(() => {
     if (open) {
@@ -143,7 +146,7 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
     e.preventDefault();
     setError("");
     if (!form.name.trim() || form.price === "" || form.stock === "") {
-      setError("Name, price and stock are required.");
+      setError(t("products.requiredFields"));
       return;
     }
     setSaving(true);
@@ -184,8 +187,8 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
     <Modal
       open={open}
       onClose={onClose}
-      title={initial ? "Edit Product" : "Create Product"}
-      subtitle={initial ? "Update product details and media" : "Add a new product to your catalog"}
+      title={initial ? t("products.editProduct") : t("products.createProduct")}
+      subtitle={initial ? t("products.editProductSub") : t("products.createProductSub")}
       icon={Package}
       maxWidth="2xl"
     >
@@ -198,10 +201,8 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
 
         {/* Images: Main + supporting */}
         <div>
-          <label className={label}>Product images</label>
-          <p className="text-xs text-slate-400 mt-0.5">
-            The first image is the <strong>main image</strong>.
-          </p>
+          <label className={label}>{t("products.productImagesLabel")}</label>
+          <p className="text-xs text-slate-400 mt-0.5">{t("products.mainImageHint")}</p>
 
           {form.images.length > 0 && (
             <div className="mt-3 grid grid-cols-3 gap-2">
@@ -214,7 +215,7 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
                   {i === 0 && (
                     <span className="absolute top-1 left-1 bg-gradient-to-r from-pink-500 to-rose-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded flex items-center gap-0.5 shadow-xs">
                       <Star className="w-2.5 h-2.5" />
-                      MAIN
+                      {t("products.mainBadge")}
                     </span>
                   )}
                   <div className="absolute inset-x-0 bottom-0 bg-black/60 opacity-0 group-hover:opacity-100 transition flex items-center justify-around py-1">
@@ -224,7 +225,7 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
                         onClick={() => makeMain(i)}
                         className="text-[10px] text-white hover:text-pink-300 font-semibold"
                       >
-                        Make main
+                        {t("products.makeMain")}
                       </button>
                     )}
                     <button
@@ -232,7 +233,7 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
                       onClick={() => removeImage(i)}
                       className="text-[10px] text-rose-300 hover:text-rose-400"
                     >
-                      Remove
+                      {t("common.remove")}
                     </button>
                   </div>
                 </div>
@@ -251,12 +252,12 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
             {uploading ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                Uploading...
+                {t("common.uploading")}
               </>
             ) : (
               <>
                 <Upload className="w-4 h-4" />
-                Upload from computer
+                {t("products.uploadFromComputer")}
               </>
             )}
           </label>
@@ -265,14 +266,12 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
         {/* Video: វីដេអូផលិតផល (mp4 / webm / mov) — បង្ហាញលើទំព័រផលិតផល */}
         <div>
           <div className="flex items-center justify-between">
-            <label className={label}>Product video</label>
+            <label className={label}>{t("products.productVideoFull")}</label>
             <span className="text-[11px] font-bold text-pink-600 dark:text-pink-400 bg-pink-50 dark:bg-pink-950/60 px-2 py-0.5 rounded-full border border-pink-200/80 dark:border-pink-800/80">
-              ★ Shows FIRST on Storefront
+              ★ {t("products.videoFirstHint")}
             </span>
           </div>
-          <p className="text-xs text-slate-400 mt-0.5">
-            Optional — when added, this video will be displayed <strong>first before images</strong> on the storefront.
-          </p>
+          <p className="text-xs text-slate-400 mt-0.5">{t("products.videoHint")}</p>
 
           {form.video_url ? (
             <div className="relative mt-3 rounded-xl overflow-hidden border border-slate-200 bg-black group">
@@ -289,14 +288,14 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
               <div className="absolute top-1.5 right-1.5 flex gap-1.5">
                 <span className="bg-gradient-to-r from-pink-500 to-rose-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded flex items-center gap-0.5 shadow-xs">
                   <Clapperboard className="w-2.5 h-2.5" />
-                  VIDEO
+                  {t("products.productVideo")}
                 </span>
                 <button
                   type="button"
                   onClick={removeVideo}
                   className="bg-rose-600/90 hover:bg-rose-700 text-white text-[10px] font-semibold px-2 py-0.5 rounded"
                 >
-                  Remove
+                  {t("common.remove")}
                 </button>
               </div>
             </div>
@@ -312,41 +311,41 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
             {uploadingVideo ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                Uploading video...
+                {t("products.uploadingVideo")}
               </>
             ) : (
               <>
                 <Clapperboard className="w-4 h-4" />
-                {form.video_url ? "Replace video" : "Upload video from computer"}
+                {form.video_url ? t("products.replaceVideo") : t("products.uploadVideoFromComputer")}
               </>
             )}
           </label>
         </div>
 
         <div>
-          <label className={label}>Name *</label>
+          <label className={label}>{t("common.name")} *</label>
           <input
             className={input}
             value={form.name}
             onChange={(e) => set("name", e.target.value)}
-            placeholder="Product name"
+            placeholder={t("products.namePlaceholder")}
           />
         </div>
 
         <div>
-          <label className={label}>Description</label>
+          <label className={label}>{t("common.description")}</label>
           <textarea
             className={input}
             rows={2}
             value={form.description}
             onChange={(e) => set("description", e.target.value)}
-            placeholder="Short description"
+            placeholder={t("products.descPlaceholder")}
           />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
           <div>
-            <label className={label}>Price ($) *</label>
+            <label className={label}>{t("products.productPrice")} *</label>
             <input
               type="number"
               step="0.01"
@@ -359,8 +358,10 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
           </div>
           <div>
             <div className="flex items-center justify-between">
-              <label className={label}>Original Price ($)</label>
-              <span className="text-[10px] text-slate-400">តម្លៃចាស់</span>
+              <label className={label}>{t("products.originalPrice")} ($)</label>
+              <span className="text-[10px] text-slate-400">
+                {t("products.originalPriceHintShort")}
+              </span>
             </div>
             <input
               type="number"
@@ -369,11 +370,11 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
               className={input}
               value={form.original_price}
               onChange={(e) => set("original_price", e.target.value)}
-              placeholder="e.g. 25.00"
+              placeholder={t("products.originalPricePlaceholder")}
             />
           </div>
           <div>
-            <label className={label}>Stock *</label>
+            <label className={label}>{t("products.productStock")} *</label>
             <input
               type="number"
               min="0"
@@ -389,7 +390,7 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
           <div className="flex items-center justify-between">
             <label className={`${label} flex items-center gap-1.5 text-amber-600 dark:text-amber-400`}>
               <Star className="w-4 h-4 fill-amber-500 text-amber-500" />
-              Rating / Stars
+              {t("products.ratingStars")}
             </label>
             <span className="text-xs font-bold text-amber-500">
               ★ {Number(form.rating || 5.0).toFixed(1)}
@@ -409,7 +410,7 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
 
         {/* Quick Star Presets */}
         <div className="flex items-center gap-1.5 -mt-1 flex-wrap">
-          <span className="text-slate-400 text-xs">Quick Star:</span>
+          <span className="text-slate-400 text-xs">{t("products.quickStar")}</span>
           {[5.0, 4.9, 4.8, 4.5, 4.0].map((val) => (
             <button
               key={val}
@@ -427,13 +428,13 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
         </div>
 
         <div>
-          <label className={label}>Category</label>
+          <label className={label}>{t("common.category")}</label>
           <input
             list="product-categories"
             className={input}
             value={form.category}
             onChange={(e) => set("category", e.target.value)}
-            placeholder="e.g. Electronics"
+            placeholder={t("products.categoryPlaceholder")}
           />
           <datalist id="product-categories">
             {categories.map((name) => (
@@ -442,19 +443,15 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
           </datalist>
           {categories.length > 0 && (
             <p className="mt-1.5 text-xs text-slate-400">
-              Tip: pick from the categories managed in the Categories page.
+              {t("products.categoryTip")}
             </p>
           )}
         </div>
 
         {/* Types / Variants (ជម្រើសប្រភេទ / ពណ៌ / ម៉ូត) */}
         <div>
-          <label className={label}>
-            Product Types / Variants (ជម្រើសប្រភេទ / ពណ៌ / ម៉ូត)
-          </label>
-          <p className="text-xs text-slate-400 mt-0.5">
-            Allow customers to order by specific type or color (e.g. Pink, Black, White, Medium, Large).
-          </p>
+          <label className={label}>{t("products.variantsLabel")}</label>
+          <p className="text-xs text-slate-400 mt-0.5">{t("products.variantsHint")}</p>
           <div className="mt-1.5 flex gap-2">
             <input
               className={input}
@@ -466,14 +463,14 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
                   addVariant();
                 }
               }}
-              placeholder="Type variant name (e.g. Pink) and press Enter or Add"
+              placeholder={t("products.variantsPlaceholder")}
             />
             <button
               type="button"
               onClick={addVariant}
               className="mt-1.5 px-4 py-2.5 rounded-xl bg-slate-800 dark:bg-slate-700 text-white text-sm font-semibold hover:bg-slate-700 dark:hover:bg-slate-600 transition shrink-0"
             >
-              Add
+              {t("common.add")}
             </button>
           </div>
           {form.variants && form.variants.length > 0 && (
@@ -488,7 +485,7 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
                     type="button"
                     onClick={() => removeVariant(v)}
                     className="w-4 h-4 rounded-full hover:bg-pink-200 dark:hover:bg-pink-800 flex items-center justify-center text-pink-800 dark:text-pink-200 text-sm font-bold ml-0.5"
-                    title="Remove variant"
+                    title={t("products.removeVariant")}
                   >
                     ×
                   </button>
@@ -506,11 +503,11 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
               onChange={(e) => set("is_on_sale", e.target.checked)}
               className="w-4 h-4 rounded accent-pink-600"
             />
-            On sale
+            {t("products.saleLabel")}
           </label>
           {form.is_on_sale && (
             <div className="w-28">
-              <label className={label}>Sale %</label>
+              <label className={label}>{t("products.salePercent")}</label>
               <input
                 type="number"
                 min="0"
@@ -529,14 +526,18 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
             onClick={onClose}
             className="px-5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition text-sm"
           >
-            Cancel
+            {t("common.cancel")}
           </button>
           <button
             type="submit"
             disabled={saving || uploading || uploadingVideo}
             className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 hover:from-pink-600 hover:to-rose-600 text-white font-semibold shadow-md shadow-pink-500/25 transition text-sm disabled:opacity-60 cursor-pointer"
           >
-            {saving ? "Saving..." : initial ? "Save changes" : "Create product"}
+            {saving
+              ? t("common.saving")
+              : initial
+              ? t("products.saveChanges")
+              : t("products.createProduct")}
           </button>
         </div>
       </form>

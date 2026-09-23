@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
+import { useI18n } from "../i18n/I18nContext";
 
 const MAX_WIDTHS = {
   sm: "max-w-sm",
@@ -20,6 +21,8 @@ export default function Modal({
   maxWidth = "lg",
   children,
 }) {
+  const { t } = useI18n();
+
   useEffect(() => {
     if (!open) return;
     const prev = document.body.style.overflow;
@@ -82,7 +85,7 @@ export default function Modal({
               onClick={onClose}
               type="button"
               className="p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-pink-50 dark:hover:bg-pink-950/30 transition-colors focus:outline-none focus:ring-2 focus:ring-pink-500 shrink-0"
-              aria-label="Close"
+              aria-label={t("common.close")}
             >
               <X className="w-5 h-5" />
             </button>

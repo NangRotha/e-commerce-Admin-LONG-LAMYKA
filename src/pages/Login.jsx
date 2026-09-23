@@ -127,7 +127,7 @@ export default function Login() {
                       required
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Please enter your password"
+                      placeholder={t("login.passwordPlaceholder")}
                       autoComplete="current-password"
                       className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-pink-950/60 bg-slate-50/50 dark:bg-[#1e1526] text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/30 focus:border-pink-400 transition-all placeholder:text-slate-400 pr-11"
                     />
@@ -135,7 +135,9 @@ export default function Login() {
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
-                      aria-label={showPassword ? "Hide password" : "Show password"}
+                      aria-label={
+                        showPassword ? t("login.hidePassword") : t("login.showPassword")
+                      }
                     >
                       {showPassword ? (
                         <EyeOff className="w-4 h-4" />
@@ -174,7 +176,7 @@ export default function Login() {
               <span>{t("login.adminOnly") || "Admin accounts only"}</span>
               <span className="inline-flex items-center gap-1 font-semibold text-pink-600 dark:text-pink-400">
                 <Lock className="w-3.5 h-3.5" />
-                Secure Portal
+                {t("login.securePortal")}
               </span>
             </div>
           </div>
@@ -188,7 +190,7 @@ export default function Login() {
             <div className="relative w-full max-w-lg p-2 transition-transform duration-500 hover:scale-[1.02]">
               <img
                 src="/login-illustration.png"
-                alt="Admin Dashboard Analytics"
+                alt={t("login.illustrationAlt")}
                 className="w-full h-auto object-contain rounded-2xl drop-shadow-md select-none pointer-events-none"
               />
             </div>
