@@ -1,10 +1,24 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { ShieldCheck, User as UserIcon, Search, Trash2, Users as UsersIcon, AlertCircle, CheckCircle2 } from "lucide-react";
+import {
+  ShieldCheck,
+  User as UserIcon,
+  Search,
+  Trash2,
+  Users as UsersIcon,
+  AlertCircle,
+  CheckCircle2,
+  Plus,
+  Loader2,
+  Mail,
+  Lock,
+} from "lucide-react";
 import { api } from "../api/client";
 import { useAuth } from "../context/AuthContext";
 import { formatDate } from "../lib/format";
 import Modal from "../components/Modal";
 import { useRealtime } from "../context/RealtimeContext";
+
+const EMPTY_FORM = { name: "", email: "", password: "", role: "user" };
 
 export default function Users() {
   const { user: currentUser } = useAuth();
@@ -14,6 +28,12 @@ export default function Users() {
   const [updatingId, setUpdatingId] = useState(null);
   const [confirming, setConfirming] = useState(null);
   const [deleting, setDeleting] = useState(false);
+
+  // Create User modal state
+  const [createOpen, setCreateOpen] = useState(false);
+  const [createForm, setCreateForm] = useState(EMPTY_FORM);
+  const [creating, setCreating] = useState(false);
+  const [createError, setCreateError] = useState("");
 
   const load = useCallback(() => {
     api
@@ -67,6 +87,32 @@ export default function Users() {
     }
   };
 
+  const handleCreate = async (e) => {
+    e.preventDefault();
+    setCreateError("");
+    if (!createForm.email || !createForm.password) {
+      setCreateError("Email and password are required.");
+      return;
+    }
+    if (createForm.password.length < 6) {
+      setCreateError("Password must be at least 6 characters.");
+      return;
+    }
+    setCreating(true);
+    try {
+      await api.createUser(createForm);
+      setCreateOpen(false);
+      setCreateForm(EMPTY_FORM);
+      await load();
+    } catch (e) {
+      setCreateError(e.message);
+    } finally {
+      setCreating(false);
+    }
+  };
+
+  const setField = (key, val) => setCreateForm((f) => ({ ...f, [key]: val }));
+
   return (
     <div className="space-y-6 sm:space-y-8">
       {/* Header */}
@@ -84,6 +130,17 @@ export default function Users() {
             </p>
           </div>
         </div>
+
+        {/* + Add User Button */}
+        <button
+          type="button"
+          onClick={() => { setCreateOpen(true); setCreateError(""); setCreateForm(EMPTY_FORM); }}
+          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl text-sm font-bold text-white shadow-md transition-all active:scale-95 shrink-0"
+          style={{ background: "linear-gradient(135deg, #ff7b8f 0%, #ff5a75 100%)", boxShadow: "0 4px 14px rgba(255,90,117,0.35)" }}
+        >
+          <Plus className="w-4 h-4" />
+          Add User
+        </button>
       </div>
 
       {error && (
@@ -211,6 +268,106 @@ export default function Users() {
           </table>
         </div>
       )}
+
+      {/* Create User Modal */}
+      <Modal open={createOpen} onClose={() => setCreateOpen(false)} title="Add New User">
+        <form onSubmit={handleCreate} className="space-y-4">
+          {createError && (
+            <div className="flex items-center gap-2 text-sm text-rose-600 bg-rose-50 dark:bg-rose-950/40 rounded-xl p-3 border border-rose-200 dark:border-rose-900/60">
+              <AlertCircle className="w-4 h-4 shrink-0" />
+              <span>{createError}</span>
+            </div>
+          )}
+
+          {/* Name */}
+          <div>
+            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
+              Full Name <span className="font-normal text-slate-400">(optional)</span>
+            </label>
+            <div className="relative">
+              <UserIcon className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
+              <input
+                type="text"
+                value={createForm.name}
+                onChange={(e) => setField("name", e.target.value)}
+                placeholder="e.g. John Doe"
+                className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-pink-100 dark:border-pink-900/60 bg-white dark:bg-[#150e1b] text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-pink-500/30 text-sm transition"
+              />
+            </div>
+          </div>
+
+          {/* Email */}
+          <div>
+            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
+              Email <span className="text-rose-500">*</span>
+            </label>
+            <div className="relative">
+              <Mail className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
+              <input
+                type="email"
+                required
+                value={createForm.email}
+                onChange={(e) => setField("email", e.target.value)}
+                placeholder="user@example.com"
+                className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-pink-100 dark:border-pink-900/60 bg-white dark:bg-[#150e1b] text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-pink-500/30 text-sm transition"
+              />
+            </div>
+          </div>
+
+          {/* Password */}
+          <div>
+            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
+              Password <span className="text-rose-500">*</span>
+            </label>
+            <div className="relative">
+              <Lock className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
+              <input
+                type="password"
+                required
+                minLength={6}
+                value={createForm.password}
+                onChange={(e) => setField("password", e.target.value)}
+                placeholder="Min 6 characters"
+                className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-pink-100 dark:border-pink-900/60 bg-white dark:bg-[#150e1b] text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-pink-500/30 text-sm transition"
+              />
+            </div>
+          </div>
+
+          {/* Role */}
+          <div>
+            <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
+              Role
+            </label>
+            <select
+              value={createForm.role}
+              onChange={(e) => setField("role", e.target.value)}
+              className="w-full px-4 py-2.5 rounded-xl border border-pink-100 dark:border-pink-900/60 bg-white dark:bg-[#150e1b] text-slate-700 dark:text-slate-200 font-bold text-sm focus:outline-none focus:ring-2 focus:ring-pink-500/30"
+            >
+              <option value="user">Customer (User)</option>
+              <option value="admin">Administrator</option>
+            </select>
+          </div>
+
+          <div className="flex gap-2 justify-end pt-1">
+            <button
+              type="button"
+              onClick={() => setCreateOpen(false)}
+              className="px-4 py-2 text-sm font-semibold rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={creating}
+              className="px-5 py-2 text-sm font-bold rounded-xl text-white shadow-sm transition disabled:opacity-50 flex items-center gap-2"
+              style={{ background: "linear-gradient(135deg, #ff7b8f 0%, #ff5a75 100%)" }}
+            >
+              {creating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+              {creating ? "Creating..." : "Create User"}
+            </button>
+          </div>
+        </form>
+      </Modal>
 
       {/* Delete User Modal */}
       <Modal open={!!confirming} onClose={() => setConfirming(null)} title="Delete User">

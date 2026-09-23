@@ -216,6 +216,8 @@ export const api = {
 
   // Users
   getUsers: () => request("/api/admin/users", { auth: true }),
+  createUser: (data) =>
+    request("/api/admin/users", { method: "POST", body: data, auth: true }),
   updateUserRole: (id, role) =>
     request(`/api/admin/users/${id}/role`, {
       method: "PUT",
@@ -224,6 +226,30 @@ export const api = {
     }),
   deleteUser: (id) =>
     request(`/api/admin/users/${id}`, { method: "DELETE", auth: true }),
+
+  // Profile (uses settings as storage for avatar/name)
+  uploadProfileAvatar: async (file) => {
+    const token = getToken();
+    const fd = new FormData();
+    fd.append("file", file);
+    const res = await fetch(
+      `${API_BASE}/api/admin/upload?kind=image`,
+      {
+        method: "POST",
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        body: fd,
+      }
+    );
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      const msg =
+        typeof data.detail === "string"
+          ? data.detail
+          : `Upload failed (${res.status})`;
+      throw new Error(msg);
+    }
+    return absolutizeMedia(data);
+  },
 
   // Settings (public endpoint — សម្រាប់ Branding លើ Login Page ផង)
   getSettings: () => request("/api/settings/all"),

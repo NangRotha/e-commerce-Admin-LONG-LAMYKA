@@ -5,10 +5,12 @@ import {
   Plus,
   ChevronLeft,
   ChevronRight,
-  TrendingUp,
-  AlertTriangle,
+  ShoppingCart,
+  Package,
+  Users as UsersIcon,
+  DollarSign,
   ArrowRight,
-  Sparkles,
+  Clock,
 } from "lucide-react";
 import { api } from "../api/client";
 import StatCard from "../components/StatCard";
@@ -22,13 +24,36 @@ import {
   ChatBubble3D,
   CloudUpload3D,
 } from "../components/ClayIcons";
-import { formatPrice } from "../lib/format";
+import { formatPrice, formatDate } from "../lib/format";
 import { useRealtime } from "../context/RealtimeContext";
 import { useI18n } from "../i18n/I18nContext";
+
+// Helper: format relative time (e.g. "2h ago")
+function timeAgo(dateStr) {
+  if (!dateStr) return "";
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return "just now";
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  const days = Math.floor(hrs / 24);
+  return `${days}d ago`;
+}
+
+// Status badge color map
+const STATUS_COLORS = {
+  pending: "bg-yellow-100 text-yellow-700",
+  confirmed: "bg-blue-100 text-blue-700",
+  shipped: "bg-purple-100 text-purple-700",
+  delivered: "bg-emerald-100 text-emerald-700",
+  cancelled: "bg-rose-100 text-rose-700",
+};
 
 export default function Dashboard() {
   const { t } = useI18n();
   const [stats, setStats] = useState(null);
+  const [orders, setOrders] = useState([]);
   const [error, setError] = useState("");
   const [chartTimeframe, setChartTimeframe] = useState("This Week");
 
@@ -49,7 +74,8 @@ export default function Dashboard() {
   const [newTodoInput, setNewTodoInput] = useState("");
   const [showAddTodo, setShowAddTodo] = useState(false);
 
-  // Calendar State
+  // Calendar State — always track actual today
+  const today = useMemo(() => new Date(), []);
   const [calendarDate, setCalendarDate] = useState(() => new Date());
 
   const toggleTodo = (id) => {
@@ -82,10 +108,8 @@ export default function Dashboard() {
   };
 
   const load = useCallback(() => {
-    api
-      .getStats()
-      .then(setStats)
-      .catch((e) => setError(e.message));
+    api.getStats().then(setStats).catch((e) => setError(e.message));
+    api.getOrders().then((data) => setOrders(Array.isArray(data) ? data : [])).catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -119,6 +143,7 @@ export default function Dashboard() {
     const daysInMonth = new Date(y, m + 1, 0).getDate();
     const prevMonthDays = new Date(y, m, 0).getDate();
 
+    const now = new Date();
     const cells = [];
     // Previous month filler days
     for (let i = startOffset - 1; i >= 0; i--) {
@@ -126,7 +151,9 @@ export default function Dashboard() {
     }
     // Current month days
     for (let i = 1; i <= daysInMonth; i++) {
-      cells.push({ day: i, current: true, isToday: i === 15 || i === new Date().getDate() });
+      const isToday =
+        y === now.getFullYear() && m === now.getMonth() && i === now.getDate();
+      cells.push({ day: i, current: true, isToday });
     }
     // Next month filler days to complete grid (up to 35 cells)
     const remaining = (7 - (cells.length % 7)) % 7;
@@ -136,39 +163,21 @@ export default function Dashboard() {
     return cells;
   }, [calendarDate]);
 
-  // Fallback placeholder during loading or offline
-  const totalProducts = stats?.total_products ?? 56;
-  const totalOrders = stats?.total_orders ?? 24;
-  const totalUsers = stats?.total_users ?? 8;
-  const totalRevenue = stats?.total_revenue ? formatPrice(stats.total_revenue) : "18h";
+  // Real stat values (fallback to dashes while loading)
+  const totalProducts = stats?.total_products ?? "—";
+  const totalOrders = stats?.total_orders ?? "—";
+  const totalUsers = stats?.total_users ?? "—";
+  const totalRevenue = stats?.total_revenue ? formatPrice(stats.total_revenue) : "—";
 
-  // Recent activity entries matching the image style
-  const activityItems = [
-    {
-      id: 1,
-      icon: CheckCircle3D,
-      title: 'Completed "User Research"',
-      time: "2h ago",
-    },
-    {
-      id: 2,
-      icon: Folder3D,
-      title: 'Updated project "Website Redesign"',
-      time: "5h ago",
-    },
-    {
-      id: 3,
-      icon: ChatBubble3D,
-      title: "New message from Sarah",
-      time: "1d ago",
-    },
-    {
-      id: 4,
-      icon: CloudUpload3D,
-      title: "Uploaded report.pdf",
-      time: "2d ago",
-    },
-  ];
+  // Recent activity: last 4 real orders from API
+  const ACTIVITY_ICONS = [CheckCircle3D, Folder3D, ChatBubble3D, CloudUpload3D];
+  const activityItems = orders.slice(0, 4).map((order, i) => ({
+    id: order.id || i,
+    icon: ACTIVITY_ICONS[i % ACTIVITY_ICONS.length],
+    title: `Order #${order.id} — ${order.customer_name || order.customer_email || "Customer"}`,
+    status: order.status,
+    time: timeAgo(order.created_at),
+  }));
 
   return (
     <div className="space-y-6 sm:space-y-7 animate-fade-in">
@@ -176,31 +185,31 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5">
         <StatCard
           icon={<CheckmarkBox3D className="w-12 h-12" />}
-          label="Tasks Done"
+          label="Total Orders"
           value={totalOrders}
           accent="purple"
-          trend="+12% from yesterday"
+          trend={stats ? `${stats.total_orders ?? 0} orders placed` : "Loading..."}
         />
         <StatCard
           icon={<Calendar3D className="w-12 h-12" />}
-          label="In Progress"
+          label="Registered Users"
           value={totalUsers}
           accent="pink"
-          trend="2 projects"
+          trend={stats ? `${stats.total_users ?? 0} accounts` : "Loading..."}
         />
         <StatCard
           icon={<Flag3D className="w-12 h-12" />}
-          label="Completed"
+          label="Total Products"
           value={totalProducts}
           accent="mint"
-          trend="This month"
+          trend={stats ? `${stats.total_products ?? 0} in catalog` : "Loading..."}
         />
         <StatCard
           icon={<Star3D className="w-12 h-12" />}
-          label="Focus Time"
+          label="Total Revenue"
           value={totalRevenue}
           accent="yellow"
-          trend="+4h from last week"
+          trend={stats ? "All time sales" : "Loading..."}
         />
       </div>
 
@@ -348,7 +357,7 @@ export default function Dashboard() {
             </div>
 
             <div className="divide-y divide-purple-100/60 dark:divide-purple-950/40">
-              {activityItems.map((act) => {
+              {activityItems.length > 0 ? activityItems.map((act) => {
                 const IconComponent = act.icon;
                 return (
                   <div
@@ -363,12 +372,25 @@ export default function Dashboard() {
                         {act.title}
                       </span>
                     </div>
-                    <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-500 shrink-0">
-                      {act.time}
-                    </span>
+                    <div className="flex items-center gap-2 shrink-0">
+                      {act.status && (
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full capitalize ${STATUS_COLORS[act.status] || "bg-slate-100 text-slate-600"}`}>
+                          {act.status}
+                        </span>
+                      )}
+                      <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-500">
+                        {act.time}
+                      </span>
+                    </div>
                   </div>
                 );
-              })}
+              }) : (
+                <div className="py-10 text-center text-slate-400 text-sm">
+                  <ShoppingCart className="w-8 h-8 mx-auto mb-2 opacity-30" />
+                  <p className="font-bold">No orders yet</p>
+                  <p className="text-xs mt-1">Orders will appear here once customers place them.</p>
+                </div>
+              )}
             </div>
           </div>
         </div>

@@ -43,7 +43,7 @@ const NAV_ITEMS = [
  * Styled with soft lilac sidebar, 3D avatar, greetings, and clay controls.
  */
 export default function Layout() {
-  const { user, logout } = useAuth();
+  const { user, logout, profileAvatar, profileName } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useI18n();
@@ -96,9 +96,11 @@ export default function Layout() {
       ? "http://localhost:5173"
       : "https://e-commerce-long-lamyka.vercel.app";
 
-  // Friendly user greeting name
-  const rawName = user?.email?.split("@")[0] || "Emily";
+  // Friendly user greeting name (prefer profileName over email)
+  const rawName = profileName || user?.email?.split("@")[0] || "Emily";
   const displayName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
+  // Real avatar URL (uploaded) or fallback to /avatar_clay.jpg
+  const avatarSrc = profileAvatar || "/avatar_clay.jpg";
 
   // Time-of-day greeting
   const greeting = useMemo(() => {
@@ -116,17 +118,23 @@ export default function Layout() {
           {/* Profile Section (3D Avatar + Greeting) */}
           <div className="flex flex-col items-center text-center pt-2 pb-5 border-b border-purple-200/50 dark:border-purple-900/40">
             <div className="relative group mb-3">
-              <div className="w-20 h-20 rounded-full overflow-hidden shadow-md shadow-purple-300/40 dark:shadow-none bg-[#f6f0fc]" style={{border:'3px solid white'}}>
-                <img
-                  src="/avatar_clay.jpg"
-                  alt="Emily 3D Avatar"
-                  className="w-full h-full object-cover object-top transition-transform duration-300"
-                  style={{ transform: 'scale(1.25)' }}
-                  onError={(e) => {
-                    e.target.style.display = "none";
-                  }}
-                />
-              </div>
+              <Link to="/profile" className="block">
+                <div className="w-20 h-20 rounded-full overflow-hidden shadow-md shadow-purple-300/40 dark:shadow-none bg-[#f6f0fc]" style={{border:'3px solid white'}}>
+                  <img
+                    src={avatarSrc}
+                    alt="Profile Avatar"
+                    className="w-full h-full object-cover object-top transition-transform duration-300"
+                    style={{ transform: 'scale(1.1)' }}
+                    onError={(e) => {
+                      e.target.style.display = "none";
+                    }}
+                  />
+                </div>
+                {/* Camera icon overlay on hover */}
+                <div className="absolute inset-0 rounded-full bg-black/0 group-hover:bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200">
+                  <span className="text-white text-xs font-bold">Edit</span>
+                </div>
+              </Link>
             </div>
             <h2 className="text-base font-black text-slate-800 dark:text-white tracking-tight flex items-center justify-center gap-1.5">
               <span>Hi, {displayName}!</span>
@@ -330,15 +338,15 @@ export default function Layout() {
               </span>
             </Link>
 
-            {/* User Profile Circle */}
+            {/* User Profile Circle → links to /profile */}
             <Link
-              to="/settings"
+              to="/profile"
               className="clay-circle-btn w-10 h-10 p-0.5 overflow-hidden flex items-center justify-center"
-              title="Profile & Settings"
+              title="My Profile"
               aria-label="Profile"
             >
               <img
-                src="/avatar_clay.jpg"
+                src={avatarSrc}
                 alt="Profile"
                 className="w-full h-full object-cover rounded-full"
                 onError={(e) => {

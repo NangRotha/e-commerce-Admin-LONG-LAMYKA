@@ -6,6 +6,7 @@ import { useRealtime } from "./context/RealtimeContext";
 import Layout from "./components/Layout";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import Profile from "./pages/Profile";
 import Products from "./pages/Products";
 import Categories from "./pages/Categories";
 import Slides from "./pages/Slides";
@@ -77,6 +78,7 @@ export default function App() {
       >
         <Route index element={<Navigate to="/dashboard" replace />} />
         <Route path="dashboard" element={<Dashboard />} />
+        <Route path="profile" element={<Profile />} />
         <Route path="products" element={<Products />} />
         <Route path="categories" element={<Categories />} />
         <Route path="slides" element={<Slides />} />
