@@ -2,10 +2,34 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="E-commerce admin dashboard" />
     <title>Admin Dashboard — E-Commerce</title>
+
+    <!-- Favicon & Site Icons (Default: LONG LAMYKA logo, dynamically updated from database) -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/logo.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="shortcut icon" href="/favicon.ico" />
+
+    <!-- Instant Branding bootstrap from cached database settings (runs before React loads) -->
+    <script>
+      (function () {
+        try {
+          var logo = localStorage.getItem("site_logo");
+          if (logo) {
+            var icons = document.querySelectorAll("link[rel*='icon'], link[rel='apple-touch-icon']");
+            icons.forEach(function (el) { el.href = logo; });
+          }
+          var name = localStorage.getItem("site_name");
+          if (name) {
+            var fullTitle = name + " — Admin";
+            if (document.title !== fullTitle) document.title = fullTitle;
+          }
+        } catch (e) {}
+      })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link

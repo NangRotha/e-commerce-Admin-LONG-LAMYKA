@@ -23,29 +23,57 @@ import NotFound from "./pages/NotFound";
  * - document.title = site_name (ពី Database)
  * - favicon (icon) = site_logo (ពី Database)
  */
-function applyBranding(settings) {
+function applyBranding(settings = {}) {
   const fallback = "Admin Dashboard";
-  const name = settings.site_name || fallback;
-  const title = settings.site_name ? `${settings.site_name} — Admin` : fallback;
+  const name = (settings.site_name || "").trim();
+  const title = name ? `${name} — Admin` : fallback;
   if (document.title !== title) document.title = title;
-  if (!name) return;
 
-  const logo = settings.site_logo || "";
-  if (!logo) return;
+  try {
+    if (name) localStorage.setItem("site_name", name);
+  } catch (e) {}
 
-  let link = document.querySelector("link[rel~='icon']");
-  if (!link) {
-    link = document.createElement("link");
-    link.rel = "icon";
-    document.head.appendChild(link);
-  }
-  if (link.getAttribute("href") !== logo) {
-    link.setAttribute("href", logo);
-    link.setAttribute(
-      "type",
-      logo.toLowerCase().endsWith(".svg") ? "image/svg+xml" : ""
-    );
-  }
+  const logo = (settings.site_logo || "").trim();
+  const targetUrl = logo || "/favicon.ico";
+
+  try {
+    if (logo) localStorage.setItem("site_logo", logo);
+  } catch (e) {}
+
+  // រក MIME type
+  let mime = "";
+  const clean = targetUrl.split("?")[0].toLowerCase();
+  if (clean.endsWith(".svg")) mime = "image/svg+xml";
+  else if (clean.endsWith(".png")) mime = "image/png";
+  else if (clean.endsWith(".ico")) mime = "image/x-icon";
+  else if (clean.endsWith(".jpg") || clean.endsWith(".jpeg")) mime = "image/jpeg";
+  else if (clean.endsWith(".webp")) mime = "image/webp";
+
+  // លុប Tag ចាស់ៗចេញទាំងអស់ រួចបញ្ចូល Tag ថ្មីដើម្បីបង្ខំឱ្យ Browser ប្តូរភ្លាមៗ
+  const oldIcons = document.querySelectorAll(
+    "link[rel*='icon'], link[rel='apple-touch-icon']"
+  );
+  oldIcons.forEach((el) => el.remove());
+
+  // 1. Primary Favicon
+  const icon = document.createElement("link");
+  icon.rel = "icon";
+  if (mime) icon.type = mime;
+  icon.href = targetUrl;
+  document.head.appendChild(icon);
+
+  // 2. Shortcut Icon
+  const shortcut = document.createElement("link");
+  shortcut.rel = "shortcut icon";
+  if (mime) shortcut.type = mime;
+  shortcut.href = targetUrl;
+  document.head.appendChild(shortcut);
+
+  // 3. Apple Touch Icon
+  const apple = document.createElement("link");
+  apple.rel = "apple-touch-icon";
+  apple.href = logo || "/apple-touch-icon.png";
+  document.head.appendChild(apple);
 }
 
 export default function App() {
