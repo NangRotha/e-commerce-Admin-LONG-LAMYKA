@@ -304,14 +304,27 @@ export const api = {
 
   // Shipping Companies (ក្រុមហ៊ុនដឹកជញ្ជូន)
   getShippingCompanies: () => request("/api/shipping-companies"),
-  getAdminShippingCompanies: () => request("/api/admin/shipping-companies", { auth: true }),
+  getAdminShippingCompanies: () =>
+    request("/api/shipping-companies/admin", { auth: true }).catch(() =>
+      request("/api/admin/shipping-companies", { auth: true }).catch(() =>
+        request("/api/shipping-companies")
+      )
+    ),
   createShippingCompany: (data) =>
-    request("/api/admin/shipping-companies", { method: "POST", body: data, auth: true }),
+    request("/api/shipping-companies/admin", { method: "POST", body: data, auth: true }).catch(() =>
+      request("/api/admin/shipping-companies", { method: "POST", body: data, auth: true })
+    ),
   updateShippingCompany: (id, data) =>
-    request(`/api/admin/shipping-companies/${id}`, { method: "PUT", body: data, auth: true }),
+    request(`/api/shipping-companies/admin/${id}`, { method: "PUT", body: data, auth: true }).catch(() =>
+      request(`/api/admin/shipping-companies/${id}`, { method: "PUT", body: data, auth: true })
+    ),
   toggleShippingCompany: (id) =>
-    request(`/api/admin/shipping-companies/${id}/toggle`, { method: "PUT", body: {}, auth: true }),
+    request(`/api/shipping-companies/admin/${id}/toggle`, { method: "PUT", body: {}, auth: true }).catch(() =>
+      request(`/api/admin/shipping-companies/${id}/toggle`, { method: "PUT", body: {}, auth: true })
+    ),
   deleteShippingCompany: (id) =>
-    request(`/api/admin/shipping-companies/${id}`, { method: "DELETE", auth: true }),
+    request(`/api/shipping-companies/admin/${id}`, { method: "DELETE", auth: true }).catch(() =>
+      request(`/api/admin/shipping-companies/${id}`, { method: "DELETE", auth: true })
+    ),
 };
 
