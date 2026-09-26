@@ -13,6 +13,7 @@ import Slides from "./pages/Slides";
 import DeliveryGoals from "./pages/DeliveryGoals";
 import Alerts from "./pages/Alerts";
 import Orders from "./pages/Orders";
+import ShippingCompanies from "./pages/ShippingCompanies";
 import Discounts from "./pages/Discounts";
 import Users from "./pages/Users";
 import Settings from "./pages/Settings";
@@ -113,6 +114,7 @@ export default function App() {
         <Route path="delivery-goals" element={<DeliveryGoals />} />
         <Route path="alerts" element={<Alerts />} />
         <Route path="orders" element={<Orders />} />
+        <Route path="shipping-companies" element={<ShippingCompanies />} />
         <Route path="discounts" element={<Discounts />} />
         <Route path="users" element={<Users />} />
         <Route path="settings" element={<Settings />} />

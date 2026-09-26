@@ -301,4 +301,17 @@ export const api = {
       method: "POST",
       auth: true,
     }),
+
+  // Shipping Companies (ក្រុមហ៊ុនដឹកជញ្ជូន)
+  getShippingCompanies: () => request("/api/shipping-companies"),
+  getAdminShippingCompanies: () => request("/api/admin/shipping-companies", { auth: true }),
+  createShippingCompany: (data) =>
+    request("/api/admin/shipping-companies", { method: "POST", body: data, auth: true }),
+  updateShippingCompany: (id, data) =>
+    request(`/api/admin/shipping-companies/${id}`, { method: "PUT", body: data, auth: true }),
+  toggleShippingCompany: (id) =>
+    request(`/api/admin/shipping-companies/${id}/toggle`, { method: "PUT", body: {}, auth: true }),
+  deleteShippingCompany: (id) =>
+    request(`/api/admin/shipping-companies/${id}`, { method: "DELETE", auth: true }),
 };
+

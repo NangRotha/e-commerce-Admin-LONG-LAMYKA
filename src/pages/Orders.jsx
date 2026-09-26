@@ -231,6 +231,13 @@ export default function Orders() {
                     </td>
 
                     <td className="px-5 py-4 text-slate-600 dark:text-slate-300">
+                      {o.shipping_company && (
+                        <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200/60 dark:border-indigo-900/50 text-[11px] font-bold text-indigo-700 dark:text-indigo-300 mb-1 max-w-[240px] truncate" title={o.shipping_company}>
+                          <span>🚚</span>
+                          <span className="truncate">{o.shipping_company}</span>
+                          {o.shipping_fee ? <span className="text-indigo-500 font-mono shrink-0">(${Number(o.shipping_fee).toFixed(2)})</span> : null}
+                        </div>
+                      )}
                       {o.shipping_address ? (
                         <div className="flex items-start gap-1.5 max-w-[240px]">
                           <MapPin className="w-3.5 h-3.5 text-pink-500 shrink-0 mt-0.5" />
