@@ -4,6 +4,7 @@ import { useAuth } from "./context/AuthContext";
 import { api } from "./api/client";
 import { useRealtime } from "./context/RealtimeContext";
 import Layout from "./components/Layout";
+import ScrollToTop from "./components/ScrollToTop";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
@@ -96,11 +97,13 @@ export default function App() {
   useRealtime("settings_changed", loadBranding);
 
   return (
-    <Routes>
-      <Route
-        path="/login"
-        element={user ? <Navigate to="/dashboard" replace /> : <Login />}
-      />
+    <>
+      <ScrollToTop />
+      <Routes>
+        <Route
+          path="/login"
+          element={user ? <Navigate to="/dashboard" replace /> : <Login />}
+        />
       <Route
         path="/"
         element={user ? <Layout /> : <Navigate to="/login" replace />}
@@ -125,6 +128,7 @@ export default function App() {
         element={user ? <Navigate to="/dashboard" replace /> : <Navigate to="/login" replace />}
       />
     </Routes>
+    </>
   );
 }
 
