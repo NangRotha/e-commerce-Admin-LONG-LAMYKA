@@ -183,48 +183,56 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6 sm:space-y-7 animate-fade-in">
-      {/* ===== Top Row: 4 Pastel Clay Stat Cards ===== */}
+      {/* ===== Top Row: 4 Pastel Clay Stat Cards (Staggered Entrance) ===== */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5">
-        <StatCard
-          icon={<CheckmarkBox3D className="w-12 h-12" />}
-          label={t("dashboard.totalOrders")}
-          value={totalOrders}
-          accent="purple"
-          trend={
-            stats
-              ? t("dashboard.ordersPlaced", { count: stats.total_orders ?? 0 })
-              : t("common.loading")
-          }
-        />
-        <StatCard
-          icon={<Calendar3D className="w-12 h-12" />}
-          label={t("dashboard.registeredUsers")}
-          value={totalUsers}
-          accent="pink"
-          trend={
-            stats
-              ? t("dashboard.accountsCount", { count: stats.total_users ?? 0 })
-              : t("common.loading")
-          }
-        />
-        <StatCard
-          icon={<Flag3D className="w-12 h-12" />}
-          label={t("dashboard.totalProducts")}
-          value={totalProducts}
-          accent="mint"
-          trend={
-            stats
-              ? t("dashboard.inCatalog", { count: stats.total_products ?? 0 })
-              : t("common.loading")
-          }
-        />
-        <StatCard
-          icon={<Star3D className="w-12 h-12" />}
-          label={t("dashboard.totalRevenue")}
-          value={totalRevenue}
-          accent="yellow"
-          trend={stats ? t("dashboard.allTimeSales") : t("common.loading")}
-        />
+        <div className="animate-fade-in-up" style={{ animationDelay: "0ms" }}>
+          <StatCard
+            icon={<CheckmarkBox3D className="w-12 h-12" />}
+            label={t("dashboard.totalOrders")}
+            value={totalOrders}
+            accent="purple"
+            trend={
+              stats
+                ? t("dashboard.ordersPlaced", { count: stats.total_orders ?? 0 })
+                : t("common.loading")
+            }
+          />
+        </div>
+        <div className="animate-fade-in-up" style={{ animationDelay: "80ms" }}>
+          <StatCard
+            icon={<Calendar3D className="w-12 h-12" />}
+            label={t("dashboard.registeredUsers")}
+            value={totalUsers}
+            accent="pink"
+            trend={
+              stats
+                ? t("dashboard.accountsCount", { count: stats.total_users ?? 0 })
+                : t("common.loading")
+            }
+          />
+        </div>
+        <div className="animate-fade-in-up" style={{ animationDelay: "160ms" }}>
+          <StatCard
+            icon={<Flag3D className="w-12 h-12" />}
+            label={t("dashboard.totalProducts")}
+            value={totalProducts}
+            accent="mint"
+            trend={
+              stats
+                ? t("dashboard.inCatalog", { count: stats.total_products ?? 0 })
+                : t("common.loading")
+            }
+          />
+        </div>
+        <div className="animate-fade-in-up" style={{ animationDelay: "240ms" }}>
+          <StatCard
+            icon={<Star3D className="w-12 h-12" />}
+            label={t("dashboard.totalRevenue")}
+            value={totalRevenue}
+            accent="yellow"
+            trend={stats ? t("dashboard.allTimeSales") : t("common.loading")}
+          />
+        </div>
       </div>
 
       {/* ===== Main Grid Layout (Left 65% / Right 35%) ===== */}
@@ -328,14 +336,14 @@ export default function Dashboard() {
                   ))}
                 </svg>
 
-                {/* Floating "Great job! 🎉" Speech Bubble Tooltip matching the image */}
+                {/* Floating "Great job! 🎉" Speech Bubble Tooltip matching the image with subtle bobbing animation */}
                 <div
-                  className="absolute z-10 pointer-events-none"
+                  className="absolute z-10 pointer-events-none animate-bounce-subtle"
                   style={{ left: "70%", top: "8%", transform: "translate(-50%, -100%)" }}
                 >
-                  <div className="relative bg-[#a78bfa] text-white text-[11px] font-bold px-3 py-1 rounded-xl shadow-md flex items-center gap-1">
+                  <div className="relative bg-[#a78bfa] text-white text-[11px] font-bold px-3 py-1 rounded-xl shadow-md shadow-purple-500/30 flex items-center gap-1.5 transition-transform hover:scale-105">
                     <span>{t("dashboard.greatJob")}</span>
-                    <span>🎉</span>
+                    <span className="inline-block animate-wiggle">🎉</span>
                     {/* Tooltip triangle tail */}
                     <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-x-4 border-x-transparent border-t-5 border-t-[#a78bfa]" />
                   </div>
@@ -363,10 +371,10 @@ export default function Dashboard() {
               </h2>
               <Link
                 to="/orders"
-                className="text-xs font-bold text-purple-600 dark:text-purple-400 hover:underline flex items-center gap-1"
+                className="text-xs font-bold text-purple-600 dark:text-purple-400 hover:underline flex items-center gap-1 group"
               >
                 <span>{t("dashboard.storeOrders")}</span>
-                <ArrowRight className="w-3.5 h-3.5" />
+                <ArrowRight className="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-1" />
               </Link>
             </div>
 
@@ -376,19 +384,19 @@ export default function Dashboard() {
                 return (
                   <div
                     key={act.id}
-                    className="py-3 sm:py-3.5 flex items-center justify-between gap-3 group hover:translate-x-1 transition-transform"
+                    className="py-3 sm:py-3.5 px-2.5 -mx-2.5 rounded-2xl flex items-center justify-between gap-3 group hover:bg-purple-50/70 dark:hover:bg-purple-950/40 hover:translate-x-1.5 transition-all duration-200"
                   >
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className="shrink-0 transition-transform duration-200 group-hover:scale-110">
+                      <div className="shrink-0 transition-transform duration-300 group-hover:scale-125 group-hover:rotate-6">
                         <IconComponent className="w-7 h-7" />
                       </div>
-                      <span className="text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 truncate">
+                      <span className="text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-200 truncate group-hover:text-purple-600 dark:group-hover:text-purple-300 transition-colors">
                         {act.title}
                       </span>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
                       {act.status && (
-                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full capitalize ${STATUS_COLORS[act.status] || "bg-slate-100 text-slate-600"}`}>
+                        <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full capitalize transition-transform group-hover:scale-105 ${STATUS_COLORS[act.status] || "bg-slate-100 text-slate-600"}`}>
                           {STATUS_COLORS[act.status]
                             ? t(`orderStatus.${act.status}`)
                             : act.status}
@@ -422,7 +430,7 @@ export default function Dashboard() {
               <button
                 type="button"
                 onClick={() => setShowAddTodo(!showAddTodo)}
-                className="w-6 h-6 rounded-full bg-[#ff7b8f] text-white flex items-center justify-center font-bold text-sm shadow-2xs hover:scale-110 active:scale-95 transition"
+                className="w-6 h-6 rounded-full bg-[#ff7b8f] text-white flex items-center justify-center font-bold text-sm shadow-2xs hover:scale-110 hover:rotate-90 active:scale-95 transition-all duration-300"
                 title={t("dashboard.addTaskTooltip")}
               >
                 <Plus className="w-4 h-4" />
@@ -431,18 +439,18 @@ export default function Dashboard() {
 
             {/* Quick Add Form */}
             {showAddTodo && (
-              <form onSubmit={handleAddTodo} className="mb-3 flex gap-2">
+              <form onSubmit={handleAddTodo} className="mb-3 flex gap-2 animate-fade-in-up">
                 <input
                   type="text"
                   value={newTodoInput}
                   onChange={(e) => setNewTodoInput(e.target.value)}
                   placeholder={t("dashboard.newTaskPlaceholder")}
-                  className="flex-1 text-xs px-3 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-pink-200 dark:border-pink-900 outline-none"
+                  className="flex-1 text-xs px-3 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-pink-200 dark:border-pink-900 outline-none focus:ring-2 focus:ring-pink-400/40"
                   autoFocus
                 />
                 <button
                   type="submit"
-                  className="px-3 py-1 text-xs font-bold text-white bg-[#ff7b8f] rounded-xl shadow-xs"
+                  className="px-3 py-1 text-xs font-bold text-white bg-[#ff7b8f] hover:bg-[#ff657d] active:scale-95 rounded-xl shadow-xs transition"
                 >
                   {t("common.add")}
                 </button>
@@ -455,13 +463,13 @@ export default function Dashboard() {
                 <div
                   key={todo.id}
                   onClick={() => toggleTodo(todo.id)}
-                  className="flex items-center gap-3 p-1.5 rounded-xl hover:bg-white/40 dark:hover:bg-white/5 cursor-pointer transition select-none"
+                  className="group flex items-center gap-3 p-1.5 rounded-xl hover:bg-white/50 dark:hover:bg-white/5 hover:translate-x-1 cursor-pointer transition-all duration-200 select-none"
                 >
                   <div
-                    className={`w-5 h-5 rounded-lg flex items-center justify-center transition-all ${
+                    className={`w-5 h-5 rounded-lg flex items-center justify-center transition-all duration-200 active:scale-75 group-hover:scale-110 ${
                       todo.done
-                        ? "bg-[#5ecb8b] text-white shadow-xs"
-                        : "border-2 border-slate-300 dark:border-pink-300/40 bg-white dark:bg-pink-950/40"
+                        ? "bg-[#5ecb8b] text-white shadow-xs animate-pop-in"
+                        : "border-2 border-slate-300 dark:border-pink-300/40 bg-white dark:bg-pink-950/40 group-hover:border-pink-400"
                     }`}
                   >
                     {todo.done && <Check className="w-3.5 h-3.5 stroke-[3]" />}
@@ -469,8 +477,8 @@ export default function Dashboard() {
                   <span
                     className={`text-xs font-bold transition-all truncate ${
                       todo.done
-                        ? "text-slate-400 line-through"
-                        : "text-slate-700 dark:text-slate-200"
+                        ? "text-slate-400 line-through opacity-75"
+                        : "text-slate-700 dark:text-slate-200 group-hover:text-pink-600 dark:group-hover:text-pink-300"
                     }`}
                   >
                     {todo.text}
@@ -488,7 +496,7 @@ export default function Dashboard() {
               </h3>
               <button
                 type="button"
-                className="text-[11px] font-bold text-blue-600 dark:text-blue-300 bg-white/80 dark:bg-blue-950/60 hover:bg-white px-2.5 py-0.5 rounded-full shadow-2xs transition"
+                className="text-[11px] font-bold text-blue-600 dark:text-blue-300 bg-white/80 dark:bg-blue-950/60 hover:bg-white hover:scale-105 active:scale-95 px-2.5 py-0.5 rounded-full shadow-2xs transition"
               >
                 {t("dashboard.viewAll")}
               </button>
@@ -498,7 +506,7 @@ export default function Dashboard() {
             <div className="flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-200 mb-2.5 px-1">
               <button
                 onClick={prevMonth}
-                className="p-1 hover:bg-white/60 dark:hover:bg-white/10 rounded-lg transition"
+                className="p-1 hover:bg-white/60 dark:hover:bg-white/10 hover:scale-120 active:scale-95 rounded-lg transition"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
@@ -507,7 +515,7 @@ export default function Dashboard() {
               </span>
               <button
                 onClick={nextMonth}
-                className="p-1 hover:bg-white/60 dark:hover:bg-white/10 rounded-lg transition"
+                className="p-1 hover:bg-white/60 dark:hover:bg-white/10 hover:scale-120 active:scale-95 rounded-lg transition"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>
@@ -529,11 +537,11 @@ export default function Dashboard() {
               {calendarGrid.map((c, i) => (
                 <div key={i} className="flex items-center justify-center">
                   <span
-                    className={`w-6 h-6 flex items-center justify-center rounded-full transition-all ${
+                    className={`w-6 h-6 flex items-center justify-center rounded-full transition-all duration-200 ${
                       c.isToday
-                        ? "bg-[#8b5cf6] text-white font-black shadow-xs shadow-purple-500/40 scale-110"
+                        ? "bg-[#8b5cf6] text-white font-black shadow-md shadow-purple-500/50 scale-110 ring-2 ring-purple-400/40 animate-pulse"
                         : c.current
-                        ? "text-slate-700 dark:text-slate-200 hover:bg-white/70"
+                        ? "text-slate-700 dark:text-slate-200 hover:bg-white/90 hover:scale-110 cursor-pointer"
                         : "text-slate-300 dark:text-blue-300/30"
                     }`}
                   >
@@ -545,21 +553,21 @@ export default function Dashboard() {
           </div>
 
           {/* Card 3: Motivation Card with 3D Bunny holding heart */}
-          <div className="clay-card-purple p-5 flex items-center justify-between gap-3 relative overflow-hidden group">
+          <div className="clay-card-purple p-5 flex items-center justify-between gap-3 relative overflow-hidden group hover:shadow-lg transition-all duration-300">
             <div className="min-w-0 flex-1">
               <h4 className="text-sm font-black text-purple-900 dark:text-purple-100 leading-tight">
                 {t("dashboard.motivationTitle")}
               </h4>
               <p className="text-xs font-bold text-purple-600 dark:text-purple-300 mt-1 flex items-center gap-1">
                 <span>{t("dashboard.keepUpGoodWork")}</span>
-                <span>✨</span>
+                <span className="inline-block animate-wiggle">✨</span>
               </p>
             </div>
-            <div className="w-18 h-18 shrink-0 rounded-2xl overflow-hidden shadow-xs border border-white/80 bg-white/40">
+            <div className="w-18 h-18 shrink-0 rounded-2xl overflow-hidden shadow-xs border border-white/80 bg-white/40 group-hover:scale-105 group-hover:rotate-2 transition-all duration-300">
               <img
                 src="/bunny_clay.jpg"
                 alt={t("dashboard.bunnyAlt")}
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-115"
               />
             </div>
           </div>

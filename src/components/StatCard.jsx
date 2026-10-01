@@ -54,19 +54,22 @@ export default function StatCard({
 
   return (
     <div
-      className={`${v.cardCls} p-4 sm:p-5 flex items-center gap-4 transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 relative overflow-hidden group cursor-default`}
+      className={`${v.cardCls} p-4 sm:p-5 flex items-center gap-4 transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 relative overflow-hidden group cursor-default shadow-xs hover:shadow-marshmallow`}
     >
-      {/* Left: 3D Clay Icon */}
-      <div className="shrink-0 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-2">
+      {/* Ambient hover light glow */}
+      <div className="absolute -right-6 -bottom-6 w-24 h-24 rounded-full bg-white/25 dark:bg-white/5 blur-xl group-hover:scale-150 transition-transform duration-500 pointer-events-none" />
+
+      {/* Left: 3D Clay Icon with subtle float */}
+      <div className="shrink-0 transition-transform duration-300 group-hover:scale-115 group-hover:rotate-3 animate-float">
         {icon}
       </div>
 
       {/* Right / Center: Content */}
-      <div className="min-w-0 flex-1">
+      <div className="min-w-0 flex-1 relative z-10">
         <p className={`text-xs font-semibold ${v.labelCls} truncate leading-tight`}>
           {label}
         </p>
-        <p className="text-2xl sm:text-3xl font-black text-slate-800 dark:text-white truncate mt-0.5 tracking-tight">
+        <p className="text-2xl sm:text-3xl font-black text-slate-800 dark:text-white truncate mt-0.5 tracking-tight group-hover:text-pink-600 dark:group-hover:text-pink-300 transition-colors">
           {value}
         </p>
         {(trend || subtext) && (

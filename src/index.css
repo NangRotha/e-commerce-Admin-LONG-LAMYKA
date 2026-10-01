@@ -169,11 +169,11 @@ html[lang="km"] textarea {
 @keyframes page-in {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(12px) scale(0.995);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
@@ -187,7 +187,7 @@ html[lang="km"] textarea {
   animation: pop-in 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 .page-enter {
-  animation: page-in 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: page-in 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
   will-change: opacity, transform;
 }
 
@@ -196,7 +196,7 @@ html[lang="km"] textarea {
     transform: translateY(0);
   }
   50% {
-    transform: translateY(-8px);
+    transform: translateY(-6px);
   }
 }
 @keyframes pulse-soft {
@@ -214,6 +214,41 @@ html[lang="km"] textarea {
   20%, 60% { transform: translateX(-6px); }
   40%, 80% { transform: translateX(6px); }
 }
+@keyframes cute-wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-5deg); }
+  75% { transform: rotate(5deg); }
+}
+@keyframes cute-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+@keyframes glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(236, 72, 153, 0);
+  }
+}
+@keyframes live-radar {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
 
 .animate-float {
   animation: float 4s ease-in-out infinite;
@@ -226,6 +261,41 @@ html[lang="km"] textarea {
 }
 .animate-shake {
   animation: shake 0.45s ease-in-out;
+}
+.animate-wiggle {
+  animation: cute-wiggle 2s ease-in-out infinite;
+}
+.animate-bounce-subtle {
+  animation: cute-bounce 2.2s ease-in-out infinite;
+}
+.animate-glow-pulse {
+  animation: glow-pulse 2.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+.animate-live-radar {
+  animation: live-radar 2s infinite;
+}
+
+/* Shimmer overlay effect for special cards & bars */
+.animate-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.animate-shimmer::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  transform: translateX(-100%);
+  background-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: shimmer 2.5s infinite;
+  pointer-events: none;
 }
 
 /* Transition រលូនពេលប្តូរ Dark / Light */
@@ -487,6 +557,12 @@ html.dark .clay-card {
     inset 0 2px 4px rgba(255, 255, 255, 0.95),
     inset 0 -2px 4px rgba(150, 125, 195, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.7);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.clay-card-purple:hover {
+  box-shadow: 
+    0 16px 30px -4px rgba(175, 150, 215, 0.32),
+    inset 0 2px 4px rgba(255, 255, 255, 0.95);
 }
 html.dark .clay-card-purple {
   background-color: #241a33;
@@ -502,6 +578,12 @@ html.dark .clay-card-purple {
     inset 0 2px 4px rgba(255, 255, 255, 0.95),
     inset 0 -2px 4px rgba(210, 120, 140, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.7);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.clay-card-pink:hover {
+  box-shadow: 
+    0 16px 30px -4px rgba(240, 150, 170, 0.32),
+    inset 0 2px 4px rgba(255, 255, 255, 0.95);
 }
 html.dark .clay-card-pink {
   background-color: #2e1a24;
@@ -517,6 +599,12 @@ html.dark .clay-card-pink {
     inset 0 2px 4px rgba(255, 255, 255, 0.95),
     inset 0 -2px 4px rgba(100, 180, 130, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.7);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.clay-card-mint:hover {
+  box-shadow: 
+    0 16px 30px -4px rgba(130, 205, 160, 0.32),
+    inset 0 2px 4px rgba(255, 255, 255, 0.95);
 }
 html.dark .clay-card-mint {
   background-color: #162920;
@@ -532,6 +620,12 @@ html.dark .clay-card-mint {
     inset 0 2px 4px rgba(255, 255, 255, 0.95),
     inset 0 -2px 4px rgba(210, 170, 80, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.7);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.clay-card-yellow:hover {
+  box-shadow: 
+    0 16px 30px -4px rgba(235, 195, 110, 0.32),
+    inset 0 2px 4px rgba(255, 255, 255, 0.95);
 }
 html.dark .clay-card-yellow {
   background-color: #2c2414;
@@ -547,6 +641,12 @@ html.dark .clay-card-yellow {
     inset 0 2px 4px rgba(255, 255, 255, 0.95),
     inset 0 -2px 4px rgba(110, 155, 210, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.7);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.clay-card-blue:hover {
+  box-shadow: 
+    0 16px 30px -4px rgba(140, 185, 235, 0.32),
+    inset 0 2px 4px rgba(255, 255, 255, 0.95);
 }
 html.dark .clay-card-blue {
   background-color: #172233;

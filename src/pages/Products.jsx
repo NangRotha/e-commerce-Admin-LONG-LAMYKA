@@ -441,18 +441,18 @@ export default function Products() {
             </thead>
             <tbody className="divide-y divide-pink-100/60 dark:divide-pink-950/60">
               {filtered.map((p) => (
-                <tr key={p.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors">
+                <tr key={p.id} className="group hover:bg-pink-50/40 dark:hover:bg-pink-950/20 transition-colors duration-200">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
-                      <div className="w-11 h-11 rounded-xl bg-slate-100 dark:bg-slate-800 overflow-hidden shrink-0 border border-slate-200/60 dark:border-slate-700">
+                      <div className="w-11 h-11 rounded-xl bg-slate-100 dark:bg-slate-800 overflow-hidden shrink-0 border border-slate-200/60 dark:border-slate-700 shadow-2xs">
                         {p.image_url ? (
                           <img
                             src={p.image_url}
                             alt={p.name}
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-115"
                           />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-lg">
+                          <div className="w-full h-full flex items-center justify-center text-lg transition-transform duration-300 group-hover:scale-115">
                             📦
                           </div>
                         )}
@@ -625,7 +625,7 @@ export default function Products() {
                           setEditing(p);
                           setModalOpen(true);
                         }}
-                        className="p-2 rounded-lg text-slate-500 hover:bg-blue-50 dark:hover:bg-blue-950/50 hover:text-blue-600 dark:hover:text-blue-400 transition"
+                        className="p-2 rounded-xl text-slate-500 hover:bg-blue-50 dark:hover:bg-blue-950/50 hover:text-blue-600 dark:hover:text-blue-400 hover:scale-110 active:scale-95 transition-all duration-200"
                         aria-label={t("common.edit")}
                         title={t("products.editProduct")}
                       >
@@ -633,7 +633,7 @@ export default function Products() {
                       </button>
                       <button
                         onClick={() => setConfirming(p)}
-                        className="p-2 rounded-lg text-slate-500 hover:bg-rose-50 dark:hover:bg-rose-950/50 hover:text-rose-600 dark:hover:text-rose-400 transition"
+                        className="p-2 rounded-xl text-slate-500 hover:bg-rose-50 dark:hover:bg-rose-950/50 hover:text-rose-600 dark:hover:text-rose-400 hover:scale-110 active:scale-95 transition-all duration-200"
                         aria-label={t("common.delete")}
                         title={t("products.deleteProduct")}
                       >

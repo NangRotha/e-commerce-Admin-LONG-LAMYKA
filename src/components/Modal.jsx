@@ -84,7 +84,7 @@ export default function Modal({
             <button
               onClick={onClose}
               type="button"
-              className="p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-pink-50 dark:hover:bg-pink-950/30 transition-colors focus:outline-none focus:ring-2 focus:ring-pink-500 shrink-0"
+              className="p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-pink-50 dark:hover:bg-pink-950/30 hover:rotate-90 active:scale-90 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-pink-500 shrink-0"
               aria-label={t("common.close")}
             >
               <X className="w-5 h-5" />

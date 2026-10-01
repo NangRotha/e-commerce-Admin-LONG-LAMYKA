@@ -121,11 +121,11 @@ export default function Layout() {
           <div className="flex flex-col items-center text-center pt-2 pb-5 border-b border-purple-200/50 dark:border-purple-900/40">
             <div className="relative group mb-3">
               <Link to="/profile" className="block">
-                <div className="w-20 h-20 rounded-full overflow-hidden shadow-md shadow-purple-300/40 dark:shadow-none bg-[#f6f0fc]" style={{border:'3px solid white'}}>
+                <div className="w-20 h-20 rounded-full overflow-hidden shadow-md shadow-purple-300/40 dark:shadow-none bg-[#f6f0fc] transition-all duration-300 group-hover:scale-105 group-hover:shadow-lg group-hover:shadow-purple-400/40" style={{border:'3px solid white'}}>
                   <img
                     src={avatarSrc}
                     alt={t("layout.profileAvatarAlt")}
-                    className="w-full h-full object-cover object-top transition-transform duration-300"
+                    className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-120"
                     style={{ transform: 'scale(1.1)' }}
                     onError={(e) => {
                       e.target.style.display = "none";
@@ -133,14 +133,14 @@ export default function Layout() {
                   />
                 </div>
                 {/* Camera icon overlay on hover */}
-                <div className="absolute inset-0 rounded-full bg-black/0 group-hover:bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200">
-                  <span className="text-white text-xs font-bold">{t("common.edit")}</span>
+                <div className="absolute inset-0 rounded-full bg-black/0 group-hover:bg-black/25 backdrop-blur-[1px] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200">
+                  <span className="text-white text-xs font-bold drop-shadow-sm">{t("common.edit")}</span>
                 </div>
               </Link>
             </div>
             <h2 className="text-base font-black text-slate-800 dark:text-white tracking-tight flex items-center justify-center gap-1.5">
               <span>{t("layout.hi", { name: displayName })}</span>
-              <span className="inline-block animate-bounce" style={{ animationDuration: "2s" }}>👋</span>
+              <span className="inline-block animate-wiggle">👋</span>
             </h2>
             <p className="text-xs text-slate-500 dark:text-purple-200/70 font-medium mt-0.5">
               {t("layout.goodToSeeYou")}
@@ -148,7 +148,7 @@ export default function Layout() {
           </div>
 
           {/* Navigation Links */}
-          <nav className="flex-1 py-4 space-y-1 overflow-y-auto pr-1">
+          <nav className="flex-1 py-4 space-y-1.5 overflow-y-auto pr-1">
             {NAV_ITEMS.map((item) => {
               const Icon = item.icon;
               return (
@@ -158,15 +158,15 @@ export default function Layout() {
                   className={({ isActive }) =>
                     `group flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs sm:text-sm font-bold transition-all duration-200 ${
                       isActive
-                        ? "clay-nav-active"
-                        : "text-slate-600 dark:text-purple-200/70 hover:text-purple-800 dark:hover:text-white hover:bg-white/60 dark:hover:bg-white/5 hover:translate-x-1"
+                        ? "clay-nav-active shadow-sm"
+                        : "text-slate-600 dark:text-purple-200/70 hover:text-purple-800 dark:hover:text-white hover:bg-white/70 dark:hover:bg-white/5 hover:translate-x-1.5"
                     }`
                   }
                 >
                   {({ isActive }) => (
                     <>
                       <div
-                        className={`w-7 h-7 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-110 ${
+                        className={`w-7 h-7 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-115 group-hover:-rotate-6 ${
                           isActive
                             ? "bg-white/25 text-white"
                             : item.color
@@ -184,12 +184,12 @@ export default function Layout() {
 
           {/* Sidebar Bottom Card: Take breaks, stay positive */}
           <div className="pt-2">
-            <div className="bg-white/70 dark:bg-purple-950/40 rounded-2xl p-3 text-center border border-white/80 dark:border-purple-900/40 shadow-xs flex flex-col items-center gap-1.5 transition-all hover:bg-white/90">
-              <div className="w-12 h-12 rounded-xl overflow-hidden shadow-2xs border border-white bg-pink-50">
+            <div className="bg-white/70 dark:bg-purple-950/40 rounded-2xl p-3 text-center border border-white/80 dark:border-purple-900/40 shadow-xs flex flex-col items-center gap-1.5 transition-all duration-300 hover:bg-white/95 dark:hover:bg-purple-950/70 hover:shadow-md hover:-translate-y-0.5 group cursor-default">
+              <div className="w-12 h-12 rounded-xl overflow-hidden shadow-2xs border border-white bg-pink-50 transition-transform duration-500 group-hover:scale-115 group-hover:rotate-3">
                 <img
                   src="/plant_clay.jpg"
                   alt={t("layout.plantAlt")}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
               </div>
               <p className="text-[11px] font-bold text-slate-700 dark:text-purple-200 leading-tight">
@@ -317,27 +317,53 @@ export default function Layout() {
           </div>
 
           {/* Right Header Buttons: Circular Clay Buttons (Search, Notification, Profile, etc.) */}
-          <div className="flex items-center gap-2.5 sm:gap-3">
-            {/* Search circular button */}
+          <div className="flex items-center gap-2 sm:gap-2.5">
+            {/* Live WebSocket status pill with live radar animation */}
+            <div
+              className="hidden md:inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/80 dark:bg-purple-950/40 border border-purple-100 dark:border-purple-900/50 shadow-2xs text-xs font-semibold select-none transition-all duration-300 hover:shadow-xs"
+              title={online ? t("common.autoRefresh") : t("common.loading")}
+            >
+              <span className="relative flex h-2.5 w-2.5">
+                {online && (
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                )}
+                <span
+                  className={`relative inline-flex rounded-full h-2.5 w-2.5 ${
+                    online ? "bg-emerald-500 animate-live-radar" : "bg-amber-400 animate-pulse"
+                  }`}
+                />
+              </span>
+              <span
+                className={`text-[11px] font-bold ${
+                  online
+                    ? "text-emerald-700 dark:text-emerald-300"
+                    : "text-amber-600 dark:text-amber-400"
+                }`}
+              >
+                {online ? t("common.live") : t("common.loading")}
+              </span>
+            </div>
+
+            {/* Search circular button with micro-interactions */}
             <button
               type="button"
               onClick={() => setSearchModalOpen(!searchModalOpen)}
-              className="clay-circle-btn w-10 h-10 flex items-center justify-center text-slate-600 dark:text-slate-300"
+              className="clay-circle-btn w-10 h-10 flex items-center justify-center text-slate-600 dark:text-slate-300 group hover:-translate-y-0.5 active:scale-90 transition-all duration-200"
               title={t("common.search")}
               aria-label={t("common.search")}
             >
-              <Search className="w-4 h-4" />
+              <Search className="w-4 h-4 transition-transform duration-300 group-hover:scale-115 group-hover:rotate-6 text-slate-700 dark:text-slate-200" />
             </button>
 
-            {/* Notification button with pink '3' badge */}
+            {/* Notification button with pink '3' badge with subtle pulse */}
             <Link
               to="/alerts"
-              className="clay-circle-btn w-10 h-10 relative flex items-center justify-center text-slate-600 dark:text-slate-300"
+              className="clay-circle-btn w-10 h-10 relative flex items-center justify-center text-slate-600 dark:text-slate-300 group hover:-translate-y-0.5 active:scale-90 transition-all duration-200"
               title={t("layout.notifications")}
               aria-label={t("layout.notifications")}
             >
-              <Bell className="w-4 h-4" />
-              <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[#ff6b8b] text-white text-[10px] font-black flex items-center justify-center shadow-xs border-2 border-white dark:border-slate-900">
+              <Bell className="w-4 h-4 transition-transform duration-300 group-hover:rotate-12 group-hover:scale-115 text-slate-700 dark:text-slate-200" />
+              <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[#ff6b8b] text-white text-[10px] font-black flex items-center justify-center shadow-xs border-2 border-white dark:border-slate-900 animate-bounce-subtle group-hover:scale-115 transition-transform duration-300">
                 3
               </span>
             </Link>
@@ -345,14 +371,14 @@ export default function Layout() {
             {/* User Profile Circle → links to /profile */}
             <Link
               to="/profile"
-              className="clay-circle-btn w-10 h-10 p-0.5 overflow-hidden flex items-center justify-center"
+              className="clay-circle-btn w-10 h-10 p-0.5 overflow-hidden flex items-center justify-center group hover:-translate-y-0.5 hover:ring-2 hover:ring-purple-400 hover:ring-offset-2 dark:hover:ring-offset-slate-900 active:scale-90 transition-all duration-300"
               title={t("nav.profile")}
               aria-label={t("nav.profile")}
             >
               <img
                 src={avatarSrc}
                 alt={t("nav.profile")}
-                className="w-full h-full object-cover rounded-full"
+                className="w-full h-full object-cover rounded-full transition-transform duration-300 group-hover:scale-115"
                 onError={(e) => {
                   e.target.style.display = "none";
                 }}
@@ -368,11 +394,11 @@ export default function Layout() {
               target="_blank"
               rel="noreferrer"
               title={t("layout.openStorefront")}
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold text-slate-700 dark:text-slate-200 clay-circle-btn"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold text-slate-700 dark:text-slate-200 clay-circle-btn group hover:-translate-y-0.5 active:scale-95 transition-all duration-200"
             >
-              <Store className="w-3.5 h-3.5 text-purple-500" />
+              <Store className="w-3.5 h-3.5 text-purple-500 transition-transform duration-300 group-hover:scale-115 group-hover:-rotate-6" />
               <span>{t("layout.store")}</span>
-              <ExternalLink className="w-3 h-3 text-slate-400" />
+              <ExternalLink className="w-3 h-3 text-slate-400 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
             </a>
           </div>
         </header>
