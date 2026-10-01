@@ -33,6 +33,14 @@ html {
   -webkit-text-size-adjust: 100%;
 }
 
+/* Momentum scrolling for touch & mobile devices */
+.scrollbar-thin,
+.scrollbar-none,
+.overflow-x-auto,
+.overflow-y-auto {
+  -webkit-overflow-scrolling: touch;
+}
+
 *, *::before, *::after {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

@@ -13,6 +13,8 @@ import {
   TrendingUp,
   DollarSign,
   Check,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { api } from "../api/client";
 import ProductModal from "../components/ProductModal";
@@ -25,6 +27,7 @@ export default function Products() {
   const [products, setProducts] = useState(null);
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [visibilityFilter, setVisibilityFilter] = useState("all"); // "all" | "active" | "hidden"
   const [sortBy, setSortBy] = useState("newest");
   const [error, setError] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
@@ -32,6 +35,7 @@ export default function Products() {
   const [confirming, setConfirming] = useState(null);
   const [editingPrice, setEditingPrice] = useState(null); // { id, value } — inline price edit
   const [savingPrice, setSavingPrice] = useState(false);
+  const [togglingId, setTogglingId] = useState(null);
 
   // Bulk Price Adjust state
   const [bulkModalOpen, setBulkModalOpen] = useState(false);
@@ -101,6 +105,15 @@ export default function Products() {
     [catMap, lang, products, t]
   );
 
+  const activeCount = useMemo(
+    () => (products || []).filter((p) => p.is_active !== false).length,
+    [products]
+  );
+  const hiddenCount = useMemo(
+    () => (products || []).filter((p) => p.is_active === false).length,
+    [products]
+  );
+
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     let list = (products || []).filter((p) => {
@@ -115,7 +128,11 @@ export default function Products() {
         (p.variants || []).some((v) => v.toLowerCase().includes(q));
       const matchCategory =
         selectedCategory === "All" || p.category === selectedCategory;
-      return matchSearch && matchCategory;
+      const matchVisibility =
+        visibilityFilter === "all" ||
+        (visibilityFilter === "active" && p.is_active !== false) ||
+        (visibilityFilter === "hidden" && p.is_active === false);
+      return matchSearch && matchCategory && matchVisibility;
     });
 
     return list.sort((a, b) => {
@@ -129,7 +146,26 @@ export default function Products() {
       if (sortBy === "stock") return b.stock - a.stock;
       return (b.id || 0) - (a.id || 0); // newest
     });
-  }, [products, search, selectedCategory, sortBy, pickName]);
+  }, [products, search, selectedCategory, visibilityFilter, sortBy, pickName]);
+
+  const toggleProductVisibility = async (p) => {
+    const nextStatus = !(p.is_active !== false);
+    setTogglingId(p.id);
+    // Optimistic UI update
+    setProducts((prev) =>
+      (prev || []).map((item) =>
+        item.id === p.id ? { ...item, is_active: nextStatus } : item
+      )
+    );
+    try {
+      await api.updateProduct(p.id, { is_active: nextStatus });
+    } catch (err) {
+      setError(err.message || "Failed to update product visibility");
+      load();
+    } finally {
+      setTogglingId(null);
+    }
+  };
 
   const handleSave = async (payload) => {
     if (editing) await api.updateProduct(editing.id, payload);
@@ -300,6 +336,45 @@ export default function Products() {
           </div>
 
           <div className="flex flex-wrap items-center gap-2.5">
+            {/* Visibility Status Tabs (All / Shown / Hidden) */}
+            <div className="flex items-center gap-1 p-1 rounded-2xl bg-pink-50/60 dark:bg-[#140d1a] border border-pink-100/80 dark:border-pink-950/70">
+              <button
+                type="button"
+                onClick={() => setVisibilityFilter("all")}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                  visibilityFilter === "all"
+                    ? "bg-white dark:bg-slate-800 text-pink-600 dark:text-pink-300 shadow-2xs"
+                    : "text-slate-500 hover:text-slate-800 dark:text-slate-400"
+                }`}
+              >
+                {t("products.visibilityStatusAll")} ({products?.length || 0})
+              </button>
+              <button
+                type="button"
+                onClick={() => setVisibilityFilter("active")}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+                  visibilityFilter === "active"
+                    ? "bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 shadow-2xs"
+                    : "text-slate-500 hover:text-slate-800 dark:text-slate-400"
+                }`}
+              >
+                <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                <span>{t("products.visibilityStatusActive")} ({activeCount})</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setVisibilityFilter("hidden")}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+                  visibilityFilter === "hidden"
+                    ? "bg-white dark:bg-slate-800 text-rose-600 dark:text-rose-400 shadow-2xs"
+                    : "text-slate-500 hover:text-slate-800 dark:text-slate-400"
+                }`}
+              >
+                <EyeOff className="w-3 h-3 text-slate-400" />
+                <span>{t("products.visibilityStatusHidden")} ({hiddenCount})</span>
+              </button>
+            </div>
+
             {/* Category Filter */}
             <div className="flex items-center gap-1.5">
               <Filter className="w-3.5 h-3.5 text-pink-500 shrink-0" />
@@ -349,7 +424,8 @@ export default function Products() {
         </div>
       ) : (
         <div className="luxury-card rounded-[28px] overflow-hidden shadow-xs">
-          <table className="w-full text-sm min-w-[780px]">
+          <div className="overflow-x-auto scrollbar-thin">
+            <table className="w-full text-sm min-w-[780px]">
             <thead>
               <tr className="text-left text-xs uppercase tracking-wider text-slate-400 dark:text-pink-300/60 border-b border-pink-100/70 dark:border-pink-950/70 bg-pink-50/30 dark:bg-white/[0.02]">
                 <th className="px-5 py-4 font-bold">{t("products.thProduct")}</th>
@@ -359,6 +435,7 @@ export default function Products() {
                 <th className="px-4 py-4 font-bold">{t("products.thPrice")}</th>
                 <th className="px-4 py-4 font-bold">{t("products.thSale")}</th>
                 <th className="px-4 py-4 font-bold">{t("common.stock")}</th>
+                <th className="px-4 py-4 font-bold">{t("products.thVisibility")}</th>
                 <th className="px-5 py-4 font-bold text-right">{t("common.actions")}</th>
               </tr>
             </thead>
@@ -511,6 +588,36 @@ export default function Products() {
                     </span>
                   </td>
 
+                  <td className="px-4 py-3 whitespace-nowrap">
+                    <button
+                      type="button"
+                      disabled={togglingId === p.id}
+                      onClick={() => toggleProductVisibility(p)}
+                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all shadow-2xs cursor-pointer disabled:opacity-50 ${
+                        p.is_active !== false
+                          ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/80 hover:bg-emerald-100/80 hover:scale-105 active:scale-95"
+                          : "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 hover:scale-105 active:scale-95"
+                      }`}
+                      title={t("products.visibilityHint")}
+                    >
+                      {togglingId === p.id ? (
+                        <Loader2 className="w-3.5 h-3.5 animate-spin text-slate-400" />
+                      ) : p.is_active !== false ? (
+                        <>
+                          <Eye className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                          <span>{t("products.visibilityShown")}</span>
+                          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                        </>
+                      ) : (
+                        <>
+                          <EyeOff className="w-3.5 h-3.5 text-slate-400" />
+                          <span>{t("products.visibilityHidden")}</span>
+                          <span className="w-2 h-2 rounded-full bg-slate-400" />
+                        </>
+                      )}
+                    </button>
+                  </td>
+
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-end gap-1.5">
                       <button
@@ -538,6 +645,7 @@ export default function Products() {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       )}
 

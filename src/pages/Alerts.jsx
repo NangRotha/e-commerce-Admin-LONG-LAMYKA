@@ -134,7 +134,8 @@ export default function Alerts() {
         </div>
       ) : (
         <div className="luxury-card rounded-[28px] overflow-hidden shadow-xs">
-          <table className="w-full text-sm min-w-[700px]">
+          <div className="overflow-x-auto scrollbar-thin">
+            <table className="w-full text-sm min-w-[700px]">
             <thead>
               <tr className="text-left text-xs uppercase tracking-wider text-slate-400 dark:text-pink-300/60 border-b border-pink-100/70 dark:border-pink-950/70 bg-pink-50/30 dark:bg-white/[0.02]">
                 <th className="px-5 py-4 font-bold">{t("alerts.thMessage")}</th>
@@ -229,6 +230,7 @@ export default function Alerts() {
               })}
             </tbody>
           </table>
+          </div>
         </div>
       )}
 

@@ -97,7 +97,7 @@ export const api = {
   getPaymentConfig: () => request("/api/payments/config"),
 
   // Products
-  getProducts: () => request("/api/products", { auth: true }),
+  getProducts: () => request("/api/admin/products", { auth: true }),
   createProduct: (p) =>
     request("/api/admin/products", { method: "POST", body: p, auth: true }),
   updateProduct: (id, p) =>
@@ -326,5 +326,93 @@ export const api = {
     request(`/api/shipping-companies/admin/${id}`, { method: "DELETE", auth: true }).catch(() =>
       request(`/api/admin/shipping-companies/${id}`, { method: "DELETE", auth: true })
     ),
+
+  // Gemini AI Auto Translation (English ⇄ Khmer)
+  translate: async ({ text, fields, source_lang = "auto", target_lang = "km" }) => {
+    // 1. Try Backend /api/translate endpoint first
+    try {
+      const res = await request("/api/translate", {
+        method: "POST",
+        body: { text, fields, source_lang, target_lang },
+        auth: false,
+      });
+      if (res && (res.translated_text !== undefined || res.translated_fields !== undefined)) {
+        return res;
+      }
+    } catch (e) {
+      console.warn("Backend translate fallback to direct Gemini API:", e);
+    }
+
+    // 2. Direct Gemini Generative Language API fallback (from environment variable)
+    const geminiKey = import.meta.env.VITE_GEMINI_API_KEY || "";
+    if (!geminiKey) {
+      throw new Error("Translation failed. Please configure VITE_GEMINI_API_KEY or backend GEMINI_API_KEY.");
+    }
+    const models = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-1.5-flash"];
+
+    // If dictionary of fields provided:
+    if (fields && typeof fields === "object" && Object.keys(fields).length > 0) {
+      const prompt = `You are a professional Cambodian e-commerce localization expert.\nTranslate all the values from ${source_lang === "km" ? "Khmer" : "English"} to ${target_lang === "km" ? "Khmer" : "English"}.\nInput JSON: ${JSON.stringify(fields)}\nReturn ONLY a valid JSON object with the exact same keys and translated values.`;
+
+      for (const model of models) {
+        try {
+          const resp = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiKey}`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                generationConfig: { responseMimeType: "application/json", temperature: 0.2 },
+                contents: [{ parts: [{ text: prompt }] }],
+              }),
+            }
+          );
+          if (resp.ok) {
+            const data = await resp.json();
+            const textPart = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (textPart) {
+              const parsed = JSON.parse(textPart);
+              return { translated_fields: parsed, source_lang, target_lang };
+            }
+          }
+        } catch {
+          // try next model
+        }
+      }
+    }
+
+    // If single text provided:
+    if (text) {
+      const prompt = `You are an expert e-commerce localization translator. Translate the text below to ${target_lang === "km" ? "Khmer" : "English"}. Keep numbers, brands, and dimensions intact. Return ONLY the translated string without quotes, notes, or markdown:\n${text}`;
+      for (const model of models) {
+        try {
+          const resp = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiKey}`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                generationConfig: { temperature: 0.2 },
+                contents: [{ parts: [{ text: prompt }] }],
+              }),
+            }
+          );
+          if (resp.ok) {
+            const data = await resp.json();
+            let result = data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+            result = result.trim();
+            if ((result.startsWith('"') && result.endsWith('"')) || (result.startsWith("'") && result.endsWith("'"))) {
+              result = result.slice(1, -1).trim();
+            }
+            return { translated_text: result, source_lang, target_lang };
+          }
+        } catch {
+          // try next model
+        }
+      }
+    }
+
+    throw new Error("Translation failed. Please try again.");
+  },
 };
 

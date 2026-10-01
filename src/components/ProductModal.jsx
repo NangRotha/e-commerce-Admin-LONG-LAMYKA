@@ -3,6 +3,7 @@ import { Upload, Star, Loader2, Clapperboard, Package } from "lucide-react";
 import Modal from "./Modal";
 import { api } from "../api/client";
 import { useI18n } from "../i18n/I18nContext";
+import { AutoTranslateBar, FieldTranslateButton } from "./AutoTranslateAction";
 
 const EMPTY = {
   name: "",
@@ -15,6 +16,7 @@ const EMPTY = {
   category: "",
   is_on_sale: false,
   sale_percent: 0,
+  is_active: true,
   images: [],
   video_url: "",
   variants: [],
@@ -27,13 +29,96 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploadingVideo, setUploadingVideo] = useState(false);
+  const [translating, setTranslating] = useState(false);
+  const [fieldTranslating, setFieldTranslating] = useState({});
   const [error, setError] = useState("");
   const [categories, setCategories] = useState([]);
 
   const { t } = useI18n();
 
+  // Gemini AI: Translate all fields (EN -> KM or KM -> EN)
+  const handleTranslateAll = async (direction = "en_to_km") => {
+    setError("");
+    const isEnToKm = direction === "en_to_km";
+    const srcLang = isEnToKm ? "en" : "km";
+    const tgtLang = isEnToKm ? "km" : "en";
+
+    const fieldsToTranslate = {};
+    if (isEnToKm) {
+      if (form.name.trim()) fieldsToTranslate.name = form.name.trim();
+      if (form.description.trim()) fieldsToTranslate.description = form.description.trim();
+    } else {
+      if (form.name_km.trim()) fieldsToTranslate.name_km = form.name_km.trim();
+      if (form.description_km.trim()) fieldsToTranslate.description_km = form.description_km.trim();
+    }
+
+    if (Object.keys(fieldsToTranslate).length === 0) {
+      setError(
+        isEnToKm
+          ? "Please type English product name or description first"
+          : "Please type Khmer product name or description first"
+      );
+      return;
+    }
+
+    setTranslating(true);
+    try {
+      const res = await api.translate({
+        fields: fieldsToTranslate,
+        source_lang: srcLang,
+        target_lang: tgtLang,
+      });
+
+      if (res?.translated_fields) {
+        setForm((prev) => ({
+          ...prev,
+          name: isEnToKm
+            ? prev.name
+            : (res.translated_fields.name_km || res.translated_fields.name || prev.name),
+          name_km: isEnToKm
+            ? (res.translated_fields.name || res.translated_fields.name_km || prev.name_km)
+            : prev.name_km,
+          description: isEnToKm
+            ? prev.description
+            : (res.translated_fields.description_km || res.translated_fields.description || prev.description),
+          description_km: isEnToKm
+            ? (res.translated_fields.description || res.translated_fields.description_km || prev.description_km)
+            : prev.description_km,
+        }));
+      }
+    } catch (err) {
+      setError(err.message || "Failed to auto-translate with Gemini AI");
+    } finally {
+      setTranslating(false);
+    }
+  };
+
+  // Translate a single field
+  const handleTranslateSingleField = async (sourceField, targetField, srcLang, tgtLang) => {
+    const text = form[sourceField]?.trim();
+    if (!text) return;
+    setFieldTranslating((prev) => ({ ...prev, [targetField]: true }));
+    setError("");
+    try {
+      const res = await api.translate({
+        text,
+        source_lang: srcLang,
+        target_lang: tgtLang,
+      });
+      if (res?.translated_text) {
+        setForm((prev) => ({ ...prev, [targetField]: res.translated_text }));
+      }
+    } catch (err) {
+      setError(err.message || "Translation error");
+    } finally {
+      setFieldTranslating((prev) => ({ ...prev, [targetField]: false }));
+    }
+  };
+
   useEffect(() => {
     if (open) {
+      setFieldTranslating({});
+      setTranslating(false);
       // ទាញ Category ពី API មកដាក់ជា suggestions (ក្នុង <datalist>)
       api
         .getCategories()
@@ -67,6 +152,7 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
                   : [],
               video_url: initial.video_url || "",
               variants: Array.isArray(initial.variants) ? initial.variants : [],
+              is_active: initial.is_active !== undefined ? Boolean(initial.is_active) : true,
             }
           : EMPTY
       );
@@ -176,6 +262,7 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
         images: form.images,
         video_url: form.video_url || "",
         variants: form.variants || [],
+        is_active: form.is_active !== undefined ? Boolean(form.is_active) : true,
       });
       onClose();
     } catch (err) {
@@ -328,9 +415,26 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
           </label>
         </div>
 
+        {/* Gemini AI Auto-Translate Bar */}
+        <AutoTranslateBar
+          onTranslateAll={handleTranslateAll}
+          isTranslating={translating}
+          statusText="Translate name & description with Google Gemini"
+        />
+
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className={label}>{t("products.nameEn")}</label>
+            <div className="flex items-center justify-between">
+              <label className={label}>{t("products.nameEn")}</label>
+              {form.name_km && (
+                <FieldTranslateButton
+                  onClick={() => handleTranslateSingleField("name_km", "name", "km", "en")}
+                  loading={fieldTranslating.name}
+                  label="From KM"
+                  title="Translate product name from Khmer to English"
+                />
+              )}
+            </div>
             <input
               className={input}
               value={form.name}
@@ -339,7 +443,17 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
             />
           </div>
           <div>
-            <label className={label}>{t("products.nameKm")}</label>
+            <div className="flex items-center justify-between">
+              <label className={label}>{t("products.nameKm")}</label>
+              {form.name && (
+                <FieldTranslateButton
+                  onClick={() => handleTranslateSingleField("name", "name_km", "en", "km")}
+                  loading={fieldTranslating.name_km}
+                  label="From EN"
+                  title="Translate product name from English to Khmer"
+                />
+              )}
+            </div>
             <input
               className={input}
               value={form.name_km || ""}
@@ -351,7 +465,17 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className={label}>{t("products.descEn")}</label>
+            <div className="flex items-center justify-between">
+              <label className={label}>{t("products.descEn")}</label>
+              {form.description_km && (
+                <FieldTranslateButton
+                  onClick={() => handleTranslateSingleField("description_km", "description", "km", "en")}
+                  loading={fieldTranslating.description}
+                  label="From KM"
+                  title="Translate description from Khmer to English"
+                />
+              )}
+            </div>
             <textarea
               className={input}
               rows={2}
@@ -361,7 +485,17 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
             />
           </div>
           <div>
-            <label className={label}>{t("products.descKm")}</label>
+            <div className="flex items-center justify-between">
+              <label className={label}>{t("products.descKm")}</label>
+              {form.description && (
+                <FieldTranslateButton
+                  onClick={() => handleTranslateSingleField("description", "description_km", "en", "km")}
+                  loading={fieldTranslating.description_km}
+                  label="From EN"
+                  title="Translate description from English to Khmer"
+                />
+              )}
+            </div>
             <textarea
               className={input}
               rows={2}
@@ -547,6 +681,34 @@ export default function ProductModal({ open, onClose, onSave, initial }) {
               />
             </div>
           )}
+        </div>
+
+        {/* Storefront Visibility Toggle (Open / Hide) */}
+        <div className="p-3.5 rounded-2xl bg-pink-50/60 dark:bg-pink-950/20 border border-pink-200/70 dark:border-pink-900/40 flex items-center justify-between gap-4">
+          <div className="space-y-0.5">
+            <p className="text-sm font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
+              <span>{form.is_active ? "👁️" : "🙈"}</span>
+              <span>{t("products.showOnStorefront")}</span>
+            </p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              {t("products.visibilityToggleDesc")}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => set("is_active", !form.is_active)}
+            className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+              form.is_active ? "bg-gradient-to-r from-pink-500 to-rose-500" : "bg-slate-300 dark:bg-slate-700"
+            }`}
+            role="switch"
+            aria-checked={form.is_active}
+          >
+            <span
+              className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out ${
+                form.is_active ? "translate-x-5" : "translate-x-0"
+              }`}
+            />
+          </button>
         </div>
 
         <div className="pt-3 flex gap-3 justify-end border-t border-pink-100 dark:border-pink-950/60">

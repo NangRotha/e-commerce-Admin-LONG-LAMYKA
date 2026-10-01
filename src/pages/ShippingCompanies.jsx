@@ -5,6 +5,7 @@ import Modal from "../components/Modal";
 import { formatDate } from "../lib/format";
 import { useRealtime } from "../context/RealtimeContext";
 import { useI18n } from "../i18n/I18nContext";
+import { AutoTranslateBar, FieldTranslateButton } from "../components/AutoTranslateAction";
 
 const DEFAULT_SHIPPING_COMPANIES = [
   { id: 1, name: "VET Express", name_km: "វីរៈ ប៊ុនថាំ (VET Express)", fee: 1.50, estimated_delivery: "1-2 ថ្ងៃ", is_active: true, sort_order: 1 },
@@ -24,6 +25,8 @@ export default function ShippingCompanies() {
   const [editing, setEditing] = useState(null);
   const [confirming, setConfirming] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [translating, setTranslating] = useState(false);
+  const [fieldTranslating, setFieldTranslating] = useState({});
 
   // Form state
   const [formData, setFormData] = useState({
@@ -36,6 +39,81 @@ export default function ShippingCompanies() {
   });
 
   const { t, lang } = useI18n();
+
+  // Gemini AI auto-translate for shipping companies
+  const handleTranslateAll = async (direction = "en_to_km") => {
+    setError("");
+    const isEnToKm = direction === "en_to_km";
+    const srcLang = isEnToKm ? "en" : "km";
+    const tgtLang = isEnToKm ? "km" : "en";
+
+    const fieldsToTranslate = {};
+    if (isEnToKm) {
+      if (formData.name.trim()) fieldsToTranslate.name = formData.name.trim();
+      if (formData.estimated_delivery.trim()) fieldsToTranslate.estimated_delivery = formData.estimated_delivery.trim();
+    } else {
+      if (formData.name_km.trim()) fieldsToTranslate.name_km = formData.name_km.trim();
+      if (formData.estimated_delivery.trim()) fieldsToTranslate.estimated_delivery = formData.estimated_delivery.trim();
+    }
+
+    if (Object.keys(fieldsToTranslate).length === 0) {
+      setError(
+        isEnToKm
+          ? "Please type company name in English first"
+          : "Please type company name in Khmer first"
+      );
+      return;
+    }
+
+    setTranslating(true);
+    try {
+      const res = await api.translate({
+        fields: fieldsToTranslate,
+        source_lang: srcLang,
+        target_lang: tgtLang,
+      });
+
+      if (res?.translated_fields) {
+        setFormData((prev) => ({
+          ...prev,
+          name: isEnToKm
+            ? prev.name
+            : (res.translated_fields.name_km || res.translated_fields.name || prev.name),
+          name_km: isEnToKm
+            ? (res.translated_fields.name || res.translated_fields.name_km || prev.name_km)
+            : prev.name_km,
+          estimated_delivery: isEnToKm
+            ? (res.translated_fields.estimated_delivery || prev.estimated_delivery)
+            : (res.translated_fields.estimated_delivery || prev.estimated_delivery),
+        }));
+      }
+    } catch (err) {
+      setError(err.message || "Translation error");
+    } finally {
+      setTranslating(false);
+    }
+  };
+
+  const handleTranslateSingleField = async (sourceField, targetField, srcLang, tgtLang) => {
+    const text = formData[sourceField]?.trim();
+    if (!text) return;
+    setFieldTranslating((prev) => ({ ...prev, [targetField]: true }));
+    setError("");
+    try {
+      const res = await api.translate({
+        text,
+        source_lang: srcLang,
+        target_lang: tgtLang,
+      });
+      if (res?.translated_text) {
+        setFormData((prev) => ({ ...prev, [targetField]: res.translated_text }));
+      }
+    } catch (err) {
+      setError(err.message || "Translation error");
+    } finally {
+      setFieldTranslating((prev) => ({ ...prev, [targetField]: false }));
+    }
+  };
 
   const load = useCallback(() => {
     return api
@@ -228,8 +306,9 @@ export default function ShippingCompanies() {
         </div>
       ) : (
         <div className="luxury-card rounded-[28px] overflow-hidden shadow-xs border border-indigo-100/60 dark:border-indigo-950/60">
-          <table className="w-full text-sm min-w-[640px]">
-            <thead>
+          <div className="overflow-x-auto scrollbar-thin">
+            <table className="w-full text-sm min-w-[640px]">
+              <thead>
               <tr className="text-left text-xs uppercase tracking-wider text-slate-400 dark:text-indigo-300/60 border-b border-indigo-100/70 dark:border-indigo-950/70 bg-indigo-50/30 dark:bg-white/[0.02]">
                 <th className="px-5 py-4 font-bold">{t("shippingCompanies.name")}</th>
                 <th className="px-4 py-4 font-bold">{t("shippingCompanies.fee")}</th>
@@ -314,6 +393,7 @@ export default function ShippingCompanies() {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       )}
 
@@ -330,10 +410,27 @@ export default function ShippingCompanies() {
         maxWidth="md"
       >
         <form onSubmit={handleSave} className="space-y-4 text-left">
+          {/* Gemini AI Auto-Translate Bar */}
+          <AutoTranslateBar
+            onTranslateAll={handleTranslateAll}
+            isTranslating={translating}
+            statusText="Translate company name & delivery with Google Gemini"
+          />
+
           <div>
-            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
-              {t("shippingCompanies.name")} *
-            </label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                {t("shippingCompanies.name")} *
+              </label>
+              {formData.name_km && (
+                <FieldTranslateButton
+                  onClick={() => handleTranslateSingleField("name_km", "name", "km", "en")}
+                  loading={fieldTranslating.name}
+                  label="From KM"
+                  title="Translate company name from Khmer to English"
+                />
+              )}
+            </div>
             <input
               type="text"
               required
@@ -347,9 +444,19 @@ export default function ShippingCompanies() {
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
-              {t("shippingCompanies.nameKm")} *
-            </label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                {t("shippingCompanies.nameKm")} *
+              </label>
+              {formData.name && (
+                <FieldTranslateButton
+                  onClick={() => handleTranslateSingleField("name", "name_km", "en", "km")}
+                  loading={fieldTranslating.name_km}
+                  label="From EN"
+                  title="Translate company name from English to Khmer"
+                />
+              )}
+            </div>
             <input
               type="text"
               required
@@ -401,9 +508,26 @@ export default function ShippingCompanies() {
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
-              {t("shippingCompanies.estimatedDelivery")}
-            </label>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                {t("shippingCompanies.estimatedDelivery")}
+              </label>
+              {formData.estimated_delivery && (
+                <FieldTranslateButton
+                  onClick={() =>
+                    handleTranslateSingleField(
+                      "estimated_delivery",
+                      "estimated_delivery",
+                      /[a-zA-Z]/.test(formData.estimated_delivery) ? "en" : "km",
+                      /[a-zA-Z]/.test(formData.estimated_delivery) ? "km" : "en"
+                    )
+                  }
+                  loading={fieldTranslating.estimated_delivery}
+                  label="Translate"
+                  title="Translate delivery time between EN & KM"
+                />
+              )}
+            </div>
             <input
               type="text"
               value={formData.estimated_delivery}
