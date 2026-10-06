@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { Plus, Pencil, Trash2, BellRing, CalendarClock, AlertCircle, Sparkles } from "lucide-react";
+import { Plus, Pencil, Trash2, BellRing, CalendarClock, AlertCircle, Sparkles, CheckCircle2 } from "lucide-react";
 import { api } from "../api/client";
 import AlertModal from "../components/AlertModal";
 import Modal from "../components/Modal";
@@ -31,11 +31,17 @@ function fmtDate(iso) {
 export default function Alerts() {
   const [alerts, setAlerts] = useState(null);
   const [error, setError] = useState("");
+  const [toast, setToast] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState(null);
   const [confirming, setConfirming] = useState(null);
 
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
+
+  const showToast = (msg) => {
+    setToast(msg);
+    setTimeout(() => setToast(""), 3500);
+  };
 
   const load = useCallback(
     () =>
@@ -53,15 +59,26 @@ export default function Alerts() {
   useRealtime("alerts_changed", load);
 
   const handleSave = async (payload) => {
-    if (editing) await api.updateAlert(editing.id, payload);
-    else await api.createAlert(payload);
-    setEditing(null);
-    await load();
+    try {
+      if (editing) {
+        await api.updateAlert(editing.id, payload);
+        showToast(t("alerts.updatedSuccess") || "Alert updated successfully!");
+      } else {
+        await api.createAlert(payload);
+        showToast(t("alerts.savedSuccess") || "Alert created successfully!");
+      }
+      setEditing(null);
+      await load();
+    } catch (e) {
+      setError(e.message);
+      throw e;
+    }
   };
 
   const handleDelete = async () => {
     try {
       await api.deleteAlert(confirming.id);
+      showToast(t("alerts.deletedSuccess") || "Alert deleted successfully!");
       setConfirming(null);
       await load();
     } catch (e) {
@@ -73,6 +90,11 @@ export default function Alerts() {
   const toggleActive = async (a) => {
     try {
       await api.updateAlert(a.id, { ...a, is_active: !a.is_active });
+      showToast(
+        !a.is_active
+          ? "Alert is now live on storefront"
+          : "Alert hidden from storefront"
+      );
       await load();
     } catch (e) {
       setError(e.message);
@@ -81,6 +103,14 @@ export default function Alerts() {
 
   return (
     <div className="space-y-6 sm:space-y-8">
+      {/* Toast Notification */}
+      {toast && (
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2.5 px-4 py-3 rounded-2xl bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-xl text-xs font-bold animate-fade-in">
+          <CheckCircle2 className="w-4 h-4 text-emerald-400 dark:text-emerald-600 shrink-0" />
+          <span>{toast}</span>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-3">
@@ -102,7 +132,7 @@ export default function Alerts() {
             setEditing(null);
             setModalOpen(true);
           }}
-          className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 hover:from-pink-600 hover:to-rose-600 text-white font-bold shadow-md shadow-pink-500/25 hover:shadow-lg hover:shadow-pink-500/35 hover:scale-[1.02] active:scale-95 transition-all text-sm shrink-0"
+          className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 hover:from-pink-600 hover:to-rose-600 text-white font-bold shadow-md shadow-pink-500/25 hover:shadow-lg hover:shadow-pink-500/35 hover:scale-[1.02] active:scale-95 transition-all text-sm shrink-0 cursor-pointer"
         >
           <Plus className="w-4 h-4 stroke-[3]" />
           <span>{t("alerts.newAlert")}</span>
@@ -123,14 +153,28 @@ export default function Alerts() {
           ))}
         </div>
       ) : alerts.length === 0 ? (
-        <div className="luxury-card rounded-[28px] p-12 sm:p-16 text-center space-y-3">
-          <BellRing className="w-14 h-14 mx-auto text-pink-300 dark:text-pink-900/60" />
-          <h2 className="text-lg font-bold text-slate-800 dark:text-white">
-            {t("alerts.noAlertsTitle")}
-          </h2>
-          <p className="text-sm text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
-            {t("alerts.noAlertsDesc")}
-          </p>
+        <div className="luxury-card rounded-[28px] p-12 sm:p-16 text-center space-y-4">
+          <div className="w-16 h-16 mx-auto rounded-3xl bg-pink-50 dark:bg-pink-950/40 text-pink-500 flex items-center justify-center shadow-inner">
+            <BellRing className="w-8 h-8" />
+          </div>
+          <div>
+            <h2 className="text-lg font-bold text-slate-800 dark:text-white">
+              {t("alerts.noAlertsTitle")}
+            </h2>
+            <p className="text-sm text-slate-500 dark:text-slate-400 max-w-sm mx-auto mt-1">
+              {t("alerts.noAlertsDesc")}
+            </p>
+          </div>
+          <button
+            onClick={() => {
+              setEditing(null);
+              setModalOpen(true);
+            }}
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 text-white text-xs font-bold shadow-md shadow-pink-500/25 hover:shadow-lg hover:scale-105 active:scale-95 transition-all cursor-pointer"
+          >
+            <Plus className="w-3.5 h-3.5 stroke-[3]" />
+            <span>{t("alerts.newAlert")}</span>
+          </button>
         </div>
       ) : (
         <div className="luxury-card rounded-[28px] overflow-hidden shadow-xs">
@@ -155,6 +199,11 @@ export default function Alerts() {
                   a.starts_at || a.expires_at
                     ? `${fmtDate(a.starts_at)} → ${fmtDate(a.expires_at)}`
                     : t("alerts.alwaysActive");
+
+                const mainTitle = lang === "km" ? (a.title_km || a.title) : (a.title || a.title_km);
+                const subTitle = lang === "km" ? (a.title && a.title !== a.title_km ? a.title : "") : (a.title_km && a.title_km !== a.title ? a.title_km : "");
+                const mainMsg = lang === "km" ? (a.message_km || a.message) : (a.message || a.message_km);
+
                 return (
                   <tr
                     key={a.id}
@@ -162,17 +211,31 @@ export default function Alerts() {
                   >
                     <td className="px-5 py-4">
                       <div className="flex items-start gap-3">
-                        <span
-                          className={`mt-0.5 shrink-0 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide shadow-2xs ${meta.cls}`}
-                        >
-                          {t(meta.labelKey)}
-                        </span>
+                        {a.image_url ? (
+                          <img
+                            src={a.image_url}
+                            alt=""
+                            className="w-10 h-10 rounded-xl object-cover border border-slate-200 dark:border-slate-700 shrink-0 bg-slate-100"
+                            onError={(e) => (e.target.style.display = "none")}
+                          />
+                        ) : (
+                          <span
+                            className={`mt-0.5 shrink-0 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide shadow-2xs ${meta.cls}`}
+                          >
+                            {t(meta.labelKey)}
+                          </span>
+                        )}
                         <div className="min-w-0">
                           <p className="font-bold text-slate-900 dark:text-white truncate">
-                            {a.title || t("common.untitled")}
+                            {mainTitle || t("common.untitled")}
                           </p>
+                          {subTitle && (
+                            <p className="text-[11px] text-pink-600 dark:text-pink-400 font-medium truncate">
+                              {subTitle}
+                            </p>
+                          )}
                           <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-1 mt-0.5">
-                            {a.message || t("alerts.noMessage")}
+                            {mainMsg || t("alerts.noMessage")}
                           </p>
                         </div>
                       </div>
@@ -191,7 +254,7 @@ export default function Alerts() {
                     <td className="px-4 py-4">
                       <button
                         onClick={() => toggleActive(a)}
-                        className={`relative w-11 h-6 rounded-full transition-colors ${
+                        className={`relative w-11 h-6 rounded-full transition-colors cursor-pointer ${
                           a.is_active ? "bg-gradient-to-r from-pink-500 to-rose-500" : "bg-slate-200 dark:bg-slate-700"
                         }`}
                         aria-label={a.is_active ? t("common.disable") : t("common.enable")}
@@ -211,14 +274,14 @@ export default function Alerts() {
                             setEditing(a);
                             setModalOpen(true);
                           }}
-                          className="p-2 rounded-xl text-slate-400 hover:bg-pink-50 dark:hover:bg-pink-950/50 hover:text-pink-600 dark:hover:text-pink-400 transition"
+                          className="p-2 rounded-xl text-slate-400 hover:bg-pink-50 dark:hover:bg-pink-950/50 hover:text-pink-600 dark:hover:text-pink-400 transition cursor-pointer"
                           title={t("alerts.editAlert")}
                         >
                           <Pencil className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => setConfirming(a)}
-                          className="p-2 rounded-xl text-slate-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 hover:text-rose-600 dark:hover:text-rose-400 transition"
+                          className="p-2 rounded-xl text-slate-400 hover:bg-rose-50 dark:hover:bg-rose-950/50 hover:text-rose-600 dark:hover:text-rose-400 transition cursor-pointer"
                           title={t("alerts.deleteAlert")}
                         >
                           <Trash2 className="w-4 h-4" />
@@ -250,20 +313,20 @@ export default function Alerts() {
           <p className="text-sm text-slate-600 dark:text-slate-300">
             {t("alerts.confirmDelete")}{" "}
             <strong className="text-slate-900 dark:text-white">
-              {confirming?.title || `#${confirming?.id}`}
+              {confirming?.title || confirming?.title_km || `#${confirming?.id}`}
             </strong>{" "}
             {t("alerts.confirmDeleteDesc")}
           </p>
           <div className="flex gap-2 justify-end pt-2">
             <button
               onClick={() => setConfirming(null)}
-              className="px-4 py-2 text-sm font-semibold rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+              className="px-4 py-2 text-sm font-semibold rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
             >
               {t("common.cancel")}
             </button>
             <button
               onClick={handleDelete}
-              className="px-4 py-2 text-sm font-semibold rounded-xl bg-rose-600 hover:bg-rose-700 text-white shadow-sm transition"
+              className="px-4 py-2 text-sm font-semibold rounded-xl bg-rose-600 hover:bg-rose-700 text-white shadow-sm transition cursor-pointer"
             >
               {t("common.delete")}
             </button>
